@@ -78,7 +78,7 @@ const performSearch = () => {
 
             <!-- Article Grid -->
             <section>
-                <div v-if="articles.data.length" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div v-if="articles?.data?.length" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <ArticleCard
                         v-for="article in articles.data"
                         :key="article.id"
@@ -92,7 +92,7 @@ const performSearch = () => {
 
                 <!-- Pagination -->
                 <div
-                    v-if="articles.meta.last_page > 1"
+                    v-if="articles?.meta?.last_page && articles.meta.last_page > 1"
                     class="mt-8 flex justify-center gap-2"
                 >
                     <Button

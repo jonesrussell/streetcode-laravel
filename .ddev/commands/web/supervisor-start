@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Description: Start supervisor manually
+## Usage: supervisor-start
+## Example: "ddev supervisor-start"
+
+supervisord -c /var/www/html/config/supervisor/supervisord.conf -n
+

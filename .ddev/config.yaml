@@ -14,6 +14,15 @@ composer_version: "2"
 web_environment: []
 corepack_enable: false
 
+# Install supervisor in web container
+webimage_extra_packages: [supervisor]
+
+# Start supervisor daemon to manage articles:subscribe command
+web_extra_daemons:
+  - name: supervisor
+    command: "/usr/bin/supervisord -c /var/www/html/config/supervisor/supervisord.conf -n"
+    directory: /var/www/html
+
 # Key features of DDEV's config.yaml:
 
 # name: <projectname> # Name of the project, automatically provides

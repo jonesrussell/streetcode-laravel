@@ -14,13 +14,11 @@ composer_version: "2"
 web_environment: []
 corepack_enable: false
 
-# Install supervisor in web container
-webimage_extra_packages: [supervisor]
-
-# Start supervisor daemon to manage articles:subscribe command
+# Start articles:subscribe command as a daemon
+# Note: DDEV's nginx-fpm already uses supervisor internally, so we run the command directly
 web_extra_daemons:
-  - name: supervisor
-    command: "/usr/bin/supervisord -c /var/www/html/config/supervisor/supervisord.conf -n"
+  - name: articles-subscribe
+    command: "php /var/www/html/artisan articles:subscribe"
     directory: /var/www/html
 
 # Key features of DDEV's config.yaml:

@@ -171,6 +171,26 @@ php artisan test tests/Feature/ArticleTest.php
 php artisan test --filter=ArticleController
 ```
 
+### DDEV Development
+
+This project is configured to work with [DDEV](https://ddev.readthedocs.io/) for local development. DDEV automatically starts the `articles:subscribe` command when you start the project.
+
+```bash
+# Start DDEV (articles:subscribe starts automatically)
+ddev start
+
+# Check if articles:subscribe is running
+ddev exec ps aux | grep articles:subscribe
+
+# View logs
+ddev exec tail -f storage/logs/laravel.log
+
+# Restart the articles:subscribe daemon
+ddev restart
+```
+
+**Note**: DDEV's `nginx-fpm` webserver type already uses supervisor internally, so the `articles:subscribe` command runs directly as a daemon rather than through a separate supervisor instance. For production Docker deployment, supervisor is used as documented in the Production Deployment section.
+
 ## Article Ingestion
 
 Articles are ingested via Redis pub/sub. The application subscribes to a Redis channel and processes incoming articles asynchronously.

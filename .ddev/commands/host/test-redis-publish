@@ -1,0 +1,40 @@
+#!/bin/bash
+
+## Description: Test publishing a message to the articles:subscribe channel
+## Usage: test-redis-publish [channel]
+## Example: "ddev test-redis-publish"
+## Example: "ddev test-redis-publish articles:breaking"
+
+CHANNEL="${1:-articles:crime}"
+
+# Get the Redis prefix from Laravel config
+PREFIX=$(ddev exec php artisan tinker --execute="echo config('database.redis.options.prefix');")
+
+# Build the full channel name with prefix
+FULL_CHANNEL="${PREFIX}${CHANNEL}"
+
+# Test message
+MESSAGE='{"id":"test-'$(date +%s)'","title":"Test Article from DDEV","canonical_url":"https://example.com/test","source":"test-source","published_date":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","publisher":{"name":"Test Publisher"},"quality_score":75}'
+
+echo "Publishing test message to Redis..."
+echo "Channel: $FULL_CHANNEL"
+echo ""
+
+# Publish the message
+RESULT=$(redis-cli PUBLISH "$FULL_CHANNEL" "$MESSAGE")
+
+if [ "$RESULT" = "1" ]; then
+    echo "✓ SUCCESS: Message delivered to 1 subscriber"
+    echo ""
+    echo "Check the logs with:"
+    echo "  ddev supervisor tail"
+    echo "  (or)"
+    echo "  ddev logs -s web | grep 'Test Article'"
+else
+    echo "✗ FAILED: No subscribers received the message (result: $RESULT)"
+    echo ""
+    echo "Troubleshooting:"
+    echo "  1. Check if subscriber is running: ddev supervisor status"
+    echo "  2. Check active channels: redis-cli PUBSUB CHANNELS"
+    echo "  3. Restart subscriber: ddev supervisor restart"
+fi

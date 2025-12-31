@@ -1,45 +1,65 @@
 #!/bin/bash
 
 ## Description: Manage supervisor processes (uses DDEV's built-in supervisor)
-## Usage: supervisor [status|start|stop|restart|tail]
+## Usage: supervisor [status|start|stop|restart|tail|logs]
 ## Example: "ddev supervisor status"
-## Example: "ddev supervisor tail articles-subscribe"
+## Example: "ddev supervisor tail"
+## Example: "ddev supervisor restart"
+
+PROCESS_NAME="webextradaemons:articles-subscribe"
 
 case "${1:-status}" in
     status)
         supervisorctl status
         ;;
     start)
-        supervisorctl start "${2:-all}"
+        if [ -n "$2" ]; then
+            supervisorctl start "$2"
+        else
+            supervisorctl start "$PROCESS_NAME"
+        fi
         ;;
     stop)
-        supervisorctl stop "${2:-all}"
+        if [ -n "$2" ]; then
+            supervisorctl stop "$2"
+        else
+            supervisorctl stop "$PROCESS_NAME"
+        fi
         ;;
     restart)
-        supervisorctl restart "${2:-all}"
-        ;;
-    tail)
-        if [ -z "$2" ]; then
-            echo "Usage: ddev supervisor tail <program-name>"
-            echo "Example: ddev supervisor tail articles-subscribe"
-            exit 1
+        if [ -n "$2" ]; then
+            supervisorctl restart "$2"
+        else
+            supervisorctl restart "$PROCESS_NAME"
         fi
-        supervisorctl tail -f "$2"
         ;;
-    logs)
-        echo "Supervisor logs:"
-        supervisorctl tail articles-subscribe
+    tail|logs)
+        echo "Tailing logs for articles-subscribe (Ctrl+C to exit)..."
+        supervisorctl tail -f "$PROCESS_NAME" 2>&1 || {
+            echo ""
+            echo "Note: If logs haven't been generated yet, try:"
+            echo "  ddev logs -s web"
+            echo ""
+            echo "Or check if the process is receiving messages:"
+            echo "  ddev exec redis-cli PUBLISH articles:crime '{\"test\":\"message\"}'"
+        }
         ;;
     *)
         echo "Usage: ddev supervisor [status|start|stop|restart|tail|logs]"
         echo ""
         echo "Commands:"
         echo "  status              Show status of all programs"
-        echo "  start <program>     Start a program (or 'all')"
-        echo "  stop <program>      Stop a program (or 'all')"
-        echo "  restart <program>   Restart a program (or 'all')"
-        echo "  tail <program>      Tail logs for a program"
-        echo "  logs                Show articles-subscribe logs"
+        echo "  start [program]     Start articles-subscribe (or specify program)"
+        echo "  stop [program]      Stop articles-subscribe (or specify program)"
+        echo "  restart [program]   Restart articles-subscribe (or specify program)"
+        echo "  tail                Tail logs for articles-subscribe"
+        echo "  logs                Alias for 'tail'"
+        echo ""
+        echo "Examples:"
+        echo "  ddev supervisor                    # Show status"
+        echo "  ddev supervisor restart            # Restart articles-subscribe"
+        echo "  ddev supervisor tail               # View live logs"
+        echo "  ddev supervisor stop nginx         # Stop a specific service"
         exit 1
         ;;
 esac

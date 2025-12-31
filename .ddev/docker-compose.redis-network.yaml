@@ -1,8 +1,0 @@
-services:
-  web:
-    networks:
-      - shared-redis-net
-
-networks:
-  shared-redis-net:
-    external: true

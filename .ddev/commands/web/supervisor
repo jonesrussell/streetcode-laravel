@@ -1,0 +1,45 @@
+#!/bin/bash
+
+## Description: Manage supervisor processes (uses DDEV's built-in supervisor)
+## Usage: supervisor [status|start|stop|restart|tail]
+## Example: "ddev supervisor status"
+## Example: "ddev supervisor tail articles-subscribe"
+
+case "${1:-status}" in
+    status)
+        supervisorctl status
+        ;;
+    start)
+        supervisorctl start "${2:-all}"
+        ;;
+    stop)
+        supervisorctl stop "${2:-all}"
+        ;;
+    restart)
+        supervisorctl restart "${2:-all}"
+        ;;
+    tail)
+        if [ -z "$2" ]; then
+            echo "Usage: ddev supervisor tail <program-name>"
+            echo "Example: ddev supervisor tail articles-subscribe"
+            exit 1
+        fi
+        supervisorctl tail -f "$2"
+        ;;
+    logs)
+        echo "Supervisor logs:"
+        supervisorctl tail articles-subscribe
+        ;;
+    *)
+        echo "Usage: ddev supervisor [status|start|stop|restart|tail|logs]"
+        echo ""
+        echo "Commands:"
+        echo "  status              Show status of all programs"
+        echo "  start <program>     Start a program (or 'all')"
+        echo "  stop <program>      Stop a program (or 'all')"
+        echo "  restart <program>   Restart a program (or 'all')"
+        echo "  tail <program>      Tail logs for a program"
+        echo "  logs                Show articles-subscribe logs"
+        exit 1
+        ;;
+esac

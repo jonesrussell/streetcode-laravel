@@ -87,26 +87,25 @@ ddev test-redis-publish
 ddev test-redis-publish articles:breaking
 ```
 
-This will automatically handle the Laravel Redis prefix and send a properly formatted test message.
-
 #### Manual Testing
 
-**Important:** Laravel adds a prefix to all Redis keys (usually `laravel-database-`).
-
-To manually test from your HOST machine:
+To manually test from your HOST machine, publish directly to the channel (no prefix needed):
 
 ```bash
 # Check the active subscription channels
 redis-cli PUBSUB CHANNELS
+# Output: articles:crime
 
-# Publish to the prefixed channel
-redis-cli PUBLISH "laravel-database-articles:crime" '{"id":"test-123","title":"Test Article","canonical_url":"https://example.com/test","source":"test","published_date":"2025-12-31","publisher":{"name":"Test Publisher"}}'
+# Publish a test message
+redis-cli PUBLISH articles:crime '{"id":"test-123","title":"Test Article","canonical_url":"https://example.com/test","source":"test","published_date":"2025-12-31","publisher":{"name":"Test Publisher"}}'
 ```
 
 You should see `(integer) 1` indicating 1 subscriber received the message, and in the logs:
 ```
 ✓ Dispatched article: Test Article
 ```
+
+**Note:** The Redis prefix has been disabled (set to empty string in `.ddev/config.yaml`). If you enable it again, you'll need to include the prefix in your channel names.
 
 ## Development Workflow
 

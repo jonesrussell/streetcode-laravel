@@ -24,7 +24,29 @@ class SubscribeToArticleFeed extends Command
             $this->info("Filtering articles with quality_score >= {$minQualityScore}");
         }
 
-        Redis::subscribe([$channel], function (string $message) use ($minQualityScore) {
+        // Use raw Redis client for pub/sub to bypass prefix
+        // Pub/sub channels shouldn't use prefixes since they're shared across services
+        $redisConfig = config('database.redis.default');
+        $client = new \Redis();
+
+        $host = $redisConfig['host'] ?? '127.0.0.1';
+        $port = (int) ($redisConfig['port'] ?? 6379);
+        $password = $redisConfig['password'] ?? null;
+
+        // Connect without prefix
+        $client->connect($host, $port);
+
+        if ($password) {
+            $client->auth($password);
+        }
+
+        // Set read timeout to -1 (infinite) for pub/sub subscriptions
+        // This prevents connection timeouts during long-lived subscriptions
+        $readTimeout = $redisConfig['read_timeout'] ?? -1;
+        $client->setOption(\Redis::OPT_READ_TIMEOUT, (float) $readTimeout);
+
+        // Subscribe without prefix - callback receives: $redis, $channel, $message
+        $client->subscribe([$channel], function (\Redis $redis, string $channel, string $message) use ($minQualityScore) {
             $this->processMessage($message, $minQualityScore);
         });
     }

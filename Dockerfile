@@ -35,16 +35,8 @@ USER www-data
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 USER root
 
-# Create supervisor directories
-RUN mkdir -p /var/log/supervisor /var/run /etc/supervisor/conf.d
-RUN chown -R www-data:www-data /var/log/supervisor /var/run
-
-# Copy supervisor configuration
-COPY --chown=www-data:www-data config/supervisor/ /var/www/html/config/supervisor/
-COPY --chown=www-data:www-data config/supervisor/ /etc/supervisor/conf.d/
-
 # Create storage and logs directories
-RUN mkdir -p /var/www/html/storage/logs/supervisor \
+RUN mkdir -p /var/www/html/storage/logs \
     && chown -R www-data:www-data /var/www/html/storage \
     && chmod -R 775 /var/www/html/storage
 
@@ -54,6 +46,6 @@ COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/var/www/html/config/supervisor/supervisord.conf", "-n"]
+# Start PHP-FPM
+CMD ["php-fpm"]
 

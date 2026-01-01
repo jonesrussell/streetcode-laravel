@@ -32,7 +32,7 @@ services:
       retries: 3
 
   db:
-    image: mariadb:10.11
+    image: mariadb:11.8
     container_name: streetcode-db
     restart: unless-stopped
     environment:
@@ -50,42 +50,28 @@ services:
       timeout: 10s
       retries: 3
 
+  # Nginx reverse proxy (internal only - accessed via north-cloud nginx)
   nginx:
     image: nginx:alpine
     container_name: streetcode-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
+    # No external ports - accessed via north-cloud nginx
     volumes:
-      - ./:/var/www/html
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - certbot_data:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-    networks:
-      - streetcode-network
+      # Laravel public directory for static files
+      - ./public:/var/www/html/public:ro
     depends_on:
       - app
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    container_name: streetcode-certbot
-    restart: unless-stopped
-    volumes:
-      - certbot_data:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
     networks:
       - streetcode-network
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - north-cloud-network
+    restart: unless-stopped
 
 networks:
   streetcode-network:
     driver: bridge
+  north-cloud-network:
+    external: true
+    name: north-cloud_north-cloud-network
 
 volumes:
   db_data:
-  certbot_data:
-  certbot_www:
-

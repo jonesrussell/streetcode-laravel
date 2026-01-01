@@ -25,8 +25,6 @@ chmod -R 775 /var/www/html/bootstrap/cache
 # Ensure supervisor log directory exists
 mkdir -p /var/log/supervisor
 
-# Start supervisor in the background to manage long-running processes
-/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
-
-# Execute the main command (PHP-FPM)
-exec "$@"
+# Start supervisor in foreground (it will manage PHP-FPM and other processes)
+# Supervisor becomes PID 1 and manages all child processes
+exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n

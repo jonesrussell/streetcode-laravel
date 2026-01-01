@@ -17,5 +17,16 @@ mkdir -p /var/www/html/storage/logs
 chown -R www-data:www-data /var/www/html/storage
 chmod -R 775 /var/www/html/storage
 
-# Execute the main command
+# Ensure bootstrap/cache directory exists and is writable
+mkdir -p /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/bootstrap/cache
+
+# Ensure supervisor log directory exists
+mkdir -p /var/log/supervisor
+
+# Start supervisor in the background to manage long-running processes
+/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+
+# Execute the main command (PHP-FPM)
 exec "$@"

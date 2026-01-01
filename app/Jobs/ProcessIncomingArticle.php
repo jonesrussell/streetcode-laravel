@@ -27,6 +27,11 @@ class ProcessIncomingArticle implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::info('ProcessIncomingArticle job started', [
+            'external_id' => $this->articleData['id'] ?? null,
+            'title' => $this->articleData['title'] ?? $this->articleData['og_title'] ?? null,
+        ]);
+
         try {
             // Validate required fields from publisher format
             if (! $this->validatePublisherMessage()) {

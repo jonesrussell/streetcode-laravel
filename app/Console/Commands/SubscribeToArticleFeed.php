@@ -60,10 +60,18 @@ class SubscribeToArticleFeed extends Command
                 return;
             }
 
-            ProcessIncomingArticle::dispatch($data);
-
             $title = $data['title'] ?? $data['og_title'] ?? 'Untitled';
-            $this->info("✓ Dispatched article: {$title}");
+            $externalId = $data['id'] ?? 'unknown';
+
+            Log::info('Processing incoming article', [
+                'external_id' => $externalId,
+                'title' => $title,
+            ]);
+
+            // Process synchronously for real-time pubsub processing
+            ProcessIncomingArticle::dispatchSync($data);
+
+            $this->info("✓ Processed article: {$title}");
         } catch (\Exception $e) {
             Log::error('Failed to process Redis message', [
                 'error' => $e->getMessage(),

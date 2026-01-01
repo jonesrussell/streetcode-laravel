@@ -349,3 +349,96 @@ it('sanitizes HTML content while preserving basic formatting', function () {
     expect($article->content)->toContain('<strong>Bold text</strong>');
     expect($article->content)->not->toContain('<script>');
 });
+
+it('processes article with og_title instead of title', function () {
+    $articleData = [
+        'publisher' => [
+            'route_id' => 'test-route',
+            'published_at' => '2025-12-28T15:30:45Z',
+            'channel' => 'articles:crime',
+        ],
+        'id' => 'es-doc-id-og-title',
+        'og_title' => 'Article with OG Title',
+        'body' => 'Content here',
+        'canonical_url' => '',
+        'published_date' => '0001-01-01T00:00:00Z',
+    ];
+
+    $job = new ProcessIncomingArticle($articleData);
+    $job->handle();
+
+    $article = Article::where('external_id', 'es-doc-id-og-title')->first();
+
+    expect($article)->not->toBeNull();
+    expect($article->title)->toBe('Article with OG Title');
+    expect($article->url)->toContain('articles:crime');
+});
+
+it('processes article with missing source field', function () {
+    $articleData = [
+        'publisher' => [
+            'route_id' => 'test-route',
+            'published_at' => '2025-12-28T15:30:45Z',
+            'channel' => 'articles:crime',
+        ],
+        'id' => 'es-doc-id-no-source',
+        'og_title' => 'Article without source',
+        'body' => 'Content',
+        'canonical_url' => '',
+    ];
+
+    $job = new ProcessIncomingArticle($articleData);
+    $job->handle();
+
+    $article = Article::where('external_id', 'es-doc-id-no-source')->first();
+
+    expect($article)->not->toBeNull();
+    expect($article->newsSource)->not->toBeNull();
+    expect($article->newsSource->slug)->toBe('crime');
+});
+
+it('uses publisher published_at when published_date is invalid', function () {
+    $articleData = [
+        'publisher' => [
+            'route_id' => 'test-route',
+            'published_at' => '2025-12-28T15:30:45Z',
+            'channel' => 'articles:crime',
+        ],
+        'id' => 'es-doc-id-invalid-date',
+        'title' => 'Test Article',
+        'body' => 'Content',
+        'canonical_url' => 'https://example.com/test',
+        'published_date' => '0001-01-01T00:00:00Z',
+    ];
+
+    $job = new ProcessIncomingArticle($articleData);
+    $job->handle();
+
+    $article = Article::where('external_id', 'es-doc-id-invalid-date')->first();
+
+    expect($article)->not->toBeNull();
+    expect($article->published_at->toIso8601String())->toBe('2025-12-28T15:30:45+00:00');
+});
+
+it('uses og_description as excerpt when intro and description are missing', function () {
+    $articleData = [
+        'publisher' => [
+            'route_id' => 'test-route',
+            'published_at' => '2025-12-28T15:30:45Z',
+            'channel' => 'articles:crime',
+        ],
+        'id' => 'es-doc-id-og-description',
+        'title' => 'Test Article',
+        'body' => 'Content',
+        'canonical_url' => 'https://example.com/test',
+        'published_date' => '2025-12-28T08:00:00Z',
+        'og_description' => 'Open Graph description',
+    ];
+
+    $job = new ProcessIncomingArticle($articleData);
+    $job->handle();
+
+    $article = Article::where('external_id', 'es-doc-id-og-description')->first();
+
+    expect($article->excerpt)->toBe('Open Graph description');
+});

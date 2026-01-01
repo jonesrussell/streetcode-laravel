@@ -52,12 +52,18 @@ class SubscribeToArticleFeed extends Command
             }
 
             if ($minQualityScore > 0 && ($data['quality_score'] ?? 0) < $minQualityScore) {
+                Log::warning('Skipping article with quality score below threshold', [
+                    'quality_score' => $data['quality_score'],
+                    'min_quality_score' => $minQualityScore,
+                ]);
+
                 return;
             }
 
             ProcessIncomingArticle::dispatch($data);
 
-            $this->info("✓ Dispatched article: {$data['title']}");
+            $title = $data['title'] ?? $data['og_title'] ?? 'Untitled';
+            $this->info("✓ Dispatched article: {$title}");
         } catch (\Exception $e) {
             Log::error('Failed to process Redis message', [
                 'error' => $e->getMessage(),
@@ -68,14 +74,16 @@ class SubscribeToArticleFeed extends Command
 
     protected function isValidMessage(array $data): bool
     {
-        $requiredFields = ['id', 'title', 'canonical_url', 'source', 'published_date', 'publisher'];
-
-        foreach ($requiredFields as $field) {
-            if (! isset($data[$field])) {
-                return false;
-            }
+        // Must have id and publisher
+        if (! isset($data['id']) || ! isset($data['publisher']) || ! is_array($data['publisher'])) {
+            return false;
         }
 
-        return is_array($data['publisher']);
+        // Must have either title or og_title
+        if (! isset($data['title']) && ! isset($data['og_title'])) {
+            return false;
+        }
+
+        return true;
     }
 }

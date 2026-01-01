@@ -48,23 +48,32 @@ class ProcessIncomingArticle implements ShouldQueue
                 return;
             }
 
-            // Get or create news source from URL
-            $sourceId = $this->getOrCreateSource($this->articleData['source']);
+            // Get or create news source
+            $sourceId = $this->getOrCreateSource();
 
             // Build metadata from publisher fields
             $metadata = $this->buildMetadata();
+
+            // Get title (prefer title, fallback to og_title)
+            $title = $this->articleData['title'] ?? $this->articleData['og_title'] ?? 'Untitled Article';
+
+            // Get URL (prefer canonical_url, fallback to og_url, or generate from id)
+            $url = $this->getArticleUrl();
+
+            // Get published date (prefer published_date, fallback to publisher.published_at, or use now)
+            $publishedAt = $this->getPublishedDate();
 
             // Map publisher fields to article fields
             $article = Article::create([
                 'news_source_id' => $sourceId,
                 'external_id' => $externalId,
-                'title' => $this->articleData['title'],
-                'excerpt' => $this->articleData['intro'] ?? $this->articleData['description'] ?? null,
+                'title' => $title,
+                'excerpt' => $this->articleData['intro'] ?? $this->articleData['description'] ?? $this->articleData['og_description'] ?? null,
                 'content' => $this->sanitizeContent($this->articleData['body'] ?? $this->articleData['raw_text'] ?? null),
-                'url' => $this->articleData['canonical_url'],
+                'url' => $url,
                 'image_url' => $this->articleData['og_image'] ?? null,
                 'author' => $this->articleData['author'] ?? null,
-                'published_at' => Carbon::parse($this->articleData['published_date']),
+                'published_at' => $publishedAt,
                 'crawled_at' => now(),
                 'metadata' => $metadata,
             ]);
@@ -95,59 +104,99 @@ class ProcessIncomingArticle implements ShouldQueue
      */
     protected function validatePublisherMessage(): bool
     {
-        $requiredFields = ['id', 'title', 'canonical_url', 'source', 'published_date'];
+        // Must have id
+        if (! isset($this->articleData['id'])) {
+            return false;
+        }
 
-        foreach ($requiredFields as $field) {
-            if (! isset($this->articleData[$field])) {
-                return false;
-            }
+        // Must have either title or og_title
+        if (! isset($this->articleData['title']) && ! isset($this->articleData['og_title'])) {
+            return false;
         }
 
         return true;
     }
 
     /**
-     * Get or create NewsSource from URL string.
+     * Get or create NewsSource from available data.
      */
-    protected function getOrCreateSource(string $sourceUrl): int
+    protected function getOrCreateSource(): int
     {
-        try {
-            $parsedUrl = parse_url($sourceUrl);
+        // Try to get source from source field, og_url, or canonical_url
+        $sourceUrl = $this->articleData['source'] ?? $this->articleData['og_url'] ?? $this->articleData['canonical_url'] ?? null;
 
-            if (! isset($parsedUrl['host'])) {
-                Log::warning('Unable to parse source URL', ['url' => $sourceUrl]);
+        // If no URL available, try to extract from publisher channel
+        if (! $sourceUrl && isset($this->articleData['publisher']['channel'])) {
+            $channel = $this->articleData['publisher']['channel'];
+            // Channel format is like "articles:crime", extract a source name from it
+            $parts = explode(':', $channel);
+            if (count($parts) > 1) {
+                $sourceName = Str::title($parts[1]);
+                $slug = Str::slug($sourceName);
+                // Provide a placeholder URL since url field is required
+                $placeholderUrl = "https://{$slug}.example.com";
+
+                $source = NewsSource::firstOrCreate(
+                    ['slug' => $slug],
+                    [
+                        'name' => $sourceName,
+                        'url' => $placeholderUrl,
+                        'is_active' => true,
+                        'credibility_score' => $this->articleData['source_reputation'] ?? null,
+                    ]
+                );
+
+                if (! $source->wasRecentlyCreated && isset($this->articleData['source_reputation'])) {
+                    $source->update(['credibility_score' => $this->articleData['source_reputation']]);
+                }
+
+                return $source->id;
+            }
+        }
+
+        // If we have a URL, parse it
+        if ($sourceUrl) {
+            try {
+                $parsedUrl = parse_url($sourceUrl);
+
+                if (! isset($parsedUrl['host'])) {
+                    Log::warning('Unable to parse source URL', ['url' => $sourceUrl]);
+
+                    return $this->getOrCreateUnknownSource($sourceUrl);
+                }
+
+                $domain = $parsedUrl['host'];
+                $name = $this->formatDomainName($domain);
+                $slug = Str::slug($name);
+
+                $source = NewsSource::firstOrCreate(
+                    ['slug' => $slug],
+                    [
+                        'name' => $name,
+                        'url' => $sourceUrl,
+                        'is_active' => true,
+                        'credibility_score' => $this->articleData['source_reputation'] ?? null,
+                    ]
+                );
+
+                // Update source_reputation if provided and source already exists
+                if (! $source->wasRecentlyCreated && isset($this->articleData['source_reputation'])) {
+                    $source->update(['credibility_score' => $this->articleData['source_reputation']]);
+                }
+
+                return $source->id;
+            } catch (\Exception $e) {
+                Log::error('Failed to create news source', [
+                    'url' => $sourceUrl,
+                    'error' => $e->getMessage(),
+                ]);
 
                 return $this->getOrCreateUnknownSource($sourceUrl);
             }
-
-            $domain = $parsedUrl['host'];
-            $name = $this->formatDomainName($domain);
-            $slug = Str::slug($name);
-
-            $source = NewsSource::firstOrCreate(
-                ['slug' => $slug],
-                [
-                    'name' => $name,
-                    'url' => $sourceUrl,
-                    'is_active' => true,
-                    'credibility_score' => $this->articleData['source_reputation'] ?? null,
-                ]
-            );
-
-            // Update source_reputation if provided and source already exists
-            if (! $source->wasRecentlyCreated && isset($this->articleData['source_reputation'])) {
-                $source->update(['credibility_score' => $this->articleData['source_reputation']]);
-            }
-
-            return $source->id;
-        } catch (\Exception $e) {
-            Log::error('Failed to create news source', [
-                'url' => $sourceUrl,
-                'error' => $e->getMessage(),
-            ]);
-
-            return $this->getOrCreateUnknownSource($sourceUrl);
         }
+
+        // Fallback to unknown source
+        return $this->getOrCreateUnknownSource(null);
     }
 
     /**
@@ -168,18 +217,72 @@ class ProcessIncomingArticle implements ShouldQueue
     /**
      * Get or create unknown source fallback.
      */
-    protected function getOrCreateUnknownSource(string $url): int
+    protected function getOrCreateUnknownSource(?string $url): int
     {
         $source = NewsSource::firstOrCreate(
             ['slug' => 'unknown'],
             [
                 'name' => 'Unknown Source',
-                'url' => $url,
+                'url' => $url ?? 'https://unknown.example.com',
                 'is_active' => true,
             ]
         );
 
         return $source->id;
+    }
+
+    /**
+     * Get article URL from available fields.
+     */
+    protected function getArticleUrl(): string
+    {
+        // Prefer canonical_url, then og_url, or generate from id
+        $url = $this->articleData['canonical_url'] ?? $this->articleData['og_url'] ?? null;
+
+        if (! empty($url)) {
+            return $url;
+        }
+
+        // Generate a placeholder URL from the external_id
+        $externalId = $this->articleData['id'];
+        $publisherChannel = $this->articleData['publisher']['channel'] ?? 'articles';
+
+        return "https://{$publisherChannel}/{$externalId}";
+    }
+
+    /**
+     * Get published date from available fields.
+     */
+    protected function getPublishedDate(): Carbon
+    {
+        // Try published_date first
+        if (isset($this->articleData['published_date'])) {
+            try {
+                $date = Carbon::parse($this->articleData['published_date']);
+                // Check if date is valid (not the default "0001-01-01" date)
+                if ($date->year > 1970) {
+                    return $date;
+                }
+            } catch (\Exception $e) {
+                Log::debug('Invalid published_date, trying alternatives', [
+                    'published_date' => $this->articleData['published_date'],
+                ]);
+            }
+        }
+
+        // Try publisher.published_at
+        if (isset($this->articleData['publisher']['published_at'])) {
+            try {
+                return Carbon::parse($this->articleData['publisher']['published_at']);
+            } catch (\Exception $e) {
+                Log::debug('Invalid publisher.published_at, using current time', [
+                    'published_at' => $this->articleData['publisher']['published_at'],
+                ]);
+            }
+        }
+
+        // Fallback to current time
+        return now();
     }
 
     /**

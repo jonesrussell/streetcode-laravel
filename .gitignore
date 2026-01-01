@@ -26,3 +26,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+.cursor/rules/laravel-boost.mdc
+/storage/logs/supervisor/*.log
+.cursor/debug.log

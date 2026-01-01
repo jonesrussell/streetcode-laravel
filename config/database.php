@@ -159,6 +159,8 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
+            'read_timeout' => env('REDIS_READ_TIMEOUT', -1), // -1 = no timeout (for pub/sub with phpredis)
+            'read_write_timeout' => env('REDIS_READ_WRITE_TIMEOUT', -1), // -1 = no timeout (for pub/sub with Predis)
             'max_retries' => env('REDIS_MAX_RETRIES', 3),
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
             'backoff_base' => env('REDIS_BACKOFF_BASE', 100),
@@ -178,6 +180,19 @@ return [
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
         ],
 
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Articles Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for incoming article processing from external sources.
+    |
+    */
+
+    'articles' => [
+        'min_quality_score' => env('ARTICLES_MIN_QUALITY_SCORE', 0),
     ],
 
 ];

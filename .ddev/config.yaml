@@ -8,11 +8,18 @@ additional_hostnames: []
 additional_fqdns: []
 database:
     type: mariadb
-    version: "10.11"
+    version: "11.8"
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
 corepack_enable: false
+
+# Start articles:subscribe command as a daemon
+# DDEV will automatically configure this in its built-in supervisor
+web_extra_daemons:
+  - name: articles-subscribe
+    command: "php /var/www/html/artisan articles:subscribe"
+    directory: /var/www/html
 
 # Key features of DDEV's config.yaml:
 

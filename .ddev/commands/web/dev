@@ -1,0 +1,26 @@
+#!/bin/bash
+
+## Description: Run development services (Horizon, Vite, Pail) concurrently inside ddev
+## Usage: dev
+## Example: "ddev dev"
+
+# Get the project root directory
+cd /var/www/html || exit 1
+
+# Check if concurrently is available
+if ! command -v npx &> /dev/null; then
+    echo "Error: npx is not available. Please ensure Node.js is installed."
+    exit 1
+fi
+
+# Run horizon, vite, and pail concurrently
+# Note: We don't run 'php artisan serve' because ddev already provides nginx
+# Note: articles:subscribe is running via supervisor (web_extra_daemons in config.yaml)
+# Color scheme matches the composer.json dev script
+npx concurrently \
+    -c "#c4b5fd,#fb7185,#fdba74" \
+    "php artisan horizon" \
+    "php artisan pail --timeout=0" \
+    "npm run dev" \
+    --names=horizon,logs,vite \
+    --kill-others

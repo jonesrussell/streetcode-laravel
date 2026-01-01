@@ -37,3 +37,62 @@ export interface User {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+export interface Article {
+    id: number;
+    news_source_id: number;
+    title: string;
+    excerpt: string | null;
+    content: string | null;
+    url: string;
+    image_url: string | null;
+    author: string | null;
+    published_at: string;
+    view_count: number;
+    is_featured: boolean;
+    news_source: NewsSource;
+    tags: Tag[];
+}
+
+export interface NewsSource {
+    id: number;
+    name: string;
+    slug: string;
+    url: string;
+    logo_url: string | null;
+    description: string | null;
+    credibility_score: number | null;
+    bias_rating: 'left' | 'center-left' | 'center' | 'center-right' | 'right' | null;
+    factual_reporting_score: number | null;
+    ownership: string | null;
+    bias_color?: string;
+    articles_count?: number;
+}
+
+export interface Tag {
+    id: number;
+    name: string;
+    slug: string;
+    type: string;
+    color: string | null;
+    description: string | null;
+    article_count: number;
+}
+
+export interface PaginatedArticles {
+    data: Article[];
+    links: {
+        first: string;
+        last: string;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        current_page: number;
+        from: number;
+        last_page: number;
+        per_page: number;
+        to: number;
+        total: number;
+    };
+}

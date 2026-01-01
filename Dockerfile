@@ -35,16 +35,27 @@ USER www-data
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 USER root
 
-# Create storage and logs directories
-RUN mkdir -p /var/www/html/storage/logs \
+# Create storage directories with proper structure
+RUN mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/testing \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/storage/logs \
     && chown -R www-data:www-data /var/www/html/storage \
     && chmod -R 775 /var/www/html/storage
 
 # Copy PHP-FPM configuration
 COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
+# Copy entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Start PHP-FPM
 CMD ["php-fpm"]

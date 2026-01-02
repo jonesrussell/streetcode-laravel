@@ -241,18 +241,25 @@ class ProcessIncomingArticle implements ShouldQueue
      */
     protected function getArticleUrl(): string
     {
-        // Prefer canonical_url, then og_url, or generate from id
+        // Prefer canonical_url, then og_url
         $url = $this->articleData['canonical_url'] ?? $this->articleData['og_url'] ?? null;
 
         if (! empty($url)) {
             return $url;
         }
 
+        // Try to use source URL if available
+        if (! empty($this->articleData['source'])) {
+            return $this->articleData['source'];
+        }
+
         // Generate a placeholder URL from the external_id
         $externalId = $this->articleData['id'];
         $publisherChannel = $this->articleData['publisher']['channel'] ?? 'articles';
+        // Replace colon with dash for valid URL format
+        $channelSlug = str_replace(':', '-', $publisherChannel);
 
-        return "https://{$publisherChannel}/{$externalId}";
+        return "https://{$channelSlug}.example.com/{$externalId}";
     }
 
     /**

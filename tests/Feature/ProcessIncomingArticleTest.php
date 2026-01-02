@@ -371,7 +371,7 @@ it('processes article with og_title instead of title', function () {
 
     expect($article)->not->toBeNull();
     expect($article->title)->toBe('Article with OG Title');
-    expect($article->url)->toContain('articles:crime');
+    expect($article->url)->toContain('articles-crime');
 });
 
 it('processes article with missing source field', function () {

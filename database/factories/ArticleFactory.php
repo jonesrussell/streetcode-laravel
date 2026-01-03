@@ -38,4 +38,18 @@ class ArticleFactory extends Factory
             'is_featured' => true,
         ]);
     }
+
+    public function draft(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'published_at' => null,
+        ]);
+    }
+
+    public function published(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'published_at' => fake()->dateTimeBetween('-30 days', 'now'),
+        ]);
+    }
 }

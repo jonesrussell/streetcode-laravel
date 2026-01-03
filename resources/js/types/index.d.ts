@@ -32,6 +32,7 @@ export interface User {
     email: string;
     avatar?: string;
     email_verified_at: string | null;
+    is_admin?: boolean;
     created_at: string;
     updated_at: string;
 }
@@ -41,17 +42,21 @@ export type BreadcrumbItemType = BreadcrumbItem;
 export interface Article {
     id: number;
     news_source_id: number;
+    author_id: number | null;
     title: string;
     excerpt: string | null;
     content: string | null;
     url: string;
     image_url: string | null;
     author: string | null;
-    published_at: string;
+    published_at: string | null;
     view_count: number;
     is_featured: boolean;
-    news_source: NewsSource;
-    tags: Tag[];
+    created_at: string;
+    updated_at: string;
+    news_source?: NewsSource;
+    tags?: Tag[];
+    author?: User;
 }
 
 export interface NewsSource {

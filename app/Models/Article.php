@@ -16,6 +16,7 @@ class Article extends Model
 
     protected $fillable = [
         'news_source_id',
+        'author_id',
         'title',
         'excerpt',
         'content',
@@ -43,6 +44,11 @@ class Article extends Model
     public function newsSource(): BelongsTo
     {
         return $this->belongsTo(NewsSource::class);
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function tags(): BelongsToMany

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -13,17 +14,34 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { BookOpen, Folder, LayoutGrid, FileText, Tag, Newspaper } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage();
+
+const isAdmin = computed(() => page.props.auth?.user?.is_admin ?? false);
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+
+    // Add admin navigation items if user is admin
+    if (isAdmin.value) {
+        items.push({
+            title: 'Articles',
+            href: { url: route('admin.articles.index'), method: 'get' },
+            icon: FileText,
+        });
+    }
+
+    return items;
+});
 
 const footerNavItems: NavItem[] = [
     {

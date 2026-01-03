@@ -3,9 +3,10 @@
         "laravel-boost": {
             "command": "wsl.exe",
             "args": [
-                "/home/linuxbrew/.linuxbrew/Cellar/php/8.5.0/bin/php",
-                "/home/jones/dev/streetcode-laravel/artisan",
-                "boost:mcp"
+                "-e",
+                "bash",
+                "-c",
+                "cd /home/jones/dev/streetcode-laravel && ddev exec php artisan boost:mcp"
             ]
         }
     }

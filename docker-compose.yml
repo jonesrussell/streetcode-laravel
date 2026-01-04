@@ -31,7 +31,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: streetcode-queue
     restart: unless-stopped
     working_dir: /var/www/html
     command: php artisan horizon

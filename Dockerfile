@@ -11,9 +11,19 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
+    $PHPIZE_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install pdo_mysql mbstring exif bcmath gd
+
+RUN docker-php-source extract \
+    && cd /usr/src/php/ext/pcntl \
+    && phpize \
+    && ./configure \
+    && make -j$(nproc) \
+    && make install \
+    && docker-php-ext-enable pcntl \
+    && docker-php-source delete
 
 RUN pecl install redis && docker-php-ext-enable redis
 

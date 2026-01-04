@@ -18,6 +18,7 @@ import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
 import { Plus, FileText, FilePlus, FileCheck } from 'lucide-vue-next';
 import { destroy } from '@/actions/App/Http/Controllers/Admin/ArticleController';
 import { dashboard } from '@/routes';
+import { index as articlesIndex, create as articlesCreate, destroy as articlesDestroy } from '@/routes/dashboard/articles';
 
 interface Props {
     articles: PaginatedArticles;
@@ -40,7 +41,7 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: dashboard().url },
-    { title: 'Articles', href: route('dashboard.articles.index') },
+    { title: 'Articles', href: articlesIndex().url },
 ];
 
 const searchQuery = ref(props.filters.search || '');
@@ -51,7 +52,7 @@ const isDeleting = ref(false);
 
 const applyFilters = () => {
     router.get(
-        route('dashboard.articles.index'),
+        articlesIndex().url,
         {
             ...props.filters,
             search: searchQuery.value || undefined,
@@ -74,7 +75,7 @@ const handleStatusChange = (value: string) => {
 };
 
 const handleCreateArticle = () => {
-    router.get(route('dashboard.articles.create'));
+    router.get(articlesCreate().url);
 };
 
 const handleDeleteClick = (article: Article) => {
@@ -87,7 +88,7 @@ const confirmDelete = () => {
 
     isDeleting.value = true;
 
-    router.delete(route('dashboard.articles.destroy', articleToDelete.value.id), {
+    router.delete(articlesDestroy(articleToDelete.value.id).url, {
         preserveScroll: true,
         onSuccess: () => {
             deleteDialogOpen.value = false;
@@ -139,7 +140,7 @@ const goToPage = (url: string | null) => {
                         <FileText class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats.total }}</div>
+                        <div class="text-2xl font-bold">{{ stats?.total ?? 0 }}</div>
                     </CardContent>
                 </Card>
 
@@ -151,7 +152,7 @@ const goToPage = (url: string | null) => {
                         <FilePlus class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats.drafts }}</div>
+                        <div class="text-2xl font-bold">{{ stats?.drafts ?? 0 }}</div>
                     </CardContent>
                 </Card>
 
@@ -163,7 +164,7 @@ const goToPage = (url: string | null) => {
                         <FileCheck class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats.published }}</div>
+                        <div class="text-2xl font-bold">{{ stats?.published ?? 0 }}</div>
                     </CardContent>
                 </Card>
             </div>
@@ -202,6 +203,7 @@ const goToPage = (url: string | null) => {
 
             <!-- Articles Table -->
             <ArticlesTable
+                v-if="articles"
                 :articles="articles"
                 :filters="filters"
                 @delete="handleDeleteClick"
@@ -209,7 +211,7 @@ const goToPage = (url: string | null) => {
 
             <!-- Pagination -->
             <div
-                v-if="articles.meta.last_page > 1"
+                v-if="articles?.meta?.last_page && articles.meta.last_page > 1"
                 class="flex items-center justify-between"
             >
                 <div class="text-sm text-muted-foreground">
@@ -220,7 +222,7 @@ const goToPage = (url: string | null) => {
                     <Button
                         variant="outline"
                         size="sm"
-                        :disabled="!articles.links.prev"
+                        :disabled="!articles?.links?.prev"
                         @click="goToPage(articles.links.prev)"
                     >
                         Previous
@@ -228,7 +230,7 @@ const goToPage = (url: string | null) => {
                     <Button
                         variant="outline"
                         size="sm"
-                        :disabled="!articles.links.next"
+                        :disabled="!articles?.links?.next"
                         @click="goToPage(articles.links.next)"
                     >
                         Next

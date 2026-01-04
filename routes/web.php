@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\NewsSourceController;
 use App\Http\Controllers\TagController;
+use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,9 +25,50 @@ Route::get('/sources/{newsSource:slug}', [NewsSourceController::class, 'show'])-
 Route::get('/search', [ArticleController::class, 'index'])->name('search');
 
 // Authenticated dashboard
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
+Route::get('dashboard', function (\Illuminate\Http\Request $request) {
+    $articles = Article::query()
+        ->with(['newsSource', 'tags'])
+        ->published()
+        ->when($request->tag, fn ($q) => $q->withTag($request->tag))
+        ->paginate(20)
+        ->withQueryString();
+
+    $featuredArticles = Article::query()
+        ->with(['newsSource', 'tags'])
+        ->featured()
+        ->published()
+        ->limit(3)
+        ->get();
+
+    $popularTags = Tag::query()
+        ->type('crime_category')
+        ->popular()
+        ->get();
+
+    $stats = [
+        'total' => Article::count(),
+        'published' => Article::whereNotNull('published_at')->count(),
+        'drafts' => Article::whereNull('published_at')->count(),
+        'featured' => Article::where('is_featured', true)->count(),
+        'recent' => Article::where('created_at', '>=', now()->subDays(7))->count(),
+        'total_views' => Article::sum('view_count'),
+    ];
+
+    return Inertia::render('Dashboard', [
+        'articles' => $articles,
+        'featuredArticles' => $featuredArticles,
+        'popularTags' => $popularTags,
+        'stats' => $stats,
+        'filters' => [
+            'tag' => $request->tag,
+        ],
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Dashboard article management routes
+Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::resource('articles', AdminArticleController::class)->except(['show']);
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/admin.php';

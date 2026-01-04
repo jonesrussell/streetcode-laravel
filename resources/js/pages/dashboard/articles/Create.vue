@@ -18,6 +18,7 @@ import {
 import TagMultiSelect from '@/components/admin/TagMultiSelect.vue';
 import { ArrowLeft } from 'lucide-vue-next';
 import { dashboard } from '@/routes';
+import { index as articlesIndex, create as articlesCreate, store as articlesStore } from '@/routes/dashboard/articles';
 
 interface Props {
     newsSources: NewsSource[];
@@ -28,8 +29,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: dashboard().url },
-    { title: 'Articles', href: route('dashboard.articles.index') },
-    { title: 'Create', href: route('dashboard.articles.create') },
+    { title: 'Articles', href: articlesIndex().url },
+    { title: 'Create', href: articlesCreate().url },
 ];
 
 const form = ref({
@@ -57,7 +58,7 @@ const handleSubmit = (publish: boolean = false) => {
         published_at: publish ? new Date().toISOString() : null,
     };
 
-    router.post(route('dashboard.articles.store'), data, {
+    router.post(articlesStore().url, data, {
         preserveScroll: true,
         onError: (err) => {
             errors.value = err;
@@ -69,7 +70,7 @@ const handleSubmit = (publish: boolean = false) => {
 };
 
 const handleCancel = () => {
-    router.get(route('dashboard.articles.index'));
+    router.get(articlesIndex().url);
 };
 </script>
 

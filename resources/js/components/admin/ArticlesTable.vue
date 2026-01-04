@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import ArticleStatusBadge from './ArticleStatusBadge.vue';
 import { Edit, Trash2, ArrowUp, ArrowDown } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { index as articlesIndex, edit as articlesEdit } from '@/routes/dashboard/articles';
 
 interface Props {
     articles: PaginatedArticles;
@@ -28,7 +29,7 @@ const toggleSort = (column: string) => {
             : 'asc';
 
     router.get(
-        route('dashboard.articles.index'),
+        articlesIndex().url,
         {
             ...props.filters,
             sort: column,
@@ -47,7 +48,7 @@ const getSortIcon = (column: string) => {
 };
 
 const handleEdit = (article: Article) => {
-    router.get(route('dashboard.articles.edit', article.id));
+    router.get(articlesEdit(article.id).url);
 };
 
 const handleDelete = (article: Article) => {
@@ -138,7 +139,7 @@ const formatDate = (date: string | null) => {
                 </thead>
                 <tbody>
                     <tr
-                        v-for="article in articles.data"
+                        v-for="article in articles?.data ?? []"
                         :key="article.id"
                         class="border-b hover:bg-muted/50 transition-colors"
                     >
@@ -216,7 +217,7 @@ const formatDate = (date: string | null) => {
                             </div>
                         </td>
                     </tr>
-                    <tr v-if="articles.data.length === 0">
+                    <tr v-if="!articles?.data || articles.data.length === 0">
                         <td colspan="8" class="px-4 py-12 text-center text-muted-foreground">
                             <div class="flex flex-col items-center gap-2">
                                 <p class="text-sm">No articles found.</p>

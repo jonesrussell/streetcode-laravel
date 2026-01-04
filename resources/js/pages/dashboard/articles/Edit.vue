@@ -20,6 +20,7 @@ import TagMultiSelect from '@/components/admin/TagMultiSelect.vue';
 import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
 import { ArrowLeft, Trash2 } from 'lucide-vue-next';
 import { dashboard } from '@/routes';
+import { index as articlesIndex, edit as articlesEdit, update as articlesUpdate, destroy as articlesDestroy } from '@/routes/dashboard/articles';
 
 interface Props {
     article: Article;
@@ -31,8 +32,8 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: dashboard().url },
-    { title: 'Articles', href: route('dashboard.articles.index') },
-    { title: 'Edit', href: route('dashboard.articles.edit', props.article.id) },
+    { title: 'Articles', href: articlesIndex().url },
+    { title: 'Edit', href: articlesEdit(props.article.id).url },
 ];
 
 const form = ref({
@@ -66,7 +67,7 @@ const handleSubmit = (publish: boolean = false) => {
             : (isPublished.value ? form.value.published_at : null),
     };
 
-    router.patch(route('dashboard.articles.update', props.article.id), data, {
+    router.patch(articlesUpdate(props.article.id).url, data, {
         preserveScroll: true,
         onError: (err) => {
             errors.value = err;
@@ -82,7 +83,7 @@ const handleUnpublish = () => {
     errors.value = {};
 
     router.patch(
-        route('dashboard.articles.update', props.article.id),
+        articlesUpdate(props.article.id).url,
         { ...form.value, published_at: null },
         {
             preserveScroll: true,
@@ -104,9 +105,9 @@ const handleDeleteClick = () => {
 const confirmDelete = () => {
     isDeleting.value = true;
 
-    router.delete(route('dashboard.articles.destroy', props.article.id), {
+    router.delete(articlesDestroy(props.article.id).url, {
         onSuccess: () => {
-            router.get(route('dashboard.articles.index'));
+            router.get(articlesIndex().url);
         },
         onFinish: () => {
             isDeleting.value = false;
@@ -115,7 +116,7 @@ const confirmDelete = () => {
 };
 
 const handleCancel = () => {
-    router.get(route('dashboard.articles.index'));
+    router.get(articlesIndex().url);
 };
 
 const formatDate = (date: string) => {

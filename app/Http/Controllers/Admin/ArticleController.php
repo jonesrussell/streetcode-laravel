@@ -32,7 +32,7 @@ class ArticleController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return Inertia::render('admin/articles/Index', [
+        return Inertia::render('dashboard/articles/Index', [
             'articles' => $articles,
             'filters' => $request->only(['status', 'search', 'tag', 'source', 'sort', 'direction']),
             'stats' => [
@@ -45,7 +45,7 @@ class ArticleController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('admin/articles/Create', [
+        return Inertia::render('dashboard/articles/Create', [
             'newsSources' => NewsSource::active()->orderBy('name')->get(),
             'tags' => Tag::orderBy('name')->get(),
         ]);
@@ -62,14 +62,14 @@ class ArticleController extends Controller
             $article->tags()->sync($request->tags);
         }
 
-        return to_route('admin.articles.index')->with('success', 'Article created successfully.');
+        return to_route('dashboard.articles.index')->with('success', 'Article created successfully.');
     }
 
     public function edit(Article $article): Response
     {
         $article->load(['newsSource', 'tags', 'author']);
 
-        return Inertia::render('admin/articles/Edit', [
+        return Inertia::render('dashboard/articles/Edit', [
             'article' => $article,
             'newsSources' => NewsSource::active()->orderBy('name')->get(),
             'tags' => Tag::orderBy('name')->get(),
@@ -84,13 +84,13 @@ class ArticleController extends Controller
             $article->tags()->sync($request->tags);
         }
 
-        return to_route('admin.articles.index')->with('success', 'Article updated successfully.');
+        return to_route('dashboard.articles.index')->with('success', 'Article updated successfully.');
     }
 
     public function destroy(Article $article): RedirectResponse
     {
         $article->delete();
 
-        return to_route('admin.articles.index')->with('success', 'Article deleted successfully.');
+        return to_route('dashboard.articles.index')->with('success', 'Article deleted successfully.');
     }
 }

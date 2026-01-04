@@ -16,7 +16,7 @@ import { dashboard } from '@/routes';
 import { index as articlesIndex } from '@/routes/dashboard/articles';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, FileText, Tag, Newspaper } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, FileText } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems = computed<NavItem[]>(() => {

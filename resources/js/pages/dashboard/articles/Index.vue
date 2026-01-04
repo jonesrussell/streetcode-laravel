@@ -16,7 +16,6 @@ import {
 import ArticlesTable from '@/components/admin/ArticlesTable.vue';
 import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
 import { Plus, FileText, FilePlus, FileCheck } from 'lucide-vue-next';
-import { destroy } from '@/actions/App/Http/Controllers/Admin/ArticleController';
 import { dashboard } from '@/routes';
 import { index as articlesIndex, create as articlesCreate, destroy as articlesDestroy } from '@/routes/dashboard/articles';
 

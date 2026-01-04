@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge'
 import { Calendar, User, ExternalLink } from 'lucide-vue-next'
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue'
 import ArticleCard from '@/components/ArticleCard.vue'
-import { Button } from '@/components/ui/button'
 
 interface Props {
     article: Article
@@ -14,11 +13,13 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const formattedDate = new Date(props.article.published_at).toLocaleDateString('en-CA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-})
+const formattedDate = props.article.published_at
+    ? new Date(props.article.published_at).toLocaleDateString('en-CA', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+      })
+    : 'Not published'
 </script>
 
 <template>
@@ -56,7 +57,7 @@ const formattedDate = new Date(props.article.published_at).toLocaleDateString('e
                             {{ article.author }}
                         </div>
 
-                        <SourceCredibilityBadge :source="article.news_source" />
+                        <SourceCredibilityBadge v-if="article.news_source" :source="article.news_source" />
                     </div>
 
                     <!-- Tags -->
@@ -97,7 +98,7 @@ const formattedDate = new Date(props.article.published_at).toLocaleDateString('e
                     rel="noopener noreferrer"
                     class="mt-6 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400"
                 >
-                    Read full article at {{ article.news_source.name }}
+                    Read full article at {{ article.news_source?.name ?? 'source' }}
                     <ExternalLink class="size-4" />
                 </a>
             </article>

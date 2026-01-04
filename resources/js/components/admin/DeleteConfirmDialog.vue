@@ -16,7 +16,7 @@ interface Props {
     loading?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
     title: 'Are you sure?',
     description: 'This action cannot be undone.',
     loading: false,

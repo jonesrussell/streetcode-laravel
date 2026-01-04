@@ -38,6 +38,9 @@ This application is a Laravel application and its main Laravel ecosystems packag
 ## Application Structure & Architecture
 - Stick to existing directory structure - don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
+- Admin article management routes are located at `/dashboard/articles` (not `/admin/articles`).
+- Dashboard pages are in `resources/js/pages/dashboard/`.
+- Admin article CRUD pages are in `resources/js/pages/dashboard/articles/`.
 
 ## Frontend Bundling
 - If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
@@ -198,7 +201,8 @@ Route::get('/users', function () {
 - Use Laravel's built-in authentication and authorization features (gates, policies, Sanctum, etc.).
 
 ### URL Generation
-- When generating links to other pages, prefer named routes and the `route()` function.
+- When generating links to other pages in PHP, prefer named routes and the `route()` function.
+- **Important**: In Vue components, NEVER use Laravel's `route()` helper function - it doesn't exist in the browser. Always use Wayfinder route functions instead (see Wayfinder section below).
 
 ### Configuration
 - Use environment variables only in configuration files - never use the `env()` function directly outside of config files. Always use `config('app.name')`, not `env('APP_NAME')`.
@@ -285,6 +289,27 @@ If your application uses the `<Form>` component from Inertia, you can use Wayfin
 
 <Form v-bind="store.form()"><input name="title" /></Form>
 
+</code-snippet>
+
+### Wayfinder Route Usage in Vue Components
+- **Never use Laravel's `route()` helper in Vue components** - it doesn't exist in the browser and will cause runtime errors.
+- Always import and use Wayfinder route functions from `@/routes/` or `@/actions/`.
+- Use `.url` property to get the URL string: `articlesIndex().url` instead of `route('dashboard.articles.index')`.
+- Example:
+<code-snippet name="Wayfinder in Vue Component" lang="typescript">
+// ✅ Correct - using Wayfinder
+import { index as articlesIndex, create as articlesCreate } from '@/routes/dashboard/articles';
+import { dashboard } from '@/routes';
+
+const breadcrumbs = [
+    { title: 'Dashboard', href: dashboard().url },
+    { title: 'Articles', href: articlesIndex().url },
+];
+
+router.get(articlesIndex().url, { search: 'query' });
+
+// ❌ Wrong - using Laravel route() helper (doesn't exist in Vue)
+route('dashboard.articles.index') // ReferenceError: route is not defined
 </code-snippet>
 
 
@@ -400,12 +425,26 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 
 - Vue components must have a single root element.
 - Use `router.visit()` or `<Link>` for navigation instead of traditional links.
+- Always use optional chaining (`?.`) when accessing nested properties from Inertia props to prevent runtime errors.
+- Example: `articles?.meta?.last_page` instead of `articles.meta.last_page`.
 
 <code-snippet name="Inertia Client Navigation" lang="vue">
 
     import { Link } from '@inertiajs/vue3'
     <Link href="/">Home</Link>
 
+</code-snippet>
+
+<code-snippet name="Safe Property Access" lang="vue">
+// ✅ Safe - using optional chaining
+<div v-if="articles?.meta?.last_page && articles.meta.last_page > 1">
+    <!-- pagination -->
+</div>
+
+// ❌ Unsafe - can cause "Cannot read properties of undefined" errors
+<div v-if="articles.meta.last_page > 1">
+    <!-- pagination -->
+</div>
 </code-snippet>
 
 
@@ -474,6 +513,35 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 ### Dark Mode
 - If existing pages and components support dark mode, new pages and components must support dark mode in a similar way, typically using `dark:`.
 
+
+=== shadcn-vue rules ===
+
+## Shadcn Vue Components
+
+- This application uses shadcn-vue components for UI elements.
+- Always prefer shadcn components over native HTML elements when available (e.g., use `Select` component instead of native `<select>`).
+- Install new shadcn components using: `npx shadcn-vue@latest add {component-name} --yes`
+- Shadcn components are located in `resources/js/components/ui/`.
+- When using Select components, import all necessary parts:
+<code-snippet name="Shadcn Select Usage" lang="vue">
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+
+<Select v-model="value" @update:model-value="handleChange">
+    <SelectTrigger>
+        <SelectValue placeholder="Select an option" />
+    </SelectTrigger>
+    <SelectContent>
+        <SelectItem value="option1">Option 1</SelectItem>
+        <SelectItem value="option2">Option 2</SelectItem>
+    </SelectContent>
+</Select>
+</code-snippet>
 
 === tailwindcss/v4 rules ===
 

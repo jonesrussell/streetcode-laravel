@@ -15,13 +15,9 @@ import {
 import { dashboard } from '@/routes';
 import { index as articlesIndex } from '@/routes/dashboard/articles';
 import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, FileText, Tag, Newspaper } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-
-const page = usePage();
-
-const isAdmin = computed(() => page.props.auth?.user?.is_admin ?? false);
 
 const mainNavItems = computed<NavItem[]>(() => {
     const items: NavItem[] = [
@@ -30,16 +26,12 @@ const mainNavItems = computed<NavItem[]>(() => {
             href: dashboard(),
             icon: LayoutGrid,
         },
-    ];
-
-    // Add admin navigation items if user is admin
-    if (isAdmin.value) {
-        items.push({
+        {
             title: 'Articles',
             href: articlesIndex(),
             icon: FileText,
-        });
-    }
+        },
+    ];
 
     return items;
 });

@@ -13,6 +13,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as articlesIndex } from '@/routes/admin/articles';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, FileText, Tag, Newspaper } from 'lucide-vue-next';
@@ -35,7 +36,7 @@ const mainNavItems = computed<NavItem[]>(() => {
     if (isAdmin.value) {
         items.push({
             title: 'Articles',
-            href: { url: route('admin.articles.index'), method: 'get' },
+            href: articlesIndex(),
             icon: FileText,
         });
     }

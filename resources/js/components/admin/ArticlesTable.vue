@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ArticleStatusBadge from './ArticleStatusBadge.vue';
 import { Edit, Trash2, ArrowUp, ArrowDown } from 'lucide-vue-next';
-import { ref } from 'vue';
 import { index as articlesIndex, edit as articlesEdit } from '@/routes/dashboard/articles';
 
 interface Props {

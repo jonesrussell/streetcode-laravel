@@ -106,13 +106,18 @@ COPY --from=node-build --chown=www-data:www-data /build/resources/js/routes ./re
 COPY --from=node-build --chown=www-data:www-data /build/resources/js/actions ./resources/js/actions
 COPY --from=node-build --chown=www-data:www-data /build/resources/js/wayfinder ./resources/js/wayfinder
 
+# Copy build assets to backup location for volume initialization
+RUN cp -r public/build public/build.bak || true
+
 RUN mkdir -p storage/framework/{cache,sessions,testing,views} storage/logs \
     && mkdir -p bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 9000
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["php-fpm"]

@@ -72,9 +72,13 @@ COPY eslint.config.js ./
 COPY public/ ./public/
 
 # Pre-generate wayfinder files (wayfinder vite plugin will use these)
-RUN php artisan wayfinder:generate --with-form || echo "Wayfinder generation failed, continuing..."
+# This ensures files exist before Vite build, and the plugin can use them
+RUN php artisan wayfinder:generate --with-form
 
-# Build assets
+# Verify wayfinder files were generated (fail build early if critical routes are missing)
+RUN test -f resources/js/routes/dashboard/articles/index.ts || (echo "ERROR: Wayfinder routes not generated!" && exit 1)
+
+# Build assets (wayfinder vite plugin will regenerate/update files if needed)
 RUN npm run build
 
 # ============================================
@@ -103,6 +107,11 @@ COPY --chown=www-data:www-data . /var/www/html
 
 # Copy built assets from node-build stage (after copying app files to preserve them)
 COPY --from=node-build --chown=www-data:www-data /build/public/build ./public/build
+
+# Copy wayfinder generated files from build stage (needed for runtime imports)
+COPY --from=node-build --chown=www-data:www-data /build/resources/js/routes ./resources/js/routes
+COPY --from=node-build --chown=www-data:www-data /build/resources/js/actions ./resources/js/actions
+COPY --from=node-build --chown=www-data:www-data /build/resources/js/wayfinder ./resources/js/wayfinder
 
 # Fix ownership after copying files
 RUN chown -R www-data:www-data /var/www/html

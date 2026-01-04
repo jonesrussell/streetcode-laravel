@@ -1,15 +1,23 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { router, Head } from '@inertiajs/vue3';
-import type { Article, PaginatedArticles, Tag, BreadcrumbItem } from '@/types';
+import type { Article, PaginatedArticles, BreadcrumbItem } from '@/types';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import ArticlesTable from '@/components/admin/ArticlesTable.vue';
 import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
 import { Plus, FileText, FilePlus, FileCheck } from 'lucide-vue-next';
 import { destroy } from '@/actions/App/Http/Controllers/Admin/ArticleController';
+import { dashboard } from '@/routes';
 
 interface Props {
     articles: PaginatedArticles;
@@ -31,19 +39,19 @@ interface Props {
 const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Articles', href: route('admin.articles.index') },
+    { title: 'Dashboard', href: dashboard().url },
+    { title: 'Articles', href: route('dashboard.articles.index') },
 ];
 
 const searchQuery = ref(props.filters.search || '');
-const statusFilter = ref(props.filters.status || 'all');
+const statusFilter = ref<string>(props.filters.status || 'all');
 const deleteDialogOpen = ref(false);
 const articleToDelete = ref<Article | null>(null);
 const isDeleting = ref(false);
 
 const applyFilters = () => {
     router.get(
-        route('admin.articles.index'),
+        route('dashboard.articles.index'),
         {
             ...props.filters,
             search: searchQuery.value || undefined,
@@ -66,7 +74,7 @@ const handleStatusChange = (value: string) => {
 };
 
 const handleCreateArticle = () => {
-    router.get(route('admin.articles.create'));
+    router.get(route('dashboard.articles.create'));
 };
 
 const handleDeleteClick = (article: Article) => {
@@ -79,7 +87,7 @@ const confirmDelete = () => {
 
     isDeleting.value = true;
 
-    router.delete(route('admin.articles.destroy', articleToDelete.value.id), {
+    router.delete(route('dashboard.articles.destroy', articleToDelete.value.id), {
         preserveScroll: true,
         onSuccess: () => {
             deleteDialogOpen.value = false;
@@ -103,7 +111,7 @@ const goToPage = (url: string | null) => {
 </script>
 
 <template>
-    <Head title="Articles - Admin" />
+    <Head title="Articles - Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
@@ -174,15 +182,16 @@ const goToPage = (url: string | null) => {
                             />
                         </div>
                         <div class="flex gap-2">
-                            <select
-                                v-model="statusFilter"
-                                @change="handleStatusChange($event.target.value)"
-                                class="flex h-9 w-[150px] items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                <option value="all">All Status</option>
-                                <option value="published">Published</option>
-                                <option value="draft">Drafts</option>
-                            </select>
+                            <Select v-model="statusFilter" @update:model-value="handleStatusChange">
+                                <SelectTrigger class="w-[150px]">
+                                    <SelectValue placeholder="All Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="published">Published</SelectItem>
+                                    <SelectItem value="draft">Drafts</SelectItem>
+                                </SelectContent>
+                            </Select>
                             <Button variant="outline" @click="handleSearch">
                                 Apply Filters
                             </Button>

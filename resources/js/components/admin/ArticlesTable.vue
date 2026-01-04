@@ -28,7 +28,7 @@ const toggleSort = (column: string) => {
             : 'asc';
 
     router.get(
-        route('admin.articles.index'),
+        route('dashboard.articles.index'),
         {
             ...props.filters,
             sort: column,
@@ -47,7 +47,7 @@ const getSortIcon = (column: string) => {
 };
 
 const handleEdit = (article: Article) => {
-    router.get(route('admin.articles.edit', article.id));
+    router.get(route('dashboard.articles.edit', article.id));
 };
 
 const handleDelete = (article: Article) => {

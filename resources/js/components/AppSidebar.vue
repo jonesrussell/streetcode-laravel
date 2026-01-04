@@ -13,7 +13,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { index as articlesIndex } from '@/routes/admin/articles';
+import { index as articlesIndex } from '@/routes/dashboard/articles';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, FileText, Tag, Newspaper } from 'lucide-vue-next';

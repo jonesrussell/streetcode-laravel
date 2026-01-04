@@ -3,13 +3,21 @@ import { ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import type { NewsSource, Tag, BreadcrumbItem } from '@/types';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import TagMultiSelect from '@/components/admin/TagMultiSelect.vue';
 import { ArrowLeft } from 'lucide-vue-next';
+import { dashboard } from '@/routes';
 
 interface Props {
     newsSources: NewsSource[];
@@ -19,9 +27,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Articles', href: route('admin.articles.index') },
-    { title: 'Create', href: route('admin.articles.create') },
+    { title: 'Dashboard', href: dashboard().url },
+    { title: 'Articles', href: route('dashboard.articles.index') },
+    { title: 'Create', href: route('dashboard.articles.create') },
 ];
 
 const form = ref({
@@ -49,7 +57,7 @@ const handleSubmit = (publish: boolean = false) => {
         published_at: publish ? new Date().toISOString() : null,
     };
 
-    router.post(route('admin.articles.store'), data, {
+    router.post(route('dashboard.articles.store'), data, {
         preserveScroll: true,
         onError: (err) => {
             errors.value = err;
@@ -61,12 +69,12 @@ const handleSubmit = (publish: boolean = false) => {
 };
 
 const handleCancel = () => {
-    router.get(route('admin.articles.index'));
+    router.get(route('dashboard.articles.index'));
 };
 </script>
 
 <template>
-    <Head title="Create Article - Admin" />
+    <Head title="Create Article - Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
@@ -200,20 +208,26 @@ const handleCancel = () => {
                                 News Source
                                 <span class="text-destructive">*</span>
                             </Label>
-                            <select
-                                id="news_source_id"
+                            <Select
                                 v-model="form.news_source_id"
-                                class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                                 :class="{ 'border-destructive': errors.news_source_id }"
                             >
-                                <option
-                                    v-for="source in newsSources"
-                                    :key="source.id"
-                                    :value="source.id"
+                                <SelectTrigger
+                                    id="news_source_id"
+                                    :class="{ 'border-destructive': errors.news_source_id }"
                                 >
-                                    {{ source.name }}
-                                </option>
-                            </select>
+                                    <SelectValue placeholder="Select a news source" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem
+                                        v-for="source in newsSources"
+                                        :key="source.id"
+                                        :value="source.id"
+                                    >
+                                        {{ source.name }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
                             <p v-if="errors.news_source_id" class="text-sm text-destructive">
                                 {{ errors.news_source_id }}
                             </p>

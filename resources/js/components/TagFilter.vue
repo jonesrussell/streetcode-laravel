@@ -6,15 +6,18 @@ import { router } from '@inertiajs/vue3'
 interface Props {
     tags: Tag[]
     activeTag?: string
+    route?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+    route: '/',
+})
 
 const selectTag = (tagSlug: string | null) => {
     if (tagSlug) {
-        router.get('/', { tag: tagSlug }, { preserveState: true })
+        router.get(props.route, { tag: tagSlug }, { preserveState: true })
     } else {
-        router.get('/', {}, { preserveState: true })
+        router.get(props.route, {}, { preserveState: true })
     }
 }
 </script>

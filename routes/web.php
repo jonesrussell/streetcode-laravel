@@ -67,6 +67,10 @@ Route::get('dashboard', function (\Illuminate\Http\Request $request) {
 
 // Dashboard article management routes
 Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::post('articles/bulk-delete', [AdminArticleController::class, 'bulkDelete'])->name('articles.bulk-delete');
+    Route::post('articles/bulk-publish', [AdminArticleController::class, 'bulkPublish'])->name('articles.bulk-publish');
+    Route::post('articles/bulk-unpublish', [AdminArticleController::class, 'bulkUnpublish'])->name('articles.bulk-unpublish');
+    Route::post('articles/{article}/toggle-publish', [AdminArticleController::class, 'togglePublish'])->name('articles.toggle-publish');
     Route::resource('articles', AdminArticleController::class)->except(['show']);
 });
 

@@ -93,4 +93,69 @@ class ArticleController extends Controller
 
         return to_route('dashboard.articles.index')->with('success', 'Article deleted successfully.');
     }
+
+    public function bulkDelete(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:articles,id',
+        ]);
+
+        Article::whereIn('id', $request->ids)->delete();
+
+        $count = count($request->ids);
+        $message = $count === 1
+            ? 'Article deleted successfully.'
+            : "{$count} articles deleted successfully.";
+
+        return to_route('dashboard.articles.index')->with('success', $message);
+    }
+
+    public function bulkPublish(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:articles,id',
+        ]);
+
+        $now = now();
+        Article::whereIn('id', $request->ids)->update(['published_at' => $now]);
+
+        $count = count($request->ids);
+        $message = $count === 1
+            ? 'Article published successfully.'
+            : "{$count} articles published successfully.";
+
+        return to_route('dashboard.articles.index')->with('success', $message);
+    }
+
+    public function bulkUnpublish(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:articles,id',
+        ]);
+
+        Article::whereIn('id', $request->ids)->update(['published_at' => null]);
+
+        $count = count($request->ids);
+        $message = $count === 1
+            ? 'Article unpublished successfully.'
+            : "{$count} articles unpublished successfully.";
+
+        return to_route('dashboard.articles.index')->with('success', $message);
+    }
+
+    public function togglePublish(Article $article): RedirectResponse
+    {
+        if ($article->published_at) {
+            $article->update(['published_at' => null]);
+            $message = 'Article unpublished successfully.';
+        } else {
+            $article->update(['published_at' => now()]);
+            $message = 'Article published successfully.';
+        }
+
+        return to_route('dashboard.articles.index')->with('success', $message);
+    }
 }

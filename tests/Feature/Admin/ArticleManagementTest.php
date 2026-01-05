@@ -507,3 +507,117 @@ it('eager loads relationships on index', function () {
     expect($articles[0]->relationLoaded('tags'))->toBeTrue();
     expect($articles[0]->relationLoaded('author'))->toBeTrue();
 });
+
+// Bulk Action Tests
+
+it('can bulk delete articles', function () {
+    $admin = User::factory()->admin()->create();
+    $articles = Article::factory()->count(3)->create();
+
+    actingAs($admin)
+        ->post(route('dashboard.articles.bulk-delete'), [
+            'ids' => $articles->pluck('id')->toArray(),
+        ])
+        ->assertRedirect(route('dashboard.articles.index'));
+
+    foreach ($articles as $article) {
+        expect($article->fresh()->trashed())->toBeTrue();
+    }
+});
+
+it('prevents non-admin users from bulk deleting articles', function () {
+    $user = User::factory()->create(['is_admin' => false]);
+    $articles = Article::factory()->count(2)->create();
+
+    actingAs($user)
+        ->post(route('dashboard.articles.bulk-delete'), [
+            'ids' => $articles->pluck('id')->toArray(),
+        ])
+        ->assertForbidden();
+});
+
+it('validates ids array for bulk delete', function () {
+    $admin = User::factory()->admin()->create();
+
+    actingAs($admin)
+        ->post(route('dashboard.articles.bulk-delete'), [])
+        ->assertSessionHasErrors('ids');
+});
+
+it('can bulk publish articles', function () {
+    $admin = User::factory()->admin()->create();
+    $articles = Article::factory()->count(3)->draft()->create();
+
+    actingAs($admin)
+        ->post(route('dashboard.articles.bulk-publish'), [
+            'ids' => $articles->pluck('id')->toArray(),
+        ])
+        ->assertRedirect(route('dashboard.articles.index'));
+
+    foreach ($articles as $article) {
+        expect($article->fresh()->published_at)->not->toBeNull();
+    }
+});
+
+it('prevents non-admin users from bulk publishing articles', function () {
+    $user = User::factory()->create(['is_admin' => false]);
+    $articles = Article::factory()->count(2)->draft()->create();
+
+    actingAs($user)
+        ->post(route('dashboard.articles.bulk-publish'), [
+            'ids' => $articles->pluck('id')->toArray(),
+        ])
+        ->assertForbidden();
+});
+
+it('can bulk unpublish articles', function () {
+    $admin = User::factory()->admin()->create();
+    $articles = Article::factory()->count(3)->published()->create();
+
+    actingAs($admin)
+        ->post(route('dashboard.articles.bulk-unpublish'), [
+            'ids' => $articles->pluck('id')->toArray(),
+        ])
+        ->assertRedirect(route('dashboard.articles.index'));
+
+    foreach ($articles as $article) {
+        expect($article->fresh()->published_at)->toBeNull();
+    }
+});
+
+it('prevents non-admin users from bulk unpublishing articles', function () {
+    $user = User::factory()->create(['is_admin' => false]);
+    $articles = Article::factory()->count(2)->published()->create();
+
+    actingAs($user)
+        ->post(route('dashboard.articles.bulk-unpublish'), [
+            'ids' => $articles->pluck('id')->toArray(),
+        ])
+        ->assertForbidden();
+});
+
+it('can toggle publish status for a single article', function () {
+    $admin = User::factory()->admin()->create();
+    $draft = Article::factory()->draft()->create();
+
+    actingAs($admin)
+        ->post(route('dashboard.articles.toggle-publish', $draft))
+        ->assertRedirect(route('dashboard.articles.index'));
+
+    expect($draft->fresh()->published_at)->not->toBeNull();
+
+    actingAs($admin)
+        ->post(route('dashboard.articles.toggle-publish', $draft))
+        ->assertRedirect(route('dashboard.articles.index'));
+
+    expect($draft->fresh()->published_at)->toBeNull();
+});
+
+it('prevents non-admin users from toggling publish status', function () {
+    $user = User::factory()->create(['is_admin' => false]);
+    $article = Article::factory()->create();
+
+    actingAs($user)
+        ->post(route('dashboard.articles.toggle-publish', $article))
+        ->assertForbidden();
+});

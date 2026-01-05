@@ -14,12 +14,16 @@ interface Props {
     title?: string;
     description?: string;
     loading?: boolean;
+    confirmText?: string;
+    cancelText?: string;
 }
 
 withDefaults(defineProps<Props>(), {
     title: 'Are you sure?',
     description: 'This action cannot be undone.',
     loading: false,
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
 });
 
 const emit = defineEmits<{
@@ -51,14 +55,14 @@ const handleCancel = () => {
                     @click="handleCancel"
                     :disabled="loading"
                 >
-                    Cancel
+                    {{ cancelText }}
                 </Button>
                 <Button
                     variant="destructive"
                     @click="handleConfirm"
                     :disabled="loading"
                 >
-                    {{ loading ? 'Deleting...' : 'Delete' }}
+                    {{ loading ? 'Deleting...' : confirmText }}
                 </Button>
             </DialogFooter>
         </DialogContent>

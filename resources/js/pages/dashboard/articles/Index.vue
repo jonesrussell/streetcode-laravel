@@ -425,6 +425,7 @@ watch(() => props.articles?.data, () => {
                 v-if="articles"
                 :articles="articles"
                 :filters="filters"
+                :selectedIds="selectedIds"
                 @delete="handleDeleteClick"
                 @update:selected="handleSelectedUpdate"
                 @toggle-publish="handleTogglePublish"

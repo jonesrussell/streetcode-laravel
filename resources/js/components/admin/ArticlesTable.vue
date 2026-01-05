@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import type { Article, PaginatedArticles } from '@/types';
 import { Badge } from '@/components/ui/badge';
@@ -16,56 +16,72 @@ interface Props {
         direction?: 'asc' | 'desc';
         [key: string]: any;
     };
+    selectedIds?: number[];
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    selectedIds: () => [],
+});
+
 const emit = defineEmits<{
     delete: [article: Article];
     'update:selected': [ids: number[]];
     'toggle-publish': [article: Article];
 }>();
 
-const selectedIds = ref<number[]>([]);
-
 const allArticleIds = computed(() => props.articles?.data?.map(a => a.id) ?? []);
+
+// Create a Set for O(1) lookup performance
+const selectedIdsSet = computed(() => new Set(props.selectedIds));
+
+// Create a computed object mapping article ID to checked state
+// Using an object (Record) ensures Vue properly tracks property access
+const articleCheckedStates = computed(() => {
+    const states: Record<number, boolean> = {};
+    props.articles?.data?.forEach(article => {
+        states[article.id] = selectedIdsSet.value.has(article.id);
+    });
+    return states;
+});
 
 const isAllSelected = computed(() => {
     if (allArticleIds.value.length === 0) return false;
-    return allArticleIds.value.every(id => selectedIds.value.includes(id));
+    return allArticleIds.value.every(id => selectedIdsSet.value.has(id));
 });
 
 const isSomeSelected = computed(() => {
-    return selectedIds.value.length > 0 && !isAllSelected.value;
+    return props.selectedIds.length > 0 && !isAllSelected.value;
 });
 
-const toggleSelectAll = () => {
-    if (isAllSelected.value) {
-        selectedIds.value = selectedIds.value.filter(id => !allArticleIds.value.includes(id));
+const toggleSelectAll = (checked: boolean | 'indeterminate') => {
+    console.log('toggleSelectAll called with:', checked, typeof checked);
+
+    // Handle indeterminate state - treat as checking all
+    const shouldSelect = checked === true || checked === 'indeterminate';
+
+    let newSelectedIds: number[];
+    if (shouldSelect) {
+        // Select all articles on current page
+        const newIds = allArticleIds.value.filter(id => !props.selectedIds.includes(id));
+        newSelectedIds = [...props.selectedIds, ...newIds];
+        console.log('Selecting all - new IDs:', newSelectedIds);
     } else {
-        const newIds = allArticleIds.value.filter(id => !selectedIds.value.includes(id));
-        selectedIds.value = [...selectedIds.value, ...newIds];
+        // Deselect all articles on current page
+        newSelectedIds = props.selectedIds.filter(id => !allArticleIds.value.includes(id));
+        console.log('Deselecting all - new IDs:', newSelectedIds);
     }
-    emit('update:selected', selectedIds.value);
+    emit('update:selected', newSelectedIds);
 };
 
 const toggleSelect = (articleId: number) => {
-    if (selectedIds.value.includes(articleId)) {
-        selectedIds.value = selectedIds.value.filter(id => id !== articleId);
+    let newSelectedIds: number[];
+    if (props.selectedIds.includes(articleId)) {
+        newSelectedIds = props.selectedIds.filter(id => id !== articleId);
     } else {
-        selectedIds.value = [...selectedIds.value, articleId];
+        newSelectedIds = [...props.selectedIds, articleId];
     }
-    emit('update:selected', selectedIds.value);
+    emit('update:selected', newSelectedIds);
 };
-
-const isSelected = (articleId: number) => {
-    return selectedIds.value.includes(articleId);
-};
-
-// Clear selections when articles data actually changes (pagination, filtering, etc.)
-watch(() => props.articles?.data?.map(a => a.id).join(','), () => {
-    selectedIds.value = [];
-    emit('update:selected', []);
-});
 
 const toggleSort = (column: string) => {
     const newDirection =
@@ -124,11 +140,13 @@ const isPublished = (article: Article) => {
             <table class="w-full">
                 <thead class="border-b bg-muted/50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-sm font-medium w-12">
+                        <th
+                            class="px-4 py-3 text-left text-sm font-medium w-12"
+                        >
                             <Checkbox
-                                :checked="isAllSelected"
+                                :model-value="isAllSelected"
                                 :indeterminate="isSomeSelected"
-                                @update:checked="toggleSelectAll"
+                                @update:model-value="toggleSelectAll"
                             />
                         </th>
                         <th
@@ -205,8 +223,8 @@ const isPublished = (article: Article) => {
                     >
                         <td class="px-4 py-3">
                             <Checkbox
-                                :checked="isSelected(article.id)"
-                                @update:checked="() => toggleSelect(article.id)"
+                                :model-value="articleCheckedStates[article.id]"
+                                @update:model-value="() => toggleSelect(article.id)"
                             />
                         </td>
                         <td class="px-4 py-3 text-sm">

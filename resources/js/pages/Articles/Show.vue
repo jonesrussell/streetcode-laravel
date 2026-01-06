@@ -20,6 +20,8 @@ const formattedDate = props.article.published_at
           day: 'numeric',
       })
     : 'Not published'
+
+const description = props.article.excerpt || props.article.metadata?.og_description || ''
 </script>
 
 <template>
@@ -80,15 +82,9 @@ const formattedDate = props.article.published_at
                     class="mb-8 w-full rounded-lg object-cover"
                 />
 
-                <!-- Content -->
-                <div
-                    v-if="article.content"
-                    class="prose prose-gray max-w-none dark:prose-invert"
-                    v-html="article.content"
-                />
-
-                <p v-else-if="article.excerpt" class="text-gray-600 dark:text-gray-400">
-                    {{ article.excerpt }}
+                <!-- Description -->
+                <p v-if="description" class="text-lg text-gray-600 dark:text-gray-400">
+                    {{ description }}
                 </p>
 
                 <!-- Read Full Article Link -->

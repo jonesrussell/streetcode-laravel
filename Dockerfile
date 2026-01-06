@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
+    supervisor \
     $PHPIZE_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
@@ -36,7 +37,7 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-custom.ini
 # ============================================
 # Stage 2: Node.js build stage (Wayfinder + Vite)
 # ============================================
-FROM node:20-alpine AS node-build
+FROM node:25-alpine AS node-build
 
 RUN apk add --no-cache \
     php php-cli php-phar php-mbstring php-xml php-json php-openssl php-tokenizer php-dom \
@@ -111,11 +112,14 @@ RUN cp -r public/build public/build.bak || true
 
 RUN mkdir -p storage/framework/{cache,sessions,testing,views} storage/logs \
     && mkdir -p bootstrap/cache \
+    && mkdir -p /var/log/supervisor /etc/supervisor/conf.d \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY docker/supervisor/conf.d/ /etc/supervisor/conf.d/
 
 EXPOSE 9000
 

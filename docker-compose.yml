@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - storage_data:/var/www/html/storage
+      - ./storage:/var/www/html/storage
       - build_assets:/var/www/html/public/build
     environment:
       APP_ENV: production
@@ -35,12 +35,15 @@ services:
     working_dir: /var/www/html
     command: php artisan horizon
     volumes:
-      - storage_data:/var/www/html/storage
+      - ./storage:/var/www/html/storage
+    environment:
+      REDIS_HOST: redis
     depends_on:
       app:
         condition: service_started
     networks:
       - streetcode-network
+      - north-cloud-network
 
   scheduler:
     build:
@@ -51,7 +54,7 @@ services:
     working_dir: /var/www/html
     command: php artisan schedule:work
     volumes:
-      - storage_data:/var/www/html/storage
+      - ./storage:/var/www/html/storage
     depends_on:
       app:
         condition: service_started
@@ -106,5 +109,4 @@ networks:
 
 volumes:
   db_data:
-  storage_data:
   build_assets:

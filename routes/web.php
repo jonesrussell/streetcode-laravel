@@ -71,7 +71,7 @@ Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->g
     Route::post('articles/bulk-publish', [AdminArticleController::class, 'bulkPublish'])->name('articles.bulk-publish');
     Route::post('articles/bulk-unpublish', [AdminArticleController::class, 'bulkUnpublish'])->name('articles.bulk-unpublish');
     Route::post('articles/{article}/toggle-publish', [AdminArticleController::class, 'togglePublish'])->name('articles.toggle-publish');
-    Route::resource('articles', AdminArticleController::class)->except(['show']);
+    Route::resource('articles', AdminArticleController::class);
 });
 
 require __DIR__.'/settings.php';

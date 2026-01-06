@@ -65,6 +65,15 @@ class ArticleController extends Controller
         return to_route('dashboard.articles.index')->with('success', 'Article created successfully.');
     }
 
+    public function show(Article $article): Response
+    {
+        $article->load(['newsSource', 'tags', 'author']);
+
+        return Inertia::render('dashboard/articles/Show', [
+            'article' => $article,
+        ]);
+    }
+
     public function edit(Article $article): Response
     {
         $article->load(['newsSource', 'tags', 'author']);

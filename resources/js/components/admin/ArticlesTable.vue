@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import ArticleStatusBadge from './ArticleStatusBadge.vue';
 import { Edit, Trash2, ArrowUp, ArrowDown, Eye, EyeOff } from 'lucide-vue-next';
-import { index as articlesIndex, edit as articlesEdit } from '@/routes/dashboard/articles';
+import { index as articlesIndex, edit as articlesEdit, show as articlesShow } from '@/routes/dashboard/articles';
 
 interface Props {
     articles: PaginatedArticles;
@@ -106,6 +106,10 @@ const toggleSort = (column: string) => {
 const getSortIcon = (column: string) => {
     if (props.filters?.sort !== column) return null;
     return props.filters?.direction === 'asc' ? ArrowUp : ArrowDown;
+};
+
+const handleShow = (article: Article) => {
+    router.get(articlesShow(article.id).url);
 };
 
 const handleEdit = (article: Article) => {
@@ -232,7 +236,10 @@ const isPublished = (article: Article) => {
                         </td>
                         <td class="px-4 py-3">
                             <div class="max-w-md">
-                                <div class="font-medium text-sm line-clamp-2">
+                                <div
+                                    class="font-medium text-sm line-clamp-2 cursor-pointer hover:text-primary transition-colors"
+                                    @click="handleShow(article)"
+                                >
                                     {{ article.title }}
                                 </div>
                                 <div

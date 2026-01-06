@@ -1,0 +1,194 @@
+<script setup lang="ts">
+import { Head, router } from '@inertiajs/vue3';
+import type { Article, BreadcrumbItem } from '@/types';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import ArticleStatusBadge from '@/components/admin/ArticleStatusBadge.vue';
+import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
+import { ArrowLeft, Edit, Calendar, User, ExternalLink, Eye } from 'lucide-vue-next';
+import { dashboard } from '@/routes';
+import { index as articlesIndex, edit as articlesEdit } from '@/routes/dashboard/articles';
+
+interface Props {
+    article: Article;
+}
+
+const props = defineProps<Props>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: dashboard().url },
+    { title: 'Articles', href: articlesIndex().url },
+    { title: props.article.title, href: '#' },
+];
+
+const formattedDate = props.article.published_at
+    ? new Date(props.article.published_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+      })
+    : 'Not published';
+
+const formatDateTime = (date: string) => {
+    return new Date(date).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const handleEdit = () => {
+    router.get(articlesEdit(props.article.id).url);
+};
+
+const handleBack = () => {
+    router.get(articlesIndex().url);
+};
+</script>
+
+<template>
+    <Head :title="`${article.title} - Dashboard`" />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        @click="handleBack"
+                        class="mb-2"
+                    >
+                        <ArrowLeft class="h-4 w-4 mr-2" />
+                        Back to Articles
+                    </Button>
+                    <h1 class="text-3xl font-bold tracking-tight">{{ article.title }}</h1>
+                </div>
+                <Button @click="handleEdit">
+                    <Edit class="h-4 w-4 mr-2" />
+                    Edit Article
+                </Button>
+            </div>
+
+            <!-- Metadata Card -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Article Metadata</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                            <p class="text-muted-foreground">Status</p>
+                            <div class="mt-1">
+                                <ArticleStatusBadge :published-at="article.published_at" />
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-muted-foreground">Published</p>
+                            <p class="font-medium">{{ formattedDate }}</p>
+                        </div>
+                        <div>
+                            <p class="text-muted-foreground">Views</p>
+                            <p class="font-medium">{{ article.view_count.toLocaleString() }}</p>
+                        </div>
+                        <div>
+                            <p class="text-muted-foreground">Created</p>
+                            <p class="font-medium">{{ formatDateTime(article.created_at) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-muted-foreground">Last Updated</p>
+                            <p class="font-medium">{{ formatDateTime(article.updated_at) }}</p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <!-- Article Info Card -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Article Information</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <!-- Meta Info -->
+                    <div class="flex flex-wrap items-center gap-4 text-sm">
+                        <div v-if="article.news_source" class="flex items-center gap-2">
+                            <SourceCredibilityBadge :source="article.news_source" />
+                        </div>
+                        <div class="flex items-center gap-2 text-muted-foreground">
+                            <Calendar class="h-4 w-4" />
+                            {{ formattedDate }}
+                        </div>
+                        <div v-if="article.author" class="flex items-center gap-2 text-muted-foreground">
+                            <User class="h-4 w-4" />
+                            {{ article.author }}
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div v-if="article.tags && article.tags.length > 0">
+                        <p class="text-sm text-muted-foreground mb-2">Tags</p>
+                        <div class="flex flex-wrap gap-2">
+                            <Badge
+                                v-for="tag in article.tags"
+                                :key="tag.id"
+                                :variant="tag.type === 'crime_category' ? 'default' : 'secondary'"
+                            >
+                                {{ tag.name }}
+                            </Badge>
+                        </div>
+                    </div>
+
+                    <!-- URL -->
+                    <div>
+                        <p class="text-sm text-muted-foreground mb-2">Source URL</p>
+                        <a
+                            :href="article.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 text-sm"
+                        >
+                            {{ article.url }}
+                            <ExternalLink class="h-4 w-4" />
+                        </a>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <!-- Featured Image -->
+            <Card v-if="article.image_url">
+                <CardContent class="pt-6">
+                    <img
+                        :src="article.image_url"
+                        :alt="article.title"
+                        class="w-full rounded-lg object-cover"
+                    />
+                </CardContent>
+            </Card>
+
+            <!-- Content Card -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Content</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div
+                        v-if="article.content"
+                        class="prose prose-gray max-w-none dark:prose-invert"
+                        v-html="article.content"
+                    />
+                    <p v-else-if="article.excerpt" class="text-muted-foreground">
+                        {{ article.excerpt }}
+                    </p>
+                    <p v-else class="text-muted-foreground italic">
+                        No content available.
+                    </p>
+                </CardContent>
+            </Card>
+        </div>
+    </AppLayout>
+</template>

@@ -40,12 +40,12 @@ const formatTimeAgo = (dateString: string | null): string => {
     <section class="mb-8">
         <h2 class="mb-4 text-lg font-bold text-white">{{ title }}</h2>
 
-        <div class="space-y-1">
+        <div class="space-y-2">
             <Link
                 v-for="article in articles"
                 :key="article.id"
                 :href="`/articles/${article.id}`"
-                class="group flex items-start gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-zinc-800/50"
+                class="group flex items-center gap-4 rounded-lg px-3 py-2 transition-colors hover:bg-zinc-800/50"
             >
                 <div class="flex min-w-0 flex-1 flex-col">
                     <h3 class="mb-1 line-clamp-2 text-sm font-medium leading-snug text-white group-hover:text-zinc-200">
@@ -59,7 +59,13 @@ const formatTimeAgo = (dateString: string | null): string => {
                         </div>
                     </div>
                 </div>
-                <ExternalLink class="mt-1 size-4 shrink-0 text-zinc-500 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div v-if="article.image_url" class="size-16 shrink-0 overflow-hidden rounded">
+                    <img
+                        :src="article.image_url"
+                        :alt="article.title"
+                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                </div>
             </Link>
         </div>
     </section>

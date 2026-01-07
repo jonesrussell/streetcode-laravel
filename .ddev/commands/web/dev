@@ -13,14 +13,15 @@ if ! command -v npx &> /dev/null; then
     exit 1
 fi
 
-# Run horizon, vite, and pail concurrently
+# Run horizon, vite, pail, and boost:mcp concurrently
 # Note: We don't run 'php artisan serve' because ddev already provides nginx
 # Note: articles:subscribe is running via supervisor (web_extra_daemons in config.yaml)
 # Color scheme matches the composer.json dev script
 npx concurrently \
-    -c "#c4b5fd,#fb7185,#fdba74" \
+    -c "#c4b5fd,#fb7185,#fdba74,#4ade80" \
     "php artisan horizon" \
     "php artisan pail --timeout=0" \
     "npm run dev" \
-    --names=horizon,logs,vite \
+    "php artisan boost:mcp" \
+    --names=horizon,logs,vite,boost \
     --kill-others

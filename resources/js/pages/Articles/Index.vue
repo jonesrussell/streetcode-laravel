@@ -9,7 +9,6 @@ import NewsletterSignup from '@/components/NewsletterSignup.vue';
 import TrendingTopics from '@/components/TrendingTopics.vue';
 import SiteFooter from '@/components/SiteFooter.vue';
 import TagFilter from '@/components/TagFilter.vue';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Menu } from 'lucide-vue-next';
@@ -49,9 +48,8 @@ const performSearch = () => {
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
                     <!-- Logo -->
-                    <Link href="/" class="flex items-center gap-2">
-                        <AppLogoIcon class="size-8" />
-                        <span class="text-xl font-bold text-white">StreetCode</span>
+                    <Link href="/" class="text-xl font-bold text-white hover:text-zinc-200">
+                        StreetCode
                     </Link>
 
                     <!-- Desktop Navigation -->
@@ -108,6 +106,7 @@ const performSearch = () => {
 
         <!-- Main Content -->
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <!-- Top Section: Hero + Sidebar -->
             <div class="grid gap-8 lg:grid-cols-3">
                 <!-- Main Column -->
                 <div class="lg:col-span-2">
@@ -122,60 +121,10 @@ const performSearch = () => {
                         v-if="topStories.length"
                         :articles="topStories"
                     />
-
-                    <!-- Topic Sections -->
-                    <TopicSection
-                        v-for="category in articlesByCategory"
-                        :key="category.tag.id"
-                        :tag="category.tag"
-                        :articles="category.articles"
-                    />
-
-                    <!-- Tag Filters -->
-                    <section v-if="popularTags.length" class="mb-8">
-                        <h3 class="mb-4 text-lg font-bold text-white">Browse by Category</h3>
-                        <TagFilter :tags="popularTags" :active-tag="filters.tag" />
-                    </section>
-
-                    <!-- All Articles Grid -->
-                    <section>
-                        <h2 class="mb-4 text-lg font-bold text-white">Latest News Stories</h2>
-                        <div v-if="articles?.data?.length" class="grid gap-4 sm:grid-cols-2">
-                            <ArticleCard
-                                v-for="article in articles.data"
-                                :key="article.id"
-                                :article="article"
-                            />
-                        </div>
-
-                        <div v-else class="rounded-lg bg-zinc-800/50 py-12 text-center text-zinc-400">
-                            No articles found. Try adjusting your filters.
-                        </div>
-
-                        <!-- Pagination -->
-                        <div
-                            v-if="articles?.meta?.last_page && articles.meta.last_page > 1"
-                            class="mt-8 flex justify-center gap-2"
-                        >
-                            <Button
-                                v-for="page in Math.min(articles.meta.last_page, 10)"
-                                :key="page"
-                                :variant="page === articles.meta.current_page ? 'default' : 'outline'"
-                                size="sm"
-                                class="border-zinc-700"
-                                @click="router.get('/', { ...filters, page })"
-                            >
-                                {{ page }}
-                            </Button>
-                        </div>
-                    </section>
                 </div>
 
                 <!-- Sidebar -->
-                <aside class="space-y-6">
-                    <!-- Newsletter Signup -->
-                    <NewsletterSignup />
-
+                <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
                     <!-- Trending Topics -->
                     <TrendingTopics
                         v-if="trendingTopics.length"
@@ -189,7 +138,60 @@ const performSearch = () => {
                         :topics="popularTags"
                         title="Crime Categories"
                     />
+
+                    <!-- Newsletter Signup -->
+                    <NewsletterSignup />
                 </aside>
+            </div>
+
+            <!-- Full Width Sections -->
+            <div class="mt-8">
+                <!-- Topic Sections -->
+                <TopicSection
+                    v-for="category in articlesByCategory"
+                    :key="category.tag.id"
+                    :tag="category.tag"
+                    :articles="category.articles"
+                />
+
+                <!-- Tag Filters -->
+                <section v-if="popularTags.length" class="mb-8">
+                    <h3 class="mb-4 text-lg font-bold text-white">Browse by Category</h3>
+                    <TagFilter :tags="popularTags" :active-tag="filters.tag" />
+                </section>
+
+                <!-- All Articles Grid -->
+                <section>
+                    <h2 class="mb-4 text-lg font-bold text-white">Latest News Stories</h2>
+                    <div v-if="articles?.data?.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <ArticleCard
+                            v-for="article in articles.data"
+                            :key="article.id"
+                            :article="article"
+                        />
+                    </div>
+
+                    <div v-else class="rounded-lg bg-zinc-800/50 py-12 text-center text-zinc-400">
+                        No articles found. Try adjusting your filters.
+                    </div>
+
+                    <!-- Pagination -->
+                    <div
+                        v-if="articles?.meta?.last_page && articles.meta.last_page > 1"
+                        class="mt-8 flex justify-center gap-2"
+                    >
+                        <Button
+                            v-for="page in Math.min(articles.meta.last_page, 10)"
+                            :key="page"
+                            :variant="page === articles.meta.current_page ? 'default' : 'outline'"
+                            size="sm"
+                            class="border-zinc-700"
+                            @click="router.get('/', { ...filters, page })"
+                        >
+                            {{ page }}
+                        </Button>
+                    </div>
+                </section>
             </div>
         </main>
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\NewsSourceController;
+use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TagController;
 use App\Models\Article;
 use App\Models\Tag;
@@ -23,6 +24,15 @@ Route::get('/sources/{newsSource:slug}', [NewsSourceController::class, 'show'])-
 
 // Search (uses ArticleController@index with search param)
 Route::get('/search', [ArticleController::class, 'index'])->name('search');
+
+// Newsletter subscription routes
+Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe.store');
+Route::get('/subscribe/verify/{subscriber}', [SubscriberController::class, 'verify'])
+    ->name('subscribe.verify')
+    ->middleware('signed');
+Route::get('/subscribe/unsubscribe/{subscriber}', [SubscriberController::class, 'unsubscribe'])
+    ->name('subscribe.unsubscribe')
+    ->middleware('signed');
 
 // Authenticated dashboard
 Route::get('dashboard', function (\Illuminate\Http\Request $request) {

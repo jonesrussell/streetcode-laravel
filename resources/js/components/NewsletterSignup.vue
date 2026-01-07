@@ -2,23 +2,57 @@
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail, Check } from 'lucide-vue-next';
+import { Mail, Check, AlertCircle } from 'lucide-vue-next';
+import { store } from '@/actions/App/Http/Controllers/SubscriberController';
 
 const email = ref('');
 const isSubmitted = ref(false);
 const isLoading = ref(false);
+const errorMessage = ref('');
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
     if (!email.value) {
         return;
     }
-    isLoading.value = true;
 
-    // Simulate submission - replace with actual API call
-    setTimeout(() => {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+        const response = await fetch(store.url(), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-XSRF-TOKEN': decodeURIComponent(
+                    document.cookie
+                        .split('; ')
+                        .find(row => row.startsWith('XSRF-TOKEN='))
+                        ?.split('=')[1] || ''
+                ),
+            },
+            body: JSON.stringify({ email: email.value }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            if (data.errors?.email) {
+                errorMessage.value = data.errors.email[0];
+            } else if (data.message) {
+                errorMessage.value = data.message;
+            } else {
+                errorMessage.value = 'Something went wrong. Please try again.';
+            }
+            return;
+        }
+
         isSubmitted.value = true;
+    } catch {
+        errorMessage.value = 'Unable to connect. Please try again.';
+    } finally {
         isLoading.value = false;
-    }, 500);
+    }
 };
 </script>
 
@@ -44,6 +78,12 @@ const handleSubmit = () => {
                     class="border-zinc-600 bg-zinc-900 text-white placeholder:text-zinc-500"
                     required
                 />
+
+                <div v-if="errorMessage" class="flex items-center gap-2 rounded-lg bg-red-500/20 p-2 text-red-400">
+                    <AlertCircle class="size-4 shrink-0" />
+                    <span class="text-sm">{{ errorMessage }}</span>
+                </div>
+
                 <Button
                     type="submit"
                     class="w-full bg-red-600 hover:bg-red-700"
@@ -54,9 +94,14 @@ const handleSubmit = () => {
             </form>
         </div>
 
-        <div v-else class="flex items-center gap-2 rounded-lg bg-green-500/20 p-3 text-green-400">
-            <Check class="size-5" />
-            <span class="text-sm">Thanks for subscribing!</span>
+        <div v-else class="space-y-2">
+            <div class="flex items-center gap-2 rounded-lg bg-green-500/20 p-3 text-green-400">
+                <Check class="size-5" />
+                <span class="text-sm">Check your email to verify!</span>
+            </div>
+            <p class="text-xs text-zinc-500">
+                We've sent a verification link to your email address.
+            </p>
         </div>
     </div>
 </template>

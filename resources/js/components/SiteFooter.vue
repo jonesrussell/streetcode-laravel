@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 
 const currentYear = new Date().getFullYear();
 
@@ -49,9 +48,8 @@ const footerLinks = {
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
                 <!-- Brand Column -->
                 <div class="lg:col-span-1">
-                    <Link href="/" class="flex items-center gap-2">
-                        <AppLogoIcon class="size-8" />
-                        <span class="text-lg font-bold text-white">StreetCode</span>
+                    <Link href="/" class="text-lg font-bold text-white hover:text-zinc-200">
+                        StreetCode
                     </Link>
                     <p class="mt-4 text-sm text-zinc-400">
                         Canadian crime news aggregation. Stay informed about crime trends and public safety across Canada.

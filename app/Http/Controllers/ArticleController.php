@@ -19,12 +19,20 @@ class ArticleController extends Controller
             ->whereNotNull('image_url')
             ->first();
 
+        if (! $heroArticle) {
+            $heroArticle = Article::query()
+                ->with(['newsSource', 'tags'])
+                ->published()
+                ->whereNotNull('image_url')
+                ->first();
+        }
+
         $heroArticleId = $heroArticle?->id;
 
         $featuredArticles = Article::query()
             ->with(['newsSource', 'tags'])
-            ->featured()
             ->published()
+            ->whereNotNull('image_url')
             ->when($heroArticleId, fn ($q) => $q->where('id', '!=', $heroArticleId))
             ->limit(3)
             ->get();

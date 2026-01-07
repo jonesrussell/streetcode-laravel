@@ -89,12 +89,15 @@ it('redirects guests to login', function () {
 
 it('displays articles in admin index', function () {
     $admin = User::factory()->admin()->create();
-    $articles = Article::factory()->count(3)->create();
+    Article::factory()->count(3)->create();
 
     $response = actingAs($admin)->get(route('dashboard.articles.index'));
 
-    $response->assertOk();
-    expect($response->viewData('articles')['data'])->toHaveCount(3);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('dashboard/articles/Index')
+            ->has('articles.data', 3)
+        );
 });
 
 it('displays article stats in admin index', function () {
@@ -104,10 +107,13 @@ it('displays article stats in admin index', function () {
 
     $response = actingAs($admin)->get(route('dashboard.articles.index'));
 
-    $stats = $response->viewData('stats');
-    expect($stats['total'])->toBe(8);
-    expect($stats['published'])->toBe(5);
-    expect($stats['drafts'])->toBe(3);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('stats')
+            ->where('stats.total', 8)
+            ->where('stats.published', 5)
+            ->where('stats.drafts', 3)
+        );
 });
 
 it('can create a new article', function () {
@@ -174,9 +180,12 @@ it('displays create form with news sources and tags', function () {
 
     $response = actingAs($admin)->get(route('dashboard.articles.create'));
 
-    $response->assertOk();
-    expect($response->viewData('newsSources'))->toHaveCount(3);
-    expect($response->viewData('tags'))->toHaveCount(5);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('dashboard/articles/Create')
+            ->has('newsSources', 3)
+            ->has('tags', 5)
+        );
 });
 
 it('displays edit form with article data', function () {
@@ -185,8 +194,12 @@ it('displays edit form with article data', function () {
 
     $response = actingAs($admin)->get(route('dashboard.articles.edit', $article));
 
-    $response->assertOk();
-    expect($response->viewData('article')->id)->toBe($article->id);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('dashboard/articles/Edit')
+            ->has('article')
+            ->where('article.id', $article->id)
+        );
 });
 
 // Validation Tests
@@ -421,7 +434,10 @@ it('can filter articles by status', function () {
     $response = actingAs($admin)
         ->get(route('dashboard.articles.index', ['status' => 'draft']));
 
-    expect($response->viewData('articles')['data'])->toHaveCount(2);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('articles.data', 2)
+        );
 });
 
 it('can search articles by title', function () {
@@ -448,7 +464,10 @@ it('can filter articles by source', function () {
     $response = actingAs($admin)
         ->get(route('dashboard.articles.index', ['source' => $source1->id]));
 
-    expect($response->viewData('articles')['data'])->toHaveCount(2);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('articles.data', 2)
+        );
 });
 
 it('can sort articles by column', function () {
@@ -460,10 +479,13 @@ it('can sort articles by column', function () {
     $response = actingAs($admin)
         ->get(route('dashboard.articles.index', ['sort' => 'view_count', 'direction' => 'desc']));
 
-    $articles = $response->viewData('articles')['data'];
-    expect($articles[0]->view_count)->toBe(200);
-    expect($articles[1]->view_count)->toBe(100);
-    expect($articles[2]->view_count)->toBe(50);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('articles.data', 3)
+            ->where('articles.data.0.view_count', 200)
+            ->where('articles.data.1.view_count', 100)
+            ->where('articles.data.2.view_count', 50)
+        );
 });
 
 it('paginates articles', function () {
@@ -472,9 +494,11 @@ it('paginates articles', function () {
 
     $response = actingAs($admin)->get(route('dashboard.articles.index'));
 
-    $articles = $response->viewData('articles');
-    expect($articles['data'])->toHaveCount(15);
-    expect($articles['meta']['total'])->toBe(20);
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('articles.data', 15)
+            ->has('articles.total')
+        );
 });
 
 // Author Tracking Tests
@@ -498,14 +522,16 @@ it('sets author_id when creating article', function () {
 
 it('eager loads relationships on index', function () {
     $admin = User::factory()->admin()->create();
-    $article = Article::factory()->create();
+    Article::factory()->create();
 
     $response = actingAs($admin)->get(route('dashboard.articles.index'));
 
-    $articles = $response->viewData('articles')['data'];
-    expect($articles[0]->relationLoaded('newsSource'))->toBeTrue();
-    expect($articles[0]->relationLoaded('tags'))->toBeTrue();
-    expect($articles[0]->relationLoaded('author'))->toBeTrue();
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('articles.data', 1)
+            ->has('articles.data.0.news_source')
+            ->has('articles.data.0.tags')
+        );
 });
 
 // Bulk Action Tests

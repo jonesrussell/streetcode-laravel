@@ -51,7 +51,15 @@ class ArticleController extends Controller
 
         $excludeIds = array_merge($excludeIds, $topStories->pluck('id')->toArray());
 
-        $crimeCategories = ['gang-violence', 'organized-crime', 'drug-crime', 'theft', 'assault'];
+        // Crime sub-categories matching classifier topics (converted from snake_case to slug format)
+        // violent_crime → violent-crime, property_crime → property-crime, etc.
+        $crimeCategories = [
+            'violent-crime',      // violent_crime: gang violence, murder, assault, shootings
+            'property-crime',     // property_crime: theft, burglary, auto theft, vandalism
+            'drug-crime',         // drug_crime: trafficking, possession, drug busts
+            'organized-crime',    // organized_crime: cartels, racketeering, mafia
+            'criminal-justice',   // criminal_justice: court cases, trials, arrests
+        ];
         $articlesByCategory = [];
 
         foreach ($crimeCategories as $categorySlug) {

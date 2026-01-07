@@ -12,6 +12,61 @@ class ArticleController extends Controller
 {
     public function index(Request $request): Response
     {
+        $heroArticle = Article::query()
+            ->with(['newsSource', 'tags'])
+            ->featured()
+            ->published()
+            ->whereNotNull('image_url')
+            ->first();
+
+        $heroArticleId = $heroArticle?->id;
+
+        $featuredArticles = Article::query()
+            ->with(['newsSource', 'tags'])
+            ->featured()
+            ->published()
+            ->when($heroArticleId, fn ($q) => $q->where('id', '!=', $heroArticleId))
+            ->limit(3)
+            ->get();
+
+        $excludeIds = collect([$heroArticleId])
+            ->merge($featuredArticles->pluck('id'))
+            ->filter()
+            ->toArray();
+
+        $topStories = Article::query()
+            ->with(['newsSource', 'tags'])
+            ->published()
+            ->whereNotIn('id', $excludeIds)
+            ->limit(8)
+            ->get();
+
+        $excludeIds = array_merge($excludeIds, $topStories->pluck('id')->toArray());
+
+        $crimeCategories = ['gang-violence', 'organized-crime', 'drug-crime', 'theft', 'assault'];
+        $articlesByCategory = [];
+
+        foreach ($crimeCategories as $categorySlug) {
+            $tag = Tag::query()->where('slug', $categorySlug)->first();
+            if ($tag) {
+                $categoryArticles = Article::query()
+                    ->with(['newsSource', 'tags'])
+                    ->published()
+                    ->whereNotIn('id', $excludeIds)
+                    ->whereHas('tags', fn ($q) => $q->where('slug', $categorySlug))
+                    ->limit(4)
+                    ->get();
+
+                if ($categoryArticles->isNotEmpty()) {
+                    $articlesByCategory[] = [
+                        'tag' => $tag,
+                        'articles' => $categoryArticles,
+                    ];
+                    $excludeIds = array_merge($excludeIds, $categoryArticles->pluck('id')->toArray());
+                }
+            }
+        }
+
         $articles = Article::query()
             ->with(['newsSource', 'tags'])
             ->published()
@@ -21,22 +76,23 @@ class ArticleController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        $featuredArticles = Article::query()
-            ->with(['newsSource', 'tags'])
-            ->featured()
-            ->published()
-            ->limit(3)
-            ->get();
-
         $popularTags = Tag::query()
             ->type('crime_category')
             ->popular()
             ->get();
 
+        $trendingTopics = Tag::query()
+            ->popular(15)
+            ->get();
+
         return Inertia::render('Articles/Index', [
-            'articles' => $articles,
+            'heroArticle' => $heroArticle,
             'featuredArticles' => $featuredArticles,
+            'topStories' => $topStories,
+            'articlesByCategory' => $articlesByCategory,
+            'articles' => $articles,
             'popularTags' => $popularTags,
+            'trendingTopics' => $trendingTopics,
             'filters' => [
                 'tag' => $request->tag,
                 'search' => $request->search,

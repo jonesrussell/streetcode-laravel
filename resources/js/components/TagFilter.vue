@@ -27,7 +27,10 @@ const selectTag = (tagSlug: string | null) => {
         <Button
             variant="outline"
             size="sm"
-            :class="{ 'bg-primary text-primary-foreground': !activeTag }"
+            :class="[
+                'border-zinc-700',
+                !activeTag ? 'bg-red-600 text-white border-red-600' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
+            ]"
             @click="selectTag(null)"
         >
             All
@@ -38,7 +41,10 @@ const selectTag = (tagSlug: string | null) => {
             :key="tag.id"
             variant="outline"
             size="sm"
-            :class="{ 'bg-primary text-primary-foreground': activeTag === tag.slug }"
+            :class="[
+                'border-zinc-700',
+                activeTag === tag.slug ? 'bg-red-600 text-white border-red-600' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
+            ]"
             @click="selectTag(tag.slug)"
         >
             {{ tag.name }}

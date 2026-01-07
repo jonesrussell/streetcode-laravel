@@ -101,3 +101,8 @@ export interface PaginatedArticles {
         total: number;
     };
 }
+
+export interface CategoryArticles {
+    tag: Tag;
+    articles: Article[];
+}

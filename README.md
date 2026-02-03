@@ -32,7 +32,7 @@ A modern news aggregation platform built with Laravel 12, Inertia.js, and Vue 3.
 ## Tech Stack
 
 ### Backend
-- **PHP**: 8.4.10
+- **PHP**: 8.4.14
 - **Laravel**: 12.x
 - **Laravel Fortify**: 1.x (Authentication)
 - **Laravel Horizon**: 5.x (Queue Management)
@@ -53,9 +53,9 @@ A modern news aggregation platform built with Laravel 12, Inertia.js, and Vue 3.
 ### Infrastructure
 - **Redis**: Pub/sub for article ingestion and queue management
 - **MariaDB**: 10.11 (Database)
-- **Nginx**: Web server (production)
-- **Docker**: Containerization
-- **Let's Encrypt**: SSL certificates (production)
+- **Caddy**: Web server with automatic HTTPS
+- **Deployer**: Zero-downtime deployments via GitHub Actions
+- **systemd**: User services for Horizon, SSR, and article subscriber
 
 ## Requirements
 
@@ -64,7 +64,7 @@ A modern news aggregation platform built with Laravel 12, Inertia.js, and Vue 3.
 - Node.js 18+ and npm
 - Redis (for queue and pub/sub)
 - MariaDB/MySQL 10.11+
-- Docker & Docker Compose (for production deployment)
+- SSH access to production server (for Deployer)
 
 ## Installation
 
@@ -189,7 +189,7 @@ ddev exec tail -f storage/logs/laravel.log
 ddev restart
 ```
 
-**Note**: DDEV's `nginx-fpm` webserver type already uses supervisor internally, so the `articles:subscribe` command runs directly as a daemon rather than through a separate supervisor instance. For production Docker deployment, supervisor is used as documented in the Production Deployment section.
+**Note**: DDEV's `nginx-fpm` webserver type already uses supervisor internally, so the `articles:subscribe` command runs directly as a daemon rather than through a separate supervisor instance.
 
 ## Article Ingestion
 
@@ -255,34 +255,85 @@ Articles must follow this format:
 
 ## Production Deployment
 
-### Docker Deployment
+### Deployer + GitHub Actions
 
-The project includes Docker configuration for production deployment. See `docker/README.md` for detailed setup instructions.
+Production deployments are automated via GitHub Actions and Deployer:
+
+1. **Trigger**: Automatically deploys after tests pass on `main` branch (or manual dispatch)
+2. **Process**: GitHub Actions runs `dep deploy streetcode.net`
+3. **Config**: See `deploy.php` for deployment configuration
+
+### Deployment Flow
+
+```
+Push to main → Tests workflow → Deploy workflow → Deployer
+```
+
+The deployment:
+- Pulls latest code to `~/streetcode-laravel` on the server
+- Runs `composer install` and `npm ci && npm run build:ssr`
+- Runs Laravel migrations and optimizations
+- Terminates Horizon and SSR for graceful restart
+- Keeps 5 releases for rollback capability
 
 ### Key Production Considerations
 
-1. **Queue Workers**: Ensure Horizon is running to process articles
-2. **Article Subscriber**: Run `php artisan articles:subscribe` as a supervisor-managed process
-3. **SSL**: Configure Let's Encrypt certificates via Certbot
-4. **Redis**: Use external Redis service for production
-5. **Database**: Use persistent volumes for MariaDB data
-6. **Environment**: Set `APP_ENV=production` and `APP_DEBUG=false`
+1. **Queue Workers**: Ensure Horizon is running via supervisor
+2. **Article Subscriber**: Run `php artisan articles:subscribe` via supervisor
+3. **SSR**: Inertia SSR server managed separately
+4. **Environment**: Set `APP_ENV=production` and `APP_DEBUG=false`
 
-### Supervisor Configuration
+### systemd User Services
 
-For production, configure Supervisor to manage:
-- `php artisan articles:subscribe` (Redis subscriber)
-- `php artisan horizon` (Queue worker)
-
-Example Supervisor config:
+Long-running processes are managed via systemd user services in `~deployer/.config/systemd/user/`:
 
 ```ini
-[program:streetcode-subscriber]
-command=php /var/www/html/artisan articles:subscribe
-directory=/var/www/html
-autostart=true
-autorestart=true
-user=www-data
+# streetcode-horizon.service
+[Unit]
+Description=StreetCode Horizon Queue Worker
+
+[Service]
+WorkingDirectory=/home/deployer/streetcode-laravel/current
+ExecStart=/usr/bin/php artisan horizon
+Restart=always
+
+[Install]
+WantedBy=default.target
+```
+
+```ini
+# streetcode-subscriber.service
+[Unit]
+Description=StreetCode Article Subscriber
+
+[Service]
+WorkingDirectory=/home/deployer/streetcode-laravel/current
+ExecStart=/usr/bin/php artisan articles:subscribe
+Restart=always
+
+[Install]
+WantedBy=default.target
+```
+
+```ini
+# streetcode-ssr.service
+[Unit]
+Description=StreetCode Inertia SSR
+
+[Service]
+WorkingDirectory=/home/deployer/streetcode-laravel/current
+ExecStart=/usr/bin/php artisan inertia:start-ssr
+Restart=always
+
+[Install]
+WantedBy=default.target
+```
+
+Enable and manage services:
+```bash
+systemctl --user enable streetcode-horizon streetcode-subscriber streetcode-ssr
+systemctl --user start streetcode-horizon streetcode-subscriber streetcode-ssr
+systemctl --user status streetcode-horizon
 ```
 
 ## Project Structure

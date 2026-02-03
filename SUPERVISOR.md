@@ -137,17 +137,4 @@ ddev logs -s web
 
 ## Production Deployment
 
-For production (non-DDEV), create a supervisor config manually:
-
-1. Install supervisor: `apt-get install supervisor`
-2. Create `/etc/supervisor/conf.d/articles-subscribe.conf`:
-   ```ini
-   [program:articles-subscribe]
-   command=php /path/to/artisan articles:subscribe
-   autostart=true
-   autorestart=true
-   user=www-data
-   redirect_stderr=true
-   stdout_logfile=/path/to/storage/logs/articles-subscribe.log
-   ```
-3. Reload supervisor: `supervisorctl reread && supervisorctl update`
+For production, systemd user services are used instead of supervisor. See the **systemd User Services** section in `README.md` for configuration details.

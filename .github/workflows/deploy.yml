@@ -1,0 +1,62 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows: ['tests']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 1
+
+      - name: Download Deployer
+        run: |
+          curl -LO https://deployer.org/deployer.phar
+          chmod +x deployer.phar
+          sudo mv deployer.phar /usr/local/bin/dep
+
+      - name: Setup SSH
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
+          if [ -n "$SSH_PRIVATE_KEY_BASE64" ]; then
+            echo "$SSH_PRIVATE_KEY_BASE64" | base64 -d | ssh-add -
+          else
+            echo "$SSH_PRIVATE_KEY" | ssh-add -
+          fi
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY_BASE64: ${{ secrets.SSH_PRIVATE_KEY_BASE64 }}
+
+      - name: Add Host Key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -T 5 -H streetcode.net >> ~/.ssh/known_hosts
+          cat >> ~/.ssh/config << EOF
+          Host streetcode.net
+            User deployer
+            StrictHostKeyChecking no
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Deploy
+        env:
+          DEPLOY_ENV: production
+        run: |
+          set -e
+          dep deploy streetcode.net -v

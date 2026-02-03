@@ -1,0 +1,14 @@
+[Unit]
+Description=Streetcode articles:subscribe
+After=network.target
+ConditionPathExists=/home/deployer/streetcode-laravel/current
+
+[Service]
+Type=simple
+WorkingDirectory=/home/deployer/streetcode-laravel/current
+ExecStart=/usr/bin/php artisan articles:subscribe
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

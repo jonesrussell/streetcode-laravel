@@ -14,7 +14,7 @@ add('shared_dirs', []);
 add('writable_dirs', []);
 
 task('deploy:build_assets', function (): void {
-    run('cd {{release_path}} && npm ci && npm run build');
+    run('bash -lc "source ~/.nvm/nvm.sh 2>/dev/null; cd {{release_path}} && npm ci && npm run build:ssr"');
 });
 after('deploy:vendors', 'deploy:build_assets');
 
@@ -29,4 +29,5 @@ host('streetcode.net')
 after('deploy:failed', 'deploy:unlock');
 after('deploy:publish', function (): void {
     run('cd {{release_path}} && {{bin/php}} artisan horizon:terminate', ['allow_failure' => true]);
+    run('cd {{release_path}} && {{bin/php}} artisan inertia:stop-ssr', ['allow_failure' => true]);
 });

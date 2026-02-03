@@ -1,0 +1,8 @@
+# New native stack (Deployer + Caddy). Copy to server (e.g. /etc/caddy/Caddyfile).
+# Root must be deployer's current release. Adjust php_fastcgi if your PHP-FPM socket differs.
+streetcode.net {
+    root * /home/deployer/streetcode-laravel/current/public
+    encode gzip
+    file_server
+    php_fastcgi unix//run/php/php8.2-fpm.sock
+}

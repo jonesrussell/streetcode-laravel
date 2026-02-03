@@ -1,4 +1,5 @@
 <?php
+
 namespace Deployer;
 
 require 'recipe/laravel.php';
@@ -6,10 +7,16 @@ require 'recipe/laravel.php';
 // Config
 
 set('repository', 'git@github.com:jonesrussell/streetcode-laravel.git');
+set('keep_releases', 5);
 
 add('shared_files', []);
 add('shared_dirs', []);
 add('writable_dirs', []);
+
+task('deploy:build_assets', function (): void {
+    run('cd {{release_path}} && npm ci && npm run build');
+});
+after('deploy:vendors', 'deploy:build_assets');
 
 // Hosts
 
@@ -20,3 +27,6 @@ host('streetcode.net')
 // Hooks
 
 after('deploy:failed', 'deploy:unlock');
+after('deploy:publish', function (): void {
+    run('cd {{release_path}} && {{bin/php}} artisan horizon:terminate', ['allow_failure' => true]);
+});

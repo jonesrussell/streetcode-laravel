@@ -40,6 +40,12 @@ const toggleTag = (tagId: number) => {
 const removeTag = (tagId: number) => {
     emit('update:modelValue', props.modelValue.filter(id => id !== tagId));
 };
+
+const handleInputBlur = () => {
+    window.setTimeout(() => {
+        isOpen.value = false;
+    }, 200);
+};
 </script>
 
 <template>
@@ -68,7 +74,7 @@ const removeTag = (tagId: number) => {
                 type="text"
                 placeholder="Search tags..."
                 @focus="isOpen = true"
-                @blur="setTimeout(() => isOpen = false, 200)"
+                @blur="handleInputBlur"
             />
 
             <div

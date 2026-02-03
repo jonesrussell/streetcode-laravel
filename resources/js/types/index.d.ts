@@ -54,6 +54,7 @@ export interface Article {
     is_featured: boolean;
     created_at: string;
     updated_at: string;
+    metadata?: Record<string, unknown> & { og_description?: string };
     news_source?: NewsSource;
     tags?: Tag[];
     author?: User;
@@ -86,13 +87,20 @@ export interface Tag {
 
 export interface PaginatedArticles {
     data: Article[];
-    links: {
-        first: string;
-        last: string;
-        prev: string | null;
-        next: string | null;
-    };
-    meta: {
+    current_page: number;
+    last_page: number;
+    from: number;
+    to: number;
+    total: number;
+    per_page: number;
+    first_page_url: string;
+    last_page_url: string;
+    prev_page_url: string | null;
+    next_page_url: string | null;
+    path: string;
+    links: Array<{ url: string | null; label: string; active: boolean }>;
+    /** Present when backend uses nested meta (e.g. Articles/Index, Dashboard). */
+    meta?: {
         current_page: number;
         from: number;
         last_page: number;

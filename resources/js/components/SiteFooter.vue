@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 
+interface FooterLink {
+    name: string;
+    href: string;
+    external?: boolean;
+}
+
 const currentYear = new Date().getFullYear();
 
-const footerLinks = {
+const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
     news: {
         title: 'News',
         links: [

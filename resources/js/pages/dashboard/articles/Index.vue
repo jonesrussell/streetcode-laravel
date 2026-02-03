@@ -82,8 +82,11 @@ const handleSearch = () => {
     applyFilters();
 };
 
-const handleStatusChange = (value: string) => {
-    statusFilter.value = value;
+const handleStatusChange = (value: unknown) => {
+    statusFilter.value =
+        value != null && (typeof value === 'string' || typeof value === 'number')
+            ? String(value)
+            : 'all';
     applyFilters();
 };
 

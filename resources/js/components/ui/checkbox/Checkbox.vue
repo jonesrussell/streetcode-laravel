@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 interface Props extends CheckboxRootProps {
     class?: HTMLAttributes["class"]
     indeterminate?: boolean
+    checked?: boolean | 'indeterminate'
 }
 
 const props = withDefaults(defineProps<Props>(), {

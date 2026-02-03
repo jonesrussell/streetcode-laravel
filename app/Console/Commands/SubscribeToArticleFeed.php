@@ -27,7 +27,7 @@ class SubscribeToArticleFeed extends Command
         // Use raw Redis client for pub/sub to bypass prefix
         // Pub/sub channels shouldn't use prefixes since they're shared across services
         $redisConfig = config('database.redis.default');
-        $client = new \Redis();
+        $client = new \Redis;
 
         $host = $redisConfig['host'] ?? '127.0.0.1';
         $port = (int) ($redisConfig['port'] ?? 6379);

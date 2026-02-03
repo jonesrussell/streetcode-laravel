@@ -31,9 +31,6 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Install Node Dependencies
-        run: npm ci
-
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
@@ -43,8 +40,23 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
 
+      - name: Install Node Dependencies
+        run: npm ci
+
       - name: Build Assets
         run: npm run build
 
-      - name: Tests
-        run: ./vendor/bin/pest
+      - name: PHP linting
+        run: composer lint
+
+      - name: PHP tests
+        run: composer test
+
+      - name: Frontend linting
+        run: npm run lint
+
+      - name: Frontend type checking
+        run: npm run type-check
+
+      - name: Frontend tests
+        run: npm run test

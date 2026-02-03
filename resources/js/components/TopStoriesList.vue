@@ -2,7 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import type { Article } from '@/types';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
-import { Clock, ExternalLink } from 'lucide-vue-next';
+import { Clock } from 'lucide-vue-next';
 
 interface Props {
     articles: Article[];

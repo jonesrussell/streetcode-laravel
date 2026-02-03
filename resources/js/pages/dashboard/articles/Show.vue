@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ArticleStatusBadge from '@/components/admin/ArticleStatusBadge.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
-import { ArrowLeft, Edit, Calendar, User, ExternalLink, Eye } from 'lucide-vue-next';
+import { ArrowLeft, Edit, Calendar, User, ExternalLink } from 'lucide-vue-next';
 import { dashboard } from '@/routes';
 import { index as articlesIndex, edit as articlesEdit } from '@/routes/dashboard/articles';
 

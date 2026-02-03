@@ -453,7 +453,6 @@ watch(() => props.articles?.data, () => {
                         <Button
                             v-for="page in getPageNumbers()"
                             :key="page"
-                            variant="outline"
                             size="sm"
                             :variant="page === articles.current_page ? 'default' : 'outline'"
                             :disabled="typeof page === 'string'"

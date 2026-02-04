@@ -15,9 +15,10 @@ class SoftDeleteByPatterns extends Command
 
     /**
      * Default patterns that indicate non-crime content.
+     * These are intentionally narrow to avoid false positives on crime stories.
      */
     protected array $defaultPatterns = [
-        // Website/meta pages
+        // Website/meta pages (very safe)
         'Work With Us',
         'Work or volunteer',
         'comment policy',
@@ -27,61 +28,98 @@ class SoftDeleteByPatterns extends Command
         'Pitch an idea',
         'Contact Us',
         'About Us',
+        'Advertise with',
         'Subscribe to',
         'Support us',
         'Donate',
         'Newsletter',
         'Sign up for',
+        'E Newsletter',
 
         // Job postings / fellowships
         'Fellowship',
         'Job posting',
-        'Career',
-        'Hiring',
+        'Hiring now',
         'Join our team',
+        'Career Expo',
 
-        // Sports
-        'Australian Open',
-        'NHL',
-        'NBA',
-        'NFL',
-        'Super Bowl',
-        'Stanley Cup',
-        'World Series',
-        'Olympics',
-        'Tennis',
-        'Hockey',
-        'Basketball',
-        'Football',
-        'Soccer',
-        'Golf',
-        'Baseball',
+        // Sports coverage (narrow - won't catch crime stories mentioning sports)
+        'hockey game',
+        'hockey team',
+        'hockey season',
+        'hockey tournament',
+        'hockey weekend',
+        'hockey award',
+        'hockey opportunity',
+        'men\'s soccer',
+        'women\'s soccer',
+        'basketball court',
+        'boys basketball',
+        'girls basketball',
+        'football season',
+        'Football Association',
+        'Golf tournament',
+        'tennis tourney',
+        'table tennis',
+        'Australian Open final',
+        'shots at tennis history',
+        'Nordic Ski',
+        'final score',
+        'game recap',
+        'match recap',
+        'season opener',
+        'making the most of college hockey',
 
-        // Weather
+        // Weather (safe)
         'snowstorm',
         'weather forecast',
-        'temperature',
+        'drop in temperature',
+        'frigid temperatures',
         'blizzard',
         'heat wave',
 
         // Entertainment
         'movie review',
         'album review',
-        'concert',
-        'Grammy',
+        'in concert',
+        'concert series',
+        'Grammy-nominated',
         'Oscar',
-        'Emmy',
+        'Emmy-winning',
         'Golden Globe',
 
-        // Lifestyle/misc
+        // Holidays/lifestyle (safe)
         'recipe',
         'cooking',
         'gardening',
         'travel guide',
         'vacation',
         'Santa Claus',
-        'Christmas',
-        'holiday',
+        'Christmas Radiothon',
+        'holiday travel',
+        'holiday campaign',
+        'holiday magic',
+        'Skill Share',
+        'tree-lighting',
+        'Living Nativity',
+        'Christmas story to life',
+        'Christmas gift',
+        'Shopping local',
+        'Last-minute shoppers',
+        'holidays at',
+        'during the holidays',
+        'over the holidays',
+        'holiday Skill Share',
+        'for the holidays',
+        'Stock up for the holidays',
+        'Christmas Carol',
+        'know about Christmas',
+        'wrapping paper recyclable',
+
+        // Misc junk
+        'BUSINESS PAGES',
+        'DESI TODAY MAGAZINE',
+        'Republic Day',
     ];
 
     public function handle(): int

@@ -21,11 +21,11 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
     categories: {
         title: 'Categories',
         links: [
-            { name: 'Gang Violence', href: '/?tag=gang-violence' },
-            { name: 'Organized Crime', href: '/?tag=organized-crime' },
+            { name: 'Violent Crime', href: '/?tag=violent-crime' },
+            { name: 'Property Crime', href: '/?tag=property-crime' },
             { name: 'Drug Crime', href: '/?tag=drug-crime' },
-            { name: 'Theft', href: '/?tag=theft' },
-            { name: 'Assault', href: '/?tag=assault' },
+            { name: 'Organized Crime', href: '/?tag=organized-crime' },
+            { name: 'Criminal Justice', href: '/?tag=criminal-justice' },
         ],
     },
     company: {

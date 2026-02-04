@@ -71,9 +71,19 @@ const performSearch = () => {
                             >Home</Link
                         >
                         <Link
-                            href="/?tag=gang-violence"
+                            href="/?tag=violent-crime"
                             class="text-sm text-zinc-300 hover:text-white"
-                            >Gang Violence</Link
+                            >Violent Crime</Link
+                        >
+                        <Link
+                            href="/?tag=property-crime"
+                            class="text-sm text-zinc-300 hover:text-white"
+                            >Property Crime</Link
+                        >
+                        <Link
+                            href="/?tag=drug-crime"
+                            class="text-sm text-zinc-300 hover:text-white"
+                            >Drug Crime</Link
                         >
                         <Link
                             href="/?tag=organized-crime"
@@ -81,9 +91,9 @@ const performSearch = () => {
                             >Organized Crime</Link
                         >
                         <Link
-                            href="/?tag=drug-crime"
+                            href="/?tag=criminal-justice"
                             class="text-sm text-zinc-300 hover:text-white"
-                            >Drug Crime</Link
+                            >Criminal Justice</Link
                         >
                     </nav>
 
@@ -133,9 +143,19 @@ const performSearch = () => {
                             >Home</Link
                         >
                         <Link
-                            href="/?tag=gang-violence"
+                            href="/?tag=violent-crime"
                             class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >Gang Violence</Link
+                            >Violent Crime</Link
+                        >
+                        <Link
+                            href="/?tag=property-crime"
+                            class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                            >Property Crime</Link
+                        >
+                        <Link
+                            href="/?tag=drug-crime"
+                            class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                            >Drug Crime</Link
                         >
                         <Link
                             href="/?tag=organized-crime"
@@ -143,9 +163,9 @@ const performSearch = () => {
                             >Organized Crime</Link
                         >
                         <Link
-                            href="/?tag=drug-crime"
+                            href="/?tag=criminal-justice"
                             class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >Drug Crime</Link
+                            >Criminal Justice</Link
                         >
                     </nav>
                 </div>
@@ -173,18 +193,11 @@ const performSearch = () => {
 
                 <!-- Sidebar -->
                 <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
-                    <!-- Trending Topics -->
-                    <TrendingTopics
-                        v-if="trendingTopics.length"
-                        :topics="trendingTopics"
-                        title="Similar News Topics"
-                    />
-
-                    <!-- Popular Tags -->
+                    <!-- Crime Categories -->
                     <TrendingTopics
                         v-if="popularTags.length"
                         :topics="popularTags"
-                        title="Crime Categories"
+                        title="Categories"
                     />
 
                     <!-- Newsletter Signup -->

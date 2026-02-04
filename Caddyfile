@@ -4,5 +4,5 @@ streetcode.net {
     root * /home/deployer/streetcode-laravel/current/public
     encode gzip
     file_server
-    php_fastcgi unix//run/php/php8.2-fpm.sock
+    php_fastcgi unix//run/php/php8.4-fpm.sock
 }

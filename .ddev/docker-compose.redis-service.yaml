@@ -1,0 +1,16 @@
+# Redis for Horizon and queues when not using north-cloud stack.
+# DDEV merges this; web can connect at hostname "redis" port 6379.
+services:
+  redis:
+    container_name: ddev-${DDEV_SITENAME}-redis
+    image: redis:7-alpine
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5

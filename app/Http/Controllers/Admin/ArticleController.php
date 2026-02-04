@@ -167,4 +167,89 @@ class ArticleController extends Controller
 
         return to_route('dashboard.articles.index')->with('success', $message);
     }
+
+    public function trashed(Request $request): Response
+    {
+        $articles = Article::onlyTrashed()
+            ->with(['newsSource', 'tags', 'author'])
+            ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%"))
+            ->when($request->source, fn ($q) => $q->where('news_source_id', $request->source))
+            ->when($request->channel, fn ($q) => $q->whereRaw(
+                "JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.publisher.channel')) = ?",
+                [$request->channel]
+            ))
+            ->when($request->sort, fn ($q) => $q->orderBy($request->sort, $request->direction ?? 'desc'),
+                fn ($q) => $q->latest('deleted_at')
+            )
+            ->paginate(15)
+            ->withQueryString();
+
+        // Get distinct channels for filter dropdown
+        $channels = Article::onlyTrashed()
+            ->selectRaw("DISTINCT JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.publisher.channel')) as channel")
+            ->whereNotNull('metadata')
+            ->pluck('channel')
+            ->filter()
+            ->sort()
+            ->values();
+
+        return Inertia::render('dashboard/articles/Trashed', [
+            'articles' => $articles,
+            'filters' => $request->only(['search', 'source', 'channel', 'sort', 'direction']),
+            'channels' => $channels,
+            'newsSources' => NewsSource::orderBy('name')->get(['id', 'name']),
+            'stats' => [
+                'trashed' => Article::onlyTrashed()->count(),
+                'active' => Article::count(),
+            ],
+        ]);
+    }
+
+    public function restore(int $id): RedirectResponse
+    {
+        $article = Article::onlyTrashed()->findOrFail($id);
+        $article->restore();
+
+        return to_route('dashboard.articles.trashed')->with('success', 'Article restored successfully.');
+    }
+
+    public function bulkRestore(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer',
+        ]);
+
+        $count = Article::onlyTrashed()->whereIn('id', $request->ids)->restore();
+
+        $message = $count === 1
+            ? 'Article restored successfully.'
+            : "{$count} articles restored successfully.";
+
+        return to_route('dashboard.articles.trashed')->with('success', $message);
+    }
+
+    public function forceDelete(int $id): RedirectResponse
+    {
+        $article = Article::onlyTrashed()->findOrFail($id);
+        $article->forceDelete();
+
+        return to_route('dashboard.articles.trashed')->with('success', 'Article permanently deleted.');
+    }
+
+    public function bulkForceDelete(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer',
+        ]);
+
+        $count = Article::onlyTrashed()->whereIn('id', $request->ids)->forceDelete();
+
+        $message = $count === 1
+            ? 'Article permanently deleted.'
+            : "{$count} articles permanently deleted.";
+
+        return to_route('dashboard.articles.trashed')->with('success', $message);
+    }
 }

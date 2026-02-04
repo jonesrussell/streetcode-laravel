@@ -77,6 +77,14 @@ Route::get('dashboard', function (\Illuminate\Http\Request $request) {
 
 // Dashboard article management routes
 Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
+    // Trashed articles management (must be before resource route)
+    Route::get('articles/trashed', [AdminArticleController::class, 'trashed'])->name('articles.trashed');
+    Route::post('articles/bulk-restore', [AdminArticleController::class, 'bulkRestore'])->name('articles.bulk-restore');
+    Route::post('articles/bulk-force-delete', [AdminArticleController::class, 'bulkForceDelete'])->name('articles.bulk-force-delete');
+    Route::post('articles/{id}/restore', [AdminArticleController::class, 'restore'])->name('articles.restore');
+    Route::delete('articles/{id}/force-delete', [AdminArticleController::class, 'forceDelete'])->name('articles.force-delete');
+
+    // Bulk actions
     Route::post('articles/bulk-delete', [AdminArticleController::class, 'bulkDelete'])->name('articles.bulk-delete');
     Route::post('articles/bulk-publish', [AdminArticleController::class, 'bulkPublish'])->name('articles.bulk-publish');
     Route::post('articles/bulk-unpublish', [AdminArticleController::class, 'bulkUnpublish'])->name('articles.bulk-unpublish');

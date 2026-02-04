@@ -55,6 +55,7 @@ export interface Article {
     is_featured: boolean;
     created_at: string;
     updated_at: string;
+    deleted_at?: string | null;
     metadata?: Record<string, unknown> & { og_description?: string };
     news_source?: NewsSource;
     tags?: Tag[];

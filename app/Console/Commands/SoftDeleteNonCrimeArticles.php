@@ -46,7 +46,7 @@ class SoftDeleteNonCrimeArticles extends Command
         $driver = DB::connection()->getDriverName();
 
         return function ($q) use ($driver) {
-            if ($driver === 'mysql') {
+            if ($driver === 'mysql' || $driver === 'mariadb') {
                 $q->whereRaw(
                     "COALESCE(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.publisher.channel')), '') NOT LIKE ?",
                     ['crime:%']

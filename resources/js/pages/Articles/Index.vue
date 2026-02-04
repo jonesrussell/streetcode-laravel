@@ -9,6 +9,7 @@ import NewsletterSignup from '@/components/NewsletterSignup.vue';
 import TrendingTopics from '@/components/TrendingTopics.vue';
 import SiteFooter from '@/components/SiteFooter.vue';
 import TagFilter from '@/components/TagFilter.vue';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Menu } from 'lucide-vue-next';
@@ -48,8 +49,8 @@ const performSearch = () => {
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
                     <!-- Logo -->
-                    <Link href="/" class="text-xl font-bold text-white hover:text-zinc-200">
-                        StreetCode
+                    <Link href="/" class="flex h-16 shrink-0 items-center p-2 hover:opacity-90">
+                        <AppLogoIcon class="max-h-full w-auto object-contain dark:invert" />
                     </Link>
 
                     <!-- Desktop Navigation -->

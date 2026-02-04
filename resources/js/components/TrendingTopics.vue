@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
 import type { Tag } from '@/types';
-import { TrendingUp, Plus } from 'lucide-vue-next';
+import { Link } from '@inertiajs/vue3';
+import { Plus, TrendingUp } from 'lucide-vue-next';
 
 interface Props {
     topics: Tag[];
@@ -41,14 +41,23 @@ const getTagColor = (color: string | null): string => {
                 class="group flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-zinc-700/50"
             >
                 <div class="flex items-center gap-2">
-                    <div :class="['size-2 rounded-full', getTagColor(topic.color)]" />
+                    <div
+                        :class="[
+                            'size-2 rounded-full',
+                            getTagColor(topic.color),
+                        ]"
+                    />
                     <span class="text-sm text-zinc-300 group-hover:text-white">
                         {{ topic.name }}
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-zinc-500">{{ topic.article_count }}</span>
-                    <Plus class="size-4 text-zinc-500 opacity-0 transition-opacity group-hover:opacity-100" />
+                    <span class="text-xs text-zinc-500">{{
+                        topic.article_count
+                    }}</span>
+                    <Plus
+                        class="size-4 text-zinc-500 opacity-0 transition-opacity group-hover:opacity-100"
+                    />
                 </div>
             </Link>
         </div>

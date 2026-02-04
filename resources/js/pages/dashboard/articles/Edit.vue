@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
-import type { Article, NewsSource, Tag, BreadcrumbItem } from '@/types';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
+import TagMultiSelect from '@/components/admin/TagMultiSelect.vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
 import {
     Select,
     SelectContent,
@@ -16,11 +14,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import TagMultiSelect from '@/components/admin/TagMultiSelect.vue';
-import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
-import { ArrowLeft, Trash2 } from 'lucide-vue-next';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
-import { index as articlesIndex, edit as articlesEdit, update as articlesUpdate, destroy as articlesDestroy } from '@/routes/dashboard/articles';
+import {
+    destroy as articlesDestroy,
+    edit as articlesEdit,
+    index as articlesIndex,
+    update as articlesUpdate,
+} from '@/routes/dashboard/articles';
+import type { Article, BreadcrumbItem, NewsSource, Tag } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import { ArrowLeft, Trash2 } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 interface Props {
     article: Article;
@@ -44,7 +49,7 @@ const form = ref({
     image_url: props.article.image_url || '',
     author: props.article.author || '',
     news_source_id: props.article.news_source_id,
-    tags: props.article.tags?.map(t => t.id) || [],
+    tags: props.article.tags?.map((t) => t.id) || [],
     is_featured: props.article.is_featured,
     published_at: props.article.published_at,
 });
@@ -63,8 +68,10 @@ const handleSubmit = (publish: boolean = false) => {
     const data = {
         ...form.value,
         published_at: publish
-            ? (form.value.published_at || new Date().toISOString())
-            : (isPublished.value ? form.value.published_at : null),
+            ? form.value.published_at || new Date().toISOString()
+            : isPublished.value
+              ? form.value.published_at
+              : null,
     };
 
     router.patch(articlesUpdate(props.article.id).url, data, {
@@ -94,7 +101,7 @@ const handleUnpublish = () => {
                 processing.value = false;
                 form.value.published_at = null;
             },
-        }
+        },
     );
 };
 
@@ -134,7 +141,9 @@ const formatDate = (date: string) => {
     <Head :title="`Edit: ${article.title} - Dashboard`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
+        <div
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6"
+        >
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
@@ -144,19 +153,18 @@ const formatDate = (date: string) => {
                         @click="handleCancel"
                         class="mb-2"
                     >
-                        <ArrowLeft class="h-4 w-4 mr-2" />
+                        <ArrowLeft class="mr-2 h-4 w-4" />
                         Back to Articles
                     </Button>
-                    <h1 class="text-3xl font-bold tracking-tight">Edit Article</h1>
-                    <p class="text-muted-foreground mt-1">
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        Edit Article
+                    </h1>
+                    <p class="mt-1 text-muted-foreground">
                         Update article details
                     </p>
                 </div>
-                <Button
-                    variant="destructive"
-                    @click="handleDeleteClick"
-                >
-                    <Trash2 class="h-4 w-4 mr-2" />
+                <Button variant="destructive" @click="handleDeleteClick">
+                    <Trash2 class="mr-2 h-4 w-4" />
                     Delete Article
                 </Button>
             </div>
@@ -167,22 +175,30 @@ const formatDate = (date: string) => {
                     <CardTitle>Article Metadata</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div class="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                         <div>
                             <p class="text-muted-foreground">Created</p>
-                            <p class="font-medium">{{ formatDate(article.created_at) }}</p>
+                            <p class="font-medium">
+                                {{ formatDate(article.created_at) }}
+                            </p>
                         </div>
                         <div>
                             <p class="text-muted-foreground">Last Updated</p>
-                            <p class="font-medium">{{ formatDate(article.updated_at) }}</p>
+                            <p class="font-medium">
+                                {{ formatDate(article.updated_at) }}
+                            </p>
                         </div>
                         <div>
                             <p class="text-muted-foreground">Views</p>
-                            <p class="font-medium">{{ article.view_count.toLocaleString() }}</p>
+                            <p class="font-medium">
+                                {{ article.view_count.toLocaleString() }}
+                            </p>
                         </div>
                         <div>
                             <p class="text-muted-foreground">Status</p>
-                            <Badge :variant="isPublished ? 'default' : 'secondary'">
+                            <Badge
+                                :variant="isPublished ? 'default' : 'secondary'"
+                            >
                                 {{ isPublished ? 'Published' : 'Draft' }}
                             </Badge>
                         </div>
@@ -193,7 +209,10 @@ const formatDate = (date: string) => {
             <!-- Form -->
             <Card>
                 <CardContent class="pt-6">
-                    <form @submit.prevent="handleSubmit(false)" class="space-y-6">
+                    <form
+                        @submit.prevent="handleSubmit(false)"
+                        class="space-y-6"
+                    >
                         <!-- Title -->
                         <div class="space-y-2">
                             <Label for="title">
@@ -207,7 +226,10 @@ const formatDate = (date: string) => {
                                 placeholder="Enter article title"
                                 :class="{ 'border-destructive': errors.title }"
                             />
-                            <p v-if="errors.title" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.title"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.title }}
                             </p>
                         </div>
@@ -225,7 +247,10 @@ const formatDate = (date: string) => {
                                 placeholder="https://example.com/article"
                                 :class="{ 'border-destructive': errors.url }"
                             />
-                            <p v-if="errors.url" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.url"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.url }}
                             </p>
                         </div>
@@ -238,10 +263,15 @@ const formatDate = (date: string) => {
                                 v-model="form.excerpt"
                                 rows="3"
                                 placeholder="Short summary of the article..."
-                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                :class="{ 'border-destructive': errors.excerpt }"
+                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                :class="{
+                                    'border-destructive': errors.excerpt,
+                                }"
                             ></textarea>
-                            <p v-if="errors.excerpt" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.excerpt"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.excerpt }}
                             </p>
                         </div>
@@ -257,10 +287,15 @@ const formatDate = (date: string) => {
                                 v-model="form.content"
                                 rows="10"
                                 placeholder="Full article content..."
-                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                :class="{ 'border-destructive': errors.content }"
+                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                :class="{
+                                    'border-destructive': errors.content,
+                                }"
                             ></textarea>
-                            <p v-if="errors.content" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.content"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.content }}
                             </p>
                         </div>
@@ -273,9 +308,14 @@ const formatDate = (date: string) => {
                                 v-model="form.image_url"
                                 type="url"
                                 placeholder="https://example.com/image.jpg"
-                                :class="{ 'border-destructive': errors.image_url }"
+                                :class="{
+                                    'border-destructive': errors.image_url,
+                                }"
                             />
-                            <p v-if="errors.image_url" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.image_url"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.image_url }}
                             </p>
                         </div>
@@ -290,7 +330,10 @@ const formatDate = (date: string) => {
                                 placeholder="Article author name"
                                 :class="{ 'border-destructive': errors.author }"
                             />
-                            <p v-if="errors.author" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.author"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.author }}
                             </p>
                         </div>
@@ -303,13 +346,20 @@ const formatDate = (date: string) => {
                             </Label>
                             <Select
                                 v-model="form.news_source_id"
-                                :class="{ 'border-destructive': errors.news_source_id }"
+                                :class="{
+                                    'border-destructive': errors.news_source_id,
+                                }"
                             >
                                 <SelectTrigger
                                     id="news_source_id"
-                                    :class="{ 'border-destructive': errors.news_source_id }"
+                                    :class="{
+                                        'border-destructive':
+                                            errors.news_source_id,
+                                    }"
                                 >
-                                    <SelectValue placeholder="Select a news source" />
+                                    <SelectValue
+                                        placeholder="Select a news source"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem
@@ -321,7 +371,10 @@ const formatDate = (date: string) => {
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <p v-if="errors.news_source_id" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.news_source_id"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.news_source_id }}
                             </p>
                         </div>
@@ -329,11 +382,11 @@ const formatDate = (date: string) => {
                         <!-- Tags -->
                         <div class="space-y-2">
                             <Label>Tags</Label>
-                            <TagMultiSelect
-                                v-model="form.tags"
-                                :tags="tags"
-                            />
-                            <p v-if="errors.tags" class="text-sm text-destructive">
+                            <TagMultiSelect v-model="form.tags" :tags="tags" />
+                            <p
+                                v-if="errors.tags"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.tags }}
                             </p>
                         </div>
@@ -350,7 +403,7 @@ const formatDate = (date: string) => {
                         </div>
 
                         <!-- Actions -->
-                        <div class="flex gap-3 pt-4 border-t">
+                        <div class="flex gap-3 border-t pt-4">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -366,7 +419,9 @@ const formatDate = (date: string) => {
                                 @click="handleUnpublish"
                                 :disabled="processing"
                             >
-                                {{ processing ? 'Unpublishing...' : 'Unpublish' }}
+                                {{
+                                    processing ? 'Unpublishing...' : 'Unpublish'
+                                }}
                             </Button>
                             <Button
                                 type="submit"
@@ -396,7 +451,7 @@ const formatDate = (date: string) => {
             :description="`Are you sure you want to delete &quot;${article.title}&quot;? This action cannot be undone.`"
             :loading="isDeleting"
             @confirm="confirmDelete"
-            @cancel="() => deleteDialogOpen = false"
+            @cancel="() => (deleteDialogOpen = false)"
         />
     </AppLayout>
 </template>

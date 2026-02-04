@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import type { Article, Tag } from '@/types';
+import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
-import { Clock, ChevronRight } from 'lucide-vue-next';
+import type { Article, Tag } from '@/types';
+import { Link } from '@inertiajs/vue3';
+import { ChevronRight, Clock } from 'lucide-vue-next';
 
 interface Props {
     tag: Tag;
@@ -45,7 +45,10 @@ const tagColorMap: Record<string, string> = {
 };
 
 const getTagColorClass = (color: string | null): string => {
-    return tagColorMap[color || ''] || 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30';
+    return (
+        tagColorMap[color || ''] ||
+        'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
+    );
 };
 </script>
 
@@ -53,13 +56,19 @@ const getTagColorClass = (color: string | null): string => {
     <section class="mb-8">
         <div class="mb-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <h2 class="text-lg font-bold text-white">{{ tag.name }} News</h2>
+                <h2 class="text-lg font-bold text-white">
+                    {{ tag.name }} News
+                </h2>
                 <Badge :class="['border', getTagColorClass(tag.color)]">
                     {{ tag.article_count }} articles
                 </Badge>
             </div>
             <Link :href="`/?tag=${tag.slug}`">
-                <Button variant="ghost" size="sm" class="text-zinc-400 hover:text-white">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    class="text-zinc-400 hover:text-white"
+                >
                     Read More
                     <ChevronRight class="ml-1 size-4" />
                 </Button>
@@ -73,7 +82,10 @@ const getTagColorClass = (color: string | null): string => {
                 :href="`/articles/${article.id}`"
                 class="group overflow-hidden rounded-lg bg-zinc-800/50 transition-colors hover:bg-zinc-800"
             >
-                <div v-if="article.image_url" class="aspect-video w-full overflow-hidden">
+                <div
+                    v-if="article.image_url"
+                    class="aspect-video w-full overflow-hidden"
+                >
                     <img
                         :src="article.image_url"
                         :alt="article.title"
@@ -81,11 +93,18 @@ const getTagColorClass = (color: string | null): string => {
                     />
                 </div>
                 <div class="p-4">
-                    <h3 class="mb-2 line-clamp-2 text-sm font-medium leading-snug text-white group-hover:text-zinc-200">
+                    <h3
+                        class="mb-2 line-clamp-2 text-sm leading-snug font-medium text-white group-hover:text-zinc-200"
+                    >
                         {{ article.title }}
                     </h3>
-                    <div class="flex items-center justify-between text-xs text-zinc-400">
-                        <SourceCredibilityBadge v-if="article.news_source" :source="article.news_source" />
+                    <div
+                        class="flex items-center justify-between text-xs text-zinc-400"
+                    >
+                        <SourceCredibilityBadge
+                            v-if="article.news_source"
+                            :source="article.news_source"
+                        />
                         <div class="flex items-center gap-1">
                             <Clock class="size-3" />
                             {{ formatTimeAgo(article.published_at) }}

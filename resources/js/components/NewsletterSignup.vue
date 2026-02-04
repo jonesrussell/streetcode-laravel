@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { store } from '@/actions/App/Http/Controllers/SubscriberController';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail, Check, AlertCircle } from 'lucide-vue-next';
-import { store } from '@/actions/App/Http/Controllers/SubscriberController';
+import { AlertCircle, Check, Mail } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const email = ref('');
 const isSubmitted = ref(false);
@@ -23,12 +23,12 @@ const handleSubmit = async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'X-XSRF-TOKEN': decodeURIComponent(
                     document.cookie
                         .split('; ')
-                        .find(row => row.startsWith('XSRF-TOKEN='))
-                        ?.split('=')[1] || ''
+                        .find((row) => row.startsWith('XSRF-TOKEN='))
+                        ?.split('=')[1] || '',
                 ),
             },
             body: JSON.stringify({ email: email.value }),
@@ -59,14 +59,17 @@ const handleSubmit = async () => {
 <template>
     <div class="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
         <div class="mb-3 flex items-center gap-2">
-            <div class="flex size-8 items-center justify-center rounded-full bg-red-500/20">
+            <div
+                class="flex size-8 items-center justify-center rounded-full bg-red-500/20"
+            >
                 <Mail class="size-4 text-red-400" />
             </div>
             <h3 class="font-semibold text-white">Daily Digest</h3>
         </div>
 
         <p class="mb-4 text-sm text-zinc-400">
-            Get the daily StreetCode report sent to your inbox and stay up to date with your bias blindspot.
+            Get the daily StreetCode report sent to your inbox and stay up to
+            date with your bias blindspot.
         </p>
 
         <div v-if="!isSubmitted">
@@ -79,7 +82,10 @@ const handleSubmit = async () => {
                     required
                 />
 
-                <div v-if="errorMessage" class="flex items-center gap-2 rounded-lg bg-red-500/20 p-2 text-red-400">
+                <div
+                    v-if="errorMessage"
+                    class="flex items-center gap-2 rounded-lg bg-red-500/20 p-2 text-red-400"
+                >
                     <AlertCircle class="size-4 shrink-0" />
                     <span class="text-sm">{{ errorMessage }}</span>
                 </div>
@@ -95,7 +101,9 @@ const handleSubmit = async () => {
         </div>
 
         <div v-else class="space-y-2">
-            <div class="flex items-center gap-2 rounded-lg bg-green-500/20 p-3 text-green-400">
+            <div
+                class="flex items-center gap-2 rounded-lg bg-green-500/20 p-3 text-green-400"
+            >
                 <Check class="size-5" />
                 <span class="text-sm">Check your email to verify!</span>
             </div>

@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import type { NewsSource } from '@/types'
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/ui/tooltip';
+import type { NewsSource } from '@/types';
 
 interface Props {
-    source: NewsSource
+    source: NewsSource;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const biasColorClass = {
-    left: 'bg-blue-500',
-    'center-left': 'bg-sky-500',
-    center: 'bg-gray-500',
-    'center-right': 'bg-orange-500',
-    right: 'bg-red-500',
-}[props.source.bias_rating || 'center'] || 'bg-gray-500'
+const biasColorClass =
+    {
+        left: 'bg-blue-500',
+        'center-left': 'bg-sky-500',
+        center: 'bg-gray-500',
+        'center-right': 'bg-orange-500',
+        right: 'bg-red-500',
+    }[props.source.bias_rating || 'center'] || 'bg-gray-500';
 
 const credibilityLevel = props.source.credibility_score
     ? props.source.credibility_score >= 80
@@ -27,7 +28,7 @@ const credibilityLevel = props.source.credibility_score
         : props.source.credibility_score >= 60
           ? 'Medium'
           : 'Low'
-    : 'Unknown'
+    : 'Unknown';
 </script>
 
 <template>
@@ -44,7 +45,11 @@ const credibilityLevel = props.source.credibility_score
                     <div>Bias: {{ source.bias_rating || 'Unknown' }}</div>
                     <div>
                         Credibility: {{ credibilityLevel }}
-                        {{ source.credibility_score ? `(${source.credibility_score})` : '' }}
+                        {{
+                            source.credibility_score
+                                ? `(${source.credibility_score})`
+                                : ''
+                        }}
                     </div>
                     <div v-if="source.factual_reporting_score">
                         Factual: {{ source.factual_reporting_score }}

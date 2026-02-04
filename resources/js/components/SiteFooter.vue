@@ -54,11 +54,15 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
                 <!-- Brand Column -->
                 <div class="lg:col-span-1">
-                    <Link href="/" class="text-lg font-bold text-white hover:text-zinc-200">
+                    <Link
+                        href="/"
+                        class="text-lg font-bold text-white hover:text-zinc-200"
+                    >
                         StreetCode
                     </Link>
                     <p class="mt-4 text-sm text-zinc-400">
-                        Canadian crime news aggregation. Stay informed about crime trends and public safety across Canada.
+                        Canadian crime news aggregation. Stay informed about
+                        crime trends and public safety across Canada.
                     </p>
                 </div>
 
@@ -68,7 +72,9 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
                     :key="key"
                     class="lg:col-span-1"
                 >
-                    <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+                    <h3
+                        class="mb-4 text-sm font-semibold tracking-wider text-zinc-400 uppercase"
+                    >
                         {{ section.title }}
                     </h3>
                     <ul class="space-y-3">
@@ -95,9 +101,12 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
             </div>
 
             <!-- Bottom Bar -->
-            <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-zinc-800 pt-8 md:flex-row">
+            <div
+                class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-zinc-800 pt-8 md:flex-row"
+            >
                 <p class="text-sm text-zinc-500">
-                    &copy; {{ currentYear }} StreetCode.net. All rights reserved.
+                    &copy; {{ currentYear }} StreetCode.net. All rights
+                    reserved.
                 </p>
                 <div class="flex items-center gap-4">
                     <span class="text-xs text-zinc-600">Canada</span>

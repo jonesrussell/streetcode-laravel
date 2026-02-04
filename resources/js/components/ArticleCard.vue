@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import type { Article } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar } from 'lucide-vue-next';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Article } from '@/types';
+import { Link } from '@inertiajs/vue3';
+import { Calendar } from 'lucide-vue-next';
 
 interface Props {
     article: Article;
@@ -23,7 +23,9 @@ const formattedDate = props.article.published_at
 
 <template>
     <Link :href="`/articles/${article.id}`">
-        <Card class="h-full border-zinc-700 bg-zinc-800/50 transition-all hover:bg-zinc-800 hover:shadow-lg">
+        <Card
+            class="h-full border-zinc-700 bg-zinc-800/50 transition-all hover:bg-zinc-800 hover:shadow-lg"
+        >
             <img
                 v-if="article.image_url"
                 :src="article.image_url"
@@ -33,7 +35,10 @@ const formattedDate = props.article.published_at
 
             <CardHeader>
                 <div class="mb-2 flex items-center justify-between text-xs">
-                    <SourceCredibilityBadge v-if="article.news_source" :source="article.news_source" />
+                    <SourceCredibilityBadge
+                        v-if="article.news_source"
+                        :source="article.news_source"
+                    />
                     <div class="flex items-center gap-1 text-zinc-400">
                         <Calendar class="size-3" />
                         {{ formattedDate }}
@@ -46,7 +51,10 @@ const formattedDate = props.article.published_at
             </CardHeader>
 
             <CardContent>
-                <p v-if="article.excerpt" class="mb-4 line-clamp-3 text-sm text-zinc-400">
+                <p
+                    v-if="article.excerpt"
+                    class="mb-4 line-clamp-3 text-sm text-zinc-400"
+                >
                     {{ article.excerpt }}
                 </p>
 

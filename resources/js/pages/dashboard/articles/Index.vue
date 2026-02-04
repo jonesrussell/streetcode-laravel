@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { router, Head } from '@inertiajs/vue3';
-import type { Article, PaginatedArticles, BreadcrumbItem } from '@/types';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ArticlesTable from '@/components/admin/ArticlesTable.vue';
+import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -13,19 +11,29 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import ArticlesTable from '@/components/admin/ArticlesTable.vue';
-import DeleteConfirmDialog from '@/components/admin/DeleteConfirmDialog.vue';
-import { Plus, FileText, FilePlus, FileCheck, Trash2, Eye, EyeOff } from 'lucide-vue-next';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import {
-    index as articlesIndex,
-    create as articlesCreate,
-    destroy as articlesDestroy,
     bulkDelete as articlesBulkDelete,
     bulkPublish as articlesBulkPublish,
     bulkUnpublish as articlesBulkUnpublish,
+    create as articlesCreate,
+    destroy as articlesDestroy,
+    index as articlesIndex,
     togglePublish as articlesTogglePublish,
 } from '@/routes/dashboard/articles';
+import type { Article, BreadcrumbItem, PaginatedArticles } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import {
+    Eye,
+    EyeOff,
+    FileCheck,
+    FilePlus,
+    FileText,
+    Plus,
+    Trash2,
+} from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 
 interface Props {
     articles: PaginatedArticles;
@@ -45,7 +53,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: dashboard().url },
@@ -69,12 +76,13 @@ const applyFilters = () => {
         {
             ...props.filters,
             search: searchQuery.value || undefined,
-            status: statusFilter.value !== 'all' ? statusFilter.value : undefined,
+            status:
+                statusFilter.value !== 'all' ? statusFilter.value : undefined,
         },
         {
             preserveState: true,
             preserveScroll: true,
-        }
+        },
     );
 };
 
@@ -84,7 +92,8 @@ const handleSearch = () => {
 
 const handleStatusChange = (value: unknown) => {
     statusFilter.value =
-        value != null && (typeof value === 'string' || typeof value === 'number')
+        value != null &&
+        (typeof value === 'string' || typeof value === 'number')
             ? String(value)
             : 'all';
     applyFilters();
@@ -156,7 +165,7 @@ const confirmBulkDelete = () => {
             onFinish: () => {
                 isBulkDeleting.value = false;
             },
-        }
+        },
     );
 };
 
@@ -176,7 +185,7 @@ const handleBulkPublish = () => {
             onFinish: () => {
                 isBulkPublishing.value = false;
             },
-        }
+        },
     );
 };
 
@@ -196,7 +205,7 @@ const handleBulkUnpublish = () => {
             onFinish: () => {
                 isBulkUnpublishing.value = false;
             },
-        }
+        },
     );
 };
 
@@ -211,7 +220,7 @@ const handleTogglePublish = (article: Article) => {
             onFinish: () => {
                 isTogglingPublish.value = false;
             },
-        }
+        },
     );
 };
 
@@ -253,7 +262,8 @@ const getPageNumbers = () => {
 };
 
 const goToPageNumber = (page: number | string) => {
-    if (typeof page === 'string' || page === props.articles?.current_page) return;
+    if (typeof page === 'string' || page === props.articles?.current_page)
+        return;
 
     router.get(
         articlesIndex().url,
@@ -264,7 +274,7 @@ const goToPageNumber = (page: number | string) => {
         {
             preserveState: true,
             preserveScroll: true,
-        }
+        },
     );
 };
 
@@ -283,31 +293,40 @@ const showPagination = computed(() => {
 });
 
 // Clear selections when articles data actually changes (pagination, filtering, etc.)
-watch(() => props.articles?.data?.map(a => a.id).join(','), () => {
-    selectedIds.value = [];
-});
+watch(
+    () => props.articles?.data?.map((a) => a.id).join(','),
+    () => {
+        selectedIds.value = [];
+    },
+);
 
 // Clear selections when articles change (pagination, filtering, etc.)
-watch(() => props.articles?.data, () => {
-    selectedIds.value = [];
-}, { deep: true });
+watch(
+    () => props.articles?.data,
+    () => {
+        selectedIds.value = [];
+    },
+    { deep: true },
+);
 </script>
 
 <template>
     <Head title="Articles - Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
+        <div
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6"
+        >
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold tracking-tight">Articles</h1>
-                    <p class="text-muted-foreground mt-1">
+                    <p class="mt-1 text-muted-foreground">
                         Manage your article content
                     </p>
                 </div>
                 <Button @click="handleCreateArticle">
-                    <Plus class="h-4 w-4 mr-2" />
+                    <Plus class="mr-2 h-4 w-4" />
                     Create Article
                 </Button>
             </div>
@@ -315,38 +334,50 @@ watch(() => props.articles?.data, () => {
             <!-- Stats Cards -->
             <div class="grid gap-4 md:grid-cols-3">
                 <Card>
-                    <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardHeader
+                        class="flex flex-row items-center justify-between space-y-0 pb-2"
+                    >
                         <CardTitle class="text-sm font-medium">
                             Total Articles
                         </CardTitle>
                         <FileText class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats?.total ?? 0 }}</div>
+                        <div class="text-2xl font-bold">
+                            {{ stats?.total ?? 0 }}
+                        </div>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardHeader
+                        class="flex flex-row items-center justify-between space-y-0 pb-2"
+                    >
                         <CardTitle class="text-sm font-medium">
                             Drafts
                         </CardTitle>
                         <FilePlus class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats?.drafts ?? 0 }}</div>
+                        <div class="text-2xl font-bold">
+                            {{ stats?.drafts ?? 0 }}
+                        </div>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardHeader
+                        class="flex flex-row items-center justify-between space-y-0 pb-2"
+                    >
                         <CardTitle class="text-sm font-medium">
                             Published
                         </CardTitle>
                         <FileCheck class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats?.published ?? 0 }}</div>
+                        <div class="text-2xl font-bold">
+                            {{ stats?.published ?? 0 }}
+                        </div>
                     </CardContent>
                 </Card>
             </div>
@@ -354,7 +385,9 @@ watch(() => props.articles?.data, () => {
             <!-- Filters -->
             <Card>
                 <CardContent class="pt-6">
-                    <div class="flex flex-col gap-4 md:flex-row md:items-center">
+                    <div
+                        class="flex flex-col gap-4 md:flex-row md:items-center"
+                    >
                         <div class="flex-1">
                             <Input
                                 v-model="searchQuery"
@@ -365,14 +398,23 @@ watch(() => props.articles?.data, () => {
                             />
                         </div>
                         <div class="flex gap-2">
-                            <Select v-model="statusFilter" @update:model-value="handleStatusChange">
+                            <Select
+                                v-model="statusFilter"
+                                @update:model-value="handleStatusChange"
+                            >
                                 <SelectTrigger class="w-[150px]">
                                     <SelectValue placeholder="All Status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="published">Published</SelectItem>
-                                    <SelectItem value="draft">Drafts</SelectItem>
+                                    <SelectItem value="all"
+                                        >All Status</SelectItem
+                                    >
+                                    <SelectItem value="published"
+                                        >Published</SelectItem
+                                    >
+                                    <SelectItem value="draft"
+                                        >Drafts</SelectItem
+                                    >
                                 </SelectContent>
                             </Select>
                             <Button variant="outline" @click="handleSearch">
@@ -388,34 +430,49 @@ watch(() => props.articles?.data, () => {
                 <CardContent class="pt-6">
                     <div class="flex items-center justify-between">
                         <div class="text-sm font-medium">
-                            {{ selectedIds.length }} article{{ selectedIds.length === 1 ? '' : 's' }} selected
+                            {{ selectedIds.length }} article{{
+                                selectedIds.length === 1 ? '' : 's'
+                            }}
+                            selected
                         </div>
                         <div class="flex gap-2">
                             <Button
                                 variant="outline"
                                 size="sm"
-                                :disabled="isBulkPublishing || isBulkUnpublishing || isBulkDeleting"
+                                :disabled="
+                                    isBulkPublishing ||
+                                    isBulkUnpublishing ||
+                                    isBulkDeleting
+                                "
                                 @click="handleBulkPublish"
                             >
-                                <Eye class="h-4 w-4 mr-2" />
+                                <Eye class="mr-2 h-4 w-4" />
                                 Publish
                             </Button>
                             <Button
                                 variant="outline"
                                 size="sm"
-                                :disabled="isBulkPublishing || isBulkUnpublishing || isBulkDeleting"
+                                :disabled="
+                                    isBulkPublishing ||
+                                    isBulkUnpublishing ||
+                                    isBulkDeleting
+                                "
                                 @click="handleBulkUnpublish"
                             >
-                                <EyeOff class="h-4 w-4 mr-2" />
+                                <EyeOff class="mr-2 h-4 w-4" />
                                 Unpublish
                             </Button>
                             <Button
                                 variant="destructive"
                                 size="sm"
-                                :disabled="isBulkPublishing || isBulkUnpublishing || isBulkDeleting"
+                                :disabled="
+                                    isBulkPublishing ||
+                                    isBulkUnpublishing ||
+                                    isBulkDeleting
+                                "
                                 @click="handleBulkDelete"
                             >
-                                <Trash2 class="h-4 w-4 mr-2" />
+                                <Trash2 class="mr-2 h-4 w-4" />
                                 Delete
                             </Button>
                         </div>
@@ -457,7 +514,11 @@ watch(() => props.articles?.data, () => {
                             v-for="page in getPageNumbers()"
                             :key="page"
                             size="sm"
-                            :variant="page === articles.current_page ? 'default' : 'outline'"
+                            :variant="
+                                page === articles.current_page
+                                    ? 'default'
+                                    : 'outline'
+                            "
                             :disabled="typeof page === 'string'"
                             @click="goToPageNumber(page)"
                         >
@@ -480,7 +541,11 @@ watch(() => props.articles?.data, () => {
         <DeleteConfirmDialog
             v-model:open="deleteDialogOpen"
             :title="articleToDelete ? 'Delete Article' : 'Delete Articles'"
-            :description="articleToDelete ? `Are you sure you want to delete &quot;${articleToDelete.title}&quot;? This action cannot be undone.` : bulkDeleteDescription"
+            :description="
+                articleToDelete
+                    ? `Are you sure you want to delete &quot;${articleToDelete.title}&quot;? This action cannot be undone.`
+                    : bulkDeleteDescription
+            "
             :loading="isDeleting || isBulkDeleting"
             @confirm="articleToDelete ? confirmDelete() : confirmBulkDelete()"
             @cancel="cancelDelete"

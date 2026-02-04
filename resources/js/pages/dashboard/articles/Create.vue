@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
-import type { NewsSource, Tag, BreadcrumbItem } from '@/types';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardContent } from '@/components/ui/card';
+import TagMultiSelect from '@/components/admin/TagMultiSelect.vue';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
     Select,
     SelectContent,
@@ -15,10 +12,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import TagMultiSelect from '@/components/admin/TagMultiSelect.vue';
-import { ArrowLeft } from 'lucide-vue-next';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
-import { index as articlesIndex, create as articlesCreate, store as articlesStore } from '@/routes/dashboard/articles';
+import {
+    create as articlesCreate,
+    index as articlesIndex,
+    store as articlesStore,
+} from '@/routes/dashboard/articles';
+import type { BreadcrumbItem, NewsSource, Tag } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import { ArrowLeft } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 interface Props {
     newsSources: NewsSource[];
@@ -78,7 +82,9 @@ const handleCancel = () => {
     <Head title="Create Article - Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
+        <div
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6"
+        >
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
@@ -88,11 +94,13 @@ const handleCancel = () => {
                         @click="handleCancel"
                         class="mb-2"
                     >
-                        <ArrowLeft class="h-4 w-4 mr-2" />
+                        <ArrowLeft class="mr-2 h-4 w-4" />
                         Back to Articles
                     </Button>
-                    <h1 class="text-3xl font-bold tracking-tight">Create Article</h1>
-                    <p class="text-muted-foreground mt-1">
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        Create Article
+                    </h1>
+                    <p class="mt-1 text-muted-foreground">
                         Add a new article to your collection
                     </p>
                 </div>
@@ -101,7 +109,10 @@ const handleCancel = () => {
             <!-- Form -->
             <Card>
                 <CardContent class="pt-6">
-                    <form @submit.prevent="handleSubmit(false)" class="space-y-6">
+                    <form
+                        @submit.prevent="handleSubmit(false)"
+                        class="space-y-6"
+                    >
                         <!-- Title -->
                         <div class="space-y-2">
                             <Label for="title">
@@ -115,7 +126,10 @@ const handleCancel = () => {
                                 placeholder="Enter article title"
                                 :class="{ 'border-destructive': errors.title }"
                             />
-                            <p v-if="errors.title" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.title"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.title }}
                             </p>
                         </div>
@@ -133,7 +147,10 @@ const handleCancel = () => {
                                 placeholder="https://example.com/article"
                                 :class="{ 'border-destructive': errors.url }"
                             />
-                            <p v-if="errors.url" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.url"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.url }}
                             </p>
                         </div>
@@ -146,10 +163,15 @@ const handleCancel = () => {
                                 v-model="form.excerpt"
                                 rows="3"
                                 placeholder="Short summary of the article..."
-                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                :class="{ 'border-destructive': errors.excerpt }"
+                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                :class="{
+                                    'border-destructive': errors.excerpt,
+                                }"
                             ></textarea>
-                            <p v-if="errors.excerpt" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.excerpt"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.excerpt }}
                             </p>
                         </div>
@@ -165,10 +187,15 @@ const handleCancel = () => {
                                 v-model="form.content"
                                 rows="10"
                                 placeholder="Full article content..."
-                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                :class="{ 'border-destructive': errors.content }"
+                                class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                :class="{
+                                    'border-destructive': errors.content,
+                                }"
                             ></textarea>
-                            <p v-if="errors.content" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.content"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.content }}
                             </p>
                         </div>
@@ -181,9 +208,14 @@ const handleCancel = () => {
                                 v-model="form.image_url"
                                 type="url"
                                 placeholder="https://example.com/image.jpg"
-                                :class="{ 'border-destructive': errors.image_url }"
+                                :class="{
+                                    'border-destructive': errors.image_url,
+                                }"
                             />
-                            <p v-if="errors.image_url" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.image_url"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.image_url }}
                             </p>
                         </div>
@@ -198,7 +230,10 @@ const handleCancel = () => {
                                 placeholder="Article author name"
                                 :class="{ 'border-destructive': errors.author }"
                             />
-                            <p v-if="errors.author" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.author"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.author }}
                             </p>
                         </div>
@@ -211,13 +246,20 @@ const handleCancel = () => {
                             </Label>
                             <Select
                                 v-model="form.news_source_id"
-                                :class="{ 'border-destructive': errors.news_source_id }"
+                                :class="{
+                                    'border-destructive': errors.news_source_id,
+                                }"
                             >
                                 <SelectTrigger
                                     id="news_source_id"
-                                    :class="{ 'border-destructive': errors.news_source_id }"
+                                    :class="{
+                                        'border-destructive':
+                                            errors.news_source_id,
+                                    }"
                                 >
-                                    <SelectValue placeholder="Select a news source" />
+                                    <SelectValue
+                                        placeholder="Select a news source"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem
@@ -229,7 +271,10 @@ const handleCancel = () => {
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <p v-if="errors.news_source_id" class="text-sm text-destructive">
+                            <p
+                                v-if="errors.news_source_id"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.news_source_id }}
                             </p>
                         </div>
@@ -237,11 +282,11 @@ const handleCancel = () => {
                         <!-- Tags -->
                         <div class="space-y-2">
                             <Label>Tags</Label>
-                            <TagMultiSelect
-                                v-model="form.tags"
-                                :tags="tags"
-                            />
-                            <p v-if="errors.tags" class="text-sm text-destructive">
+                            <TagMultiSelect v-model="form.tags" :tags="tags" />
+                            <p
+                                v-if="errors.tags"
+                                class="text-sm text-destructive"
+                            >
                                 {{ errors.tags }}
                             </p>
                         </div>
@@ -258,7 +303,7 @@ const handleCancel = () => {
                         </div>
 
                         <!-- Actions -->
-                        <div class="flex gap-3 pt-4 border-t">
+                        <div class="flex gap-3 border-t pt-4">
                             <Button
                                 type="button"
                                 variant="outline"

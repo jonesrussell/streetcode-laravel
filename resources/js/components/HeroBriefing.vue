@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import type { Article } from '@/types';
-import { Badge } from '@/components/ui/badge';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
+import { Badge } from '@/components/ui/badge';
+import type { Article } from '@/types';
+import { Link } from '@inertiajs/vue3';
 import { Clock } from 'lucide-vue-next';
 
 interface Props {
@@ -40,7 +40,14 @@ const formatTimeAgo = (dateString: string | null): string => {
         <div class="mb-4 flex items-center justify-between">
             <h2 class="text-xl font-bold text-white">Daily Briefing</h2>
             <span class="text-sm text-zinc-400">
-                {{ new Date().toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) }}
+                {{
+                    new Date().toLocaleDateString('en-CA', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                    })
+                }}
             </span>
         </div>
 
@@ -58,23 +65,38 @@ const formatTimeAgo = (dateString: string | null): string => {
                             :alt="heroArticle.title"
                             class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
-                        <div v-else class="flex h-full w-full items-center justify-center bg-zinc-700">
+                        <div
+                            v-else
+                            class="flex h-full w-full items-center justify-center bg-zinc-700"
+                        >
                             <span class="text-zinc-500">No image</span>
                         </div>
                     </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                    <div class="absolute bottom-0 left-0 right-0 p-6">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+                    />
+                    <div class="absolute right-0 bottom-0 left-0 p-6">
                         <div class="mb-3 flex items-center gap-3">
-                            <SourceCredibilityBadge v-if="heroArticle.news_source" :source="heroArticle.news_source" />
-                            <div class="flex items-center gap-1 text-xs text-zinc-300">
+                            <SourceCredibilityBadge
+                                v-if="heroArticle.news_source"
+                                :source="heroArticle.news_source"
+                            />
+                            <div
+                                class="flex items-center gap-1 text-xs text-zinc-300"
+                            >
                                 <Clock class="size-3" />
                                 {{ formatTimeAgo(heroArticle.published_at) }}
                             </div>
                         </div>
-                        <h3 class="mb-2 text-2xl font-bold leading-tight text-white group-hover:text-zinc-200">
+                        <h3
+                            class="mb-2 text-2xl leading-tight font-bold text-white group-hover:text-zinc-200"
+                        >
                             {{ heroArticle.title }}
                         </h3>
-                        <p v-if="heroArticle.excerpt" class="line-clamp-2 text-sm text-zinc-300">
+                        <p
+                            v-if="heroArticle.excerpt"
+                            class="line-clamp-2 text-sm text-zinc-300"
+                        >
                             {{ heroArticle.excerpt }}
                         </p>
                     </div>
@@ -89,7 +111,10 @@ const formatTimeAgo = (dateString: string | null): string => {
                     :href="`/articles/${article.id}`"
                     class="group flex gap-3 rounded-lg bg-zinc-800/50 p-3 transition-colors hover:bg-zinc-800"
                 >
-                    <div v-if="article.image_url" class="size-20 shrink-0 overflow-hidden rounded">
+                    <div
+                        v-if="article.image_url"
+                        class="size-20 shrink-0 overflow-hidden rounded"
+                    >
                         <img
                             :src="article.image_url"
                             :alt="article.title"
@@ -98,15 +123,25 @@ const formatTimeAgo = (dateString: string | null): string => {
                     </div>
                     <div class="flex min-w-0 flex-col justify-center">
                         <div class="mb-1 flex items-center gap-2">
-                            <span v-if="article.news_source" class="text-xs text-zinc-400">
+                            <span
+                                v-if="article.news_source"
+                                class="text-xs text-zinc-400"
+                            >
                                 {{ article.news_source.name }}
                             </span>
-                            <span class="text-xs text-zinc-500">{{ formatTimeAgo(article.published_at) }}</span>
+                            <span class="text-xs text-zinc-500">{{
+                                formatTimeAgo(article.published_at)
+                            }}</span>
                         </div>
-                        <h4 class="line-clamp-2 text-sm font-medium leading-snug text-white group-hover:text-zinc-200">
+                        <h4
+                            class="line-clamp-2 text-sm leading-snug font-medium text-white group-hover:text-zinc-200"
+                        >
                             {{ article.title }}
                         </h4>
-                        <div v-if="article.tags?.length" class="mt-2 flex flex-wrap gap-1">
+                        <div
+                            v-if="article.tags?.length"
+                            class="mt-2 flex flex-wrap gap-1"
+                        >
                             <Badge
                                 v-for="tag in article.tags.slice(0, 2)"
                                 :key="tag.id"

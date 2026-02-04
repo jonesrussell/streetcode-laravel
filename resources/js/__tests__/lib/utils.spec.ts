@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { cn, toUrl, urlIsActive } from '@/lib/utils';
+import { describe, expect, it } from 'vitest';
 
 describe('cn', () => {
     it('merges class names', () => {
@@ -7,7 +7,9 @@ describe('cn', () => {
     });
 
     it('handles conditional classes', () => {
-        expect(cn('base', false && 'hidden', true && 'visible')).toBe('base visible');
+        expect(cn('base', false && 'hidden', true && 'visible')).toBe(
+            'base visible',
+        );
     });
 
     it('merges tailwind classes correctly', () => {
@@ -28,7 +30,9 @@ describe('toUrl', () => {
 describe('urlIsActive', () => {
     it('returns true when url matches current', () => {
         expect(urlIsActive('/dashboard', '/dashboard')).toBe(true);
-        expect(urlIsActive({ url: '/settings', method: 'get' }, '/settings')).toBe(true);
+        expect(
+            urlIsActive({ url: '/settings', method: 'get' }, '/settings'),
+        ).toBe(true);
     });
 
     it('returns false when url does not match', () => {

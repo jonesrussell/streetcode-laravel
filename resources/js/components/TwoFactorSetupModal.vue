@@ -261,8 +261,11 @@ watch(
                                 </InputOTP>
                                 <InputError
                                     :message="
-                                        Array.isArray(errors?.confirmTwoFactorAuthentication)
-                                            ? errors.confirmTwoFactorAuthentication[0]
+                                        Array.isArray(
+                                            errors?.confirmTwoFactorAuthentication,
+                                        )
+                                            ? errors
+                                                  .confirmTwoFactorAuthentication[0]
                                             : errors?.confirmTwoFactorAuthentication
                                     "
                                 />

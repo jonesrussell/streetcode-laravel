@@ -69,7 +69,13 @@ export interface NewsSource {
     logo_url: string | null;
     description: string | null;
     credibility_score: number | null;
-    bias_rating: 'left' | 'center-left' | 'center' | 'center-right' | 'right' | null;
+    bias_rating:
+        | 'left'
+        | 'center-left'
+        | 'center'
+        | 'center-right'
+        | 'right'
+        | null;
     factual_reporting_score: number | null;
     ownership: string | null;
     bias_color?: string;

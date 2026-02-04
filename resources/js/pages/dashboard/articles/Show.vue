@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { Head, router } from '@inertiajs/vue3';
-import type { Article, BreadcrumbItem } from '@/types';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import ArticleStatusBadge from '@/components/admin/ArticleStatusBadge.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
-import { ArrowLeft, Edit, Calendar, User, ExternalLink } from 'lucide-vue-next';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
-import { index as articlesIndex, edit as articlesEdit } from '@/routes/dashboard/articles';
+import {
+    edit as articlesEdit,
+    index as articlesIndex,
+} from '@/routes/dashboard/articles';
+import type { Article, BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import { ArrowLeft, Calendar, Edit, ExternalLink, User } from 'lucide-vue-next';
 
 interface Props {
     article: Article;
@@ -54,7 +57,9 @@ const handleBack = () => {
     <Head :title="`${article.title} - Dashboard`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
+        <div
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6"
+        >
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
@@ -64,13 +69,15 @@ const handleBack = () => {
                         @click="handleBack"
                         class="mb-2"
                     >
-                        <ArrowLeft class="h-4 w-4 mr-2" />
+                        <ArrowLeft class="mr-2 h-4 w-4" />
                         Back to Articles
                     </Button>
-                    <h1 class="text-3xl font-bold tracking-tight">{{ article.title }}</h1>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        {{ article.title }}
+                    </h1>
                 </div>
                 <Button @click="handleEdit">
-                    <Edit class="h-4 w-4 mr-2" />
+                    <Edit class="mr-2 h-4 w-4" />
                     Edit Article
                 </Button>
             </div>
@@ -81,11 +88,13 @@ const handleBack = () => {
                     <CardTitle>Article Metadata</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div class="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                         <div>
                             <p class="text-muted-foreground">Status</p>
                             <div class="mt-1">
-                                <ArticleStatusBadge :published-at="article.published_at" />
+                                <ArticleStatusBadge
+                                    :published-at="article.published_at"
+                                />
                             </div>
                         </div>
                         <div>
@@ -94,15 +103,21 @@ const handleBack = () => {
                         </div>
                         <div>
                             <p class="text-muted-foreground">Views</p>
-                            <p class="font-medium">{{ article.view_count.toLocaleString() }}</p>
+                            <p class="font-medium">
+                                {{ article.view_count.toLocaleString() }}
+                            </p>
                         </div>
                         <div>
                             <p class="text-muted-foreground">Created</p>
-                            <p class="font-medium">{{ formatDateTime(article.created_at) }}</p>
+                            <p class="font-medium">
+                                {{ formatDateTime(article.created_at) }}
+                            </p>
                         </div>
                         <div>
                             <p class="text-muted-foreground">Last Updated</p>
-                            <p class="font-medium">{{ formatDateTime(article.updated_at) }}</p>
+                            <p class="font-medium">
+                                {{ formatDateTime(article.updated_at) }}
+                            </p>
                         </div>
                     </div>
                 </CardContent>
@@ -116,14 +131,24 @@ const handleBack = () => {
                 <CardContent class="space-y-4">
                     <!-- Meta Info -->
                     <div class="flex flex-wrap items-center gap-4 text-sm">
-                        <div v-if="article.news_source" class="flex items-center gap-2">
-                            <SourceCredibilityBadge :source="article.news_source" />
+                        <div
+                            v-if="article.news_source"
+                            class="flex items-center gap-2"
+                        >
+                            <SourceCredibilityBadge
+                                :source="article.news_source"
+                            />
                         </div>
-                        <div class="flex items-center gap-2 text-muted-foreground">
+                        <div
+                            class="flex items-center gap-2 text-muted-foreground"
+                        >
                             <Calendar class="h-4 w-4" />
                             {{ formattedDate }}
                         </div>
-                        <div v-if="article.author" class="flex items-center gap-2 text-muted-foreground">
+                        <div
+                            v-if="article.author"
+                            class="flex items-center gap-2 text-muted-foreground"
+                        >
                             <User class="h-4 w-4" />
                             {{ article.author }}
                         </div>
@@ -131,12 +156,16 @@ const handleBack = () => {
 
                     <!-- Tags -->
                     <div v-if="article.tags && article.tags.length > 0">
-                        <p class="text-sm text-muted-foreground mb-2">Tags</p>
+                        <p class="mb-2 text-sm text-muted-foreground">Tags</p>
                         <div class="flex flex-wrap gap-2">
                             <Badge
                                 v-for="tag in article.tags"
                                 :key="tag.id"
-                                :variant="tag.type === 'crime_category' ? 'default' : 'secondary'"
+                                :variant="
+                                    tag.type === 'crime_category'
+                                        ? 'default'
+                                        : 'secondary'
+                                "
                             >
                                 {{ tag.name }}
                             </Badge>
@@ -145,12 +174,14 @@ const handleBack = () => {
 
                     <!-- URL -->
                     <div>
-                        <p class="text-sm text-muted-foreground mb-2">Source URL</p>
+                        <p class="mb-2 text-sm text-muted-foreground">
+                            Source URL
+                        </p>
                         <a
                             :href="article.url"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 text-sm"
+                            class="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
                         >
                             {{ article.url }}
                             <ExternalLink class="h-4 w-4" />
@@ -178,10 +209,13 @@ const handleBack = () => {
                 <CardContent>
                     <div
                         v-if="article.content"
-                        class="prose prose-gray max-w-none dark:prose-invert"
+                        class="prose prose-gray dark:prose-invert max-w-none"
                         v-html="article.content"
                     />
-                    <p v-else-if="article.excerpt" class="text-muted-foreground">
+                    <p
+                        v-else-if="article.excerpt"
+                        class="text-muted-foreground"
+                    >
                         {{ article.excerpt }}
                     </p>
                     <p v-else class="text-muted-foreground italic">

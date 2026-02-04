@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import type { Article } from '@/types';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
+import type { Article } from '@/types';
+import { Link } from '@inertiajs/vue3';
 import { Clock } from 'lucide-vue-next';
 
 interface Props {
@@ -48,18 +48,26 @@ const formatTimeAgo = (dateString: string | null): string => {
                 class="group flex items-center gap-4 rounded-lg px-3 py-2 transition-colors hover:bg-zinc-800/50"
             >
                 <div class="flex min-w-0 flex-1 flex-col">
-                    <h3 class="mb-1 line-clamp-2 text-sm font-medium leading-snug text-white group-hover:text-zinc-200">
+                    <h3
+                        class="mb-1 line-clamp-2 text-sm leading-snug font-medium text-white group-hover:text-zinc-200"
+                    >
                         {{ article.title }}
                     </h3>
                     <div class="flex items-center gap-3 text-xs text-zinc-400">
-                        <SourceCredibilityBadge v-if="article.news_source" :source="article.news_source" />
+                        <SourceCredibilityBadge
+                            v-if="article.news_source"
+                            :source="article.news_source"
+                        />
                         <div class="flex items-center gap-1">
                             <Clock class="size-3" />
                             {{ formatTimeAgo(article.published_at) }}
                         </div>
                     </div>
                 </div>
-                <div v-if="article.image_url" class="size-16 shrink-0 overflow-hidden rounded">
+                <div
+                    v-if="article.image_url"
+                    class="size-16 shrink-0 overflow-hidden rounded"
+                >
                     <img
                         :src="article.image_url"
                         :alt="article.title"

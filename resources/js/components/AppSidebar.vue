@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -16,7 +15,8 @@ import { dashboard } from '@/routes';
 import { index as articlesIndex } from '@/routes/dashboard/articles';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, FileText } from 'lucide-vue-next';
+import { BookOpen, FileText, Folder, LayoutGrid } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems = computed<NavItem[]>(() => {

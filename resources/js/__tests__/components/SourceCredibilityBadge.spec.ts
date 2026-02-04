@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import { mount } from '@vue/test-utils';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import type { NewsSource } from '@/types';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
 function createSource(overrides: Partial<NewsSource> = {}): NewsSource {
     return {
@@ -27,7 +27,10 @@ describe('SourceCredibilityBadge', () => {
     });
 
     it('renders with high credibility score', () => {
-        const source = createSource({ credibility_score: 85, name: 'High Cred' });
+        const source = createSource({
+            credibility_score: 85,
+            name: 'High Cred',
+        });
         const wrapper = mount(SourceCredibilityBadge, { props: { source } });
         expect(wrapper.text()).toContain('High Cred');
     });

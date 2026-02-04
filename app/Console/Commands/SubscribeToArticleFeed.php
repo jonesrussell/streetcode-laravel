@@ -9,16 +9,18 @@ use Illuminate\Support\Facades\Redis;
 
 class SubscribeToArticleFeed extends Command
 {
-    protected $signature = 'articles:subscribe {channel=articles:crime}';
+    protected $signature = 'articles:subscribe
+                            {--channel= : Single channel (overrides crime_channels config)}
+                            {--channels= : Comma-separated channels (overrides config)}';
 
-    protected $description = 'Subscribe to external Redis pub/sub for incoming articles';
+    protected $description = 'Subscribe to external Redis pub/sub for incoming crime articles (North Cloud Layer 3 channels)';
 
     public function handle(): void
     {
-        $channel = $this->argument('channel');
+        $channels = $this->resolveChannels();
         $minQualityScore = (int) config('database.articles.min_quality_score', 0);
 
-        $this->info("Subscribing to Redis channel: {$channel}");
+        $this->info('Subscribing to Redis channels: '.implode(', ', $channels));
 
         if ($minQualityScore > 0) {
             $this->info("Filtering articles with quality_score >= {$minQualityScore}");
@@ -41,14 +43,40 @@ class SubscribeToArticleFeed extends Command
         }
 
         // Set read timeout to -1 (infinite) for pub/sub subscriptions
-        // This prevents connection timeouts during long-lived subscriptions
         $readTimeout = $redisConfig['read_timeout'] ?? -1;
         $client->setOption(\Redis::OPT_READ_TIMEOUT, (float) $readTimeout);
 
-        // Subscribe without prefix - callback receives: $redis, $channel, $message
-        $client->subscribe([$channel], function (\Redis $redis, string $channel, string $message) use ($minQualityScore) {
+        // Subscribe to all crime channels - callback receives: $redis, $channel, $message
+        $client->subscribe($channels, function (\Redis $redis, string $channel, string $message) use ($minQualityScore) {
             $this->processMessage($message, $minQualityScore);
         });
+    }
+
+    /**
+     * Resolve which Redis channels to subscribe to (crime-only by default).
+     */
+    protected function resolveChannels(): array
+    {
+        if ($single = $this->option('channel')) {
+            return [$single];
+        }
+
+        if ($list = $this->option('channels')) {
+            return array_map('trim', explode(',', $list));
+        }
+
+        return config('database.articles.crime_channels', [
+            'crime:homepage',
+            'crime:category:violent-crime',
+            'crime:category:property-crime',
+            'crime:category:drug-crime',
+            'crime:category:gang-violence',
+            'crime:category:organized-crime',
+            'crime:category:court-news',
+            'crime:category:crime',
+            'crime:courts',
+            'crime:context',
+        ]);
     }
 
     protected function processMessage(string $message, int $minQualityScore): void

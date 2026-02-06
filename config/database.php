@@ -193,7 +193,9 @@ return [
 
     'articles' => [
         'min_quality_score' => env('ARTICLES_MIN_QUALITY_SCORE', 0),
-        // Crime-only Redis channels (North Cloud Layer 3). Do not add articles:news/articles:politics.
+        // Crime-only Redis channels (North Cloud Layer 3).
+        // Only core_street_crime articles reach these channels.
+        // Peripheral crime (crime:courts, crime:context) deliberately excluded.
         'crime_channels' => [
             'crime:homepage',
             'crime:category:violent-crime',
@@ -203,8 +205,6 @@ return [
             'crime:category:organized-crime',
             'crime:category:court-news',
             'crime:category:crime',
-            'crime:courts',
-            'crime:context',
         ],
     ],
 

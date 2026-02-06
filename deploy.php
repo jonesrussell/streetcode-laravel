@@ -27,6 +27,7 @@ host('streetcode.net')
 // Hooks
 
 after('deploy:failed', 'deploy:unlock');
+before('deploy:symlink', 'artisan:migrate');
 
 task('deploy:restart_services', function (): void {
     run('cd {{release_path}} && {{bin/php}} artisan horizon:terminate', ['allow_failure' => true]);

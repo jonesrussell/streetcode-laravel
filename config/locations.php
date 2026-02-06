@@ -12,6 +12,7 @@ return [
     'country_codes' => [
         'canada' => 'ca',
         'united_states' => 'us',
+        'united_kingdom' => 'gb',
     ],
 
     /*
@@ -22,6 +23,7 @@ return [
     'countries' => [
         'ca' => 'Canada',
         'us' => 'United States',
+        'gb' => 'United Kingdom',
     ],
 
     /*
@@ -44,6 +46,12 @@ return [
             'QC' => 'Quebec',
             'SK' => 'Saskatchewan',
             'YT' => 'Yukon',
+        ],
+        'gb' => [
+            'ENG' => 'England',
+            'SCT' => 'Scotland',
+            'WLS' => 'Wales',
+            'NIR' => 'Northern Ireland',
         ],
         'us' => [
             'AL' => 'Alabama',

@@ -41,6 +41,17 @@
 
         @vite(['resources/js/app.ts'])
         @inertiaHead
+
+        @production
+        {{-- Google Analytics --}}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-PNZ5W694WT"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-PNZ5W694WT');
+        </script>
+        @endproduction
     </head>
     <body class="font-sans antialiased">
         @inertia

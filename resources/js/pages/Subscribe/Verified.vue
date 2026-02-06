@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import PublicLayout from '@/layouts/PublicLayout.vue';
 import { Button } from '@/components/ui/button';
 import { Head, Link } from '@inertiajs/vue3';
 import { CheckCircle, Mail } from 'lucide-vue-next';
+
+defineOptions({ layout: PublicLayout });
 
 defineProps<{
     alreadyVerified: boolean;
@@ -11,17 +14,17 @@ defineProps<{
 <template>
     <Head title="Subscription Verified" />
 
-    <div class="flex min-h-screen items-center justify-center bg-zinc-900 px-4">
+    <div class="flex min-h-[60vh] items-center justify-center px-4 py-16">
         <div
-            class="w-full max-w-md rounded-lg border border-zinc-700 bg-zinc-800/50 p-8 text-center"
+            class="w-full max-w-md rounded-lg border border-public-border bg-public-surface p-8 text-center"
         >
             <div
-                class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-green-500/20"
+                class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-green-500/10"
             >
-                <CheckCircle class="size-8 text-green-400" />
+                <CheckCircle class="size-8 text-green-600 dark:text-green-400" />
             </div>
 
-            <h1 class="mb-2 text-2xl font-bold text-white">
+            <h1 class="mb-2 font-heading text-2xl font-bold text-public-text">
                 {{
                     alreadyVerified
                         ? 'Already Verified'
@@ -29,7 +32,7 @@ defineProps<{
                 }}
             </h1>
 
-            <p class="mb-6 text-zinc-400">
+            <p class="mb-6 text-public-text-secondary">
                 <template v-if="alreadyVerified">
                     Your email address has already been verified. You're all set
                     to receive our Daily Digest.
@@ -41,14 +44,16 @@ defineProps<{
             </p>
 
             <div
-                class="flex items-center justify-center gap-2 rounded-lg bg-zinc-900 p-4 text-zinc-300"
+                class="flex items-center justify-center gap-2 rounded-lg bg-public-bg-subtle p-4 text-public-text-secondary"
             >
-                <Mail class="size-5 text-red-400" />
+                <Mail class="size-5 text-public-accent" />
                 <span class="text-sm">Daily Digest subscription active</span>
             </div>
 
             <Link href="/">
-                <Button class="mt-6 w-full bg-red-600 hover:bg-red-700">
+                <Button
+                    class="mt-6 w-full bg-public-accent text-white hover:bg-public-accent-hover"
+                >
                     Go to Homepage
                 </Button>
             </Link>

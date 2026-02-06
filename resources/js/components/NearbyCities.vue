@@ -12,10 +12,12 @@ defineProps<Props>();
 </script>
 
 <template>
-    <div class="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+    <div class="rounded-lg border border-public-border bg-public-surface p-4">
         <div class="mb-4 flex items-center gap-2">
-            <MapPin class="size-4 text-zinc-400" />
-            <h3 class="font-semibold text-white">Nearby Cities</h3>
+            <MapPin class="size-4 text-public-text-muted" />
+            <h3 class="font-heading font-semibold text-public-text">
+                Nearby Cities
+            </h3>
         </div>
 
         <div class="space-y-1">
@@ -23,17 +25,17 @@ defineProps<Props>();
                 v-for="city in cities"
                 :key="city.id"
                 :href="`/crime/${city.country_code}/${city.region_code.toLowerCase()}/${city.city_slug}`"
-                class="group flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors hover:bg-zinc-700/50"
+                class="group flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors hover:bg-public-bg-subtle"
                 :class="
                     city.city_slug === currentSlug
-                        ? 'bg-zinc-700/50 text-white'
-                        : 'text-zinc-300'
+                        ? 'bg-public-accent-subtle text-public-accent font-medium'
+                        : 'text-public-text-secondary'
                 "
             >
-                <span class="group-hover:text-white">
+                <span class="group-hover:text-public-accent">
                     {{ city.city_name }}
                 </span>
-                <span class="text-xs text-zinc-500">
+                <span class="text-xs text-public-text-muted">
                     {{ city.article_count }}
                 </span>
             </Link>

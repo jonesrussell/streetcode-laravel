@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import type { Tag } from '@/types';
 import { router } from '@inertiajs/vue3';
 
@@ -24,37 +23,33 @@ const selectTag = (tagSlug: string | null) => {
 
 <template>
     <div class="flex flex-wrap gap-2">
-        <Button
-            variant="outline"
-            size="sm"
+        <button
             :class="[
-                'border-zinc-700',
+                'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
                 !activeTag
-                    ? 'border-red-600 bg-red-600 text-white'
-                    : 'text-zinc-300 hover:bg-zinc-800 hover:text-white',
+                    ? 'border-public-accent bg-public-accent text-white'
+                    : 'border-public-border text-public-text-secondary hover:border-public-accent hover:text-public-accent',
             ]"
             @click="selectTag(null)"
         >
             All
-        </Button>
+        </button>
 
-        <Button
+        <button
             v-for="tag in tags"
             :key="tag.id"
-            variant="outline"
-            size="sm"
             :class="[
-                'border-zinc-700',
+                'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
                 activeTag === tag.slug
-                    ? 'border-red-600 bg-red-600 text-white'
-                    : 'text-zinc-300 hover:bg-zinc-800 hover:text-white',
+                    ? 'border-public-accent bg-public-accent text-white'
+                    : 'border-public-border text-public-text-secondary hover:border-public-accent hover:text-public-accent',
             ]"
             @click="selectTag(tag.slug)"
         >
             {{ tag.name }}
-            <span class="ml-1.5 text-xs opacity-70"
+            <span class="ml-1 text-xs opacity-70"
                 >({{ tag.article_count }})</span
             >
-        </Button>
+        </button>
     </div>
 </template>

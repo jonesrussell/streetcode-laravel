@@ -57,17 +57,19 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-    <div class="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+    <div class="rounded-lg border border-public-border bg-public-surface p-4">
         <div class="mb-3 flex items-center gap-2">
             <div
-                class="flex size-8 items-center justify-center rounded-full bg-red-500/20"
+                class="flex size-8 items-center justify-center rounded-full bg-public-accent-subtle"
             >
-                <Mail class="size-4 text-red-400" />
+                <Mail class="size-4 text-public-accent" />
             </div>
-            <h3 class="font-semibold text-white">Daily Digest</h3>
+            <h3 class="font-heading font-semibold text-public-text">
+                Daily Digest
+            </h3>
         </div>
 
-        <p class="mb-4 text-sm text-zinc-400">
+        <p class="mb-4 text-sm text-public-text-secondary">
             Get the daily StreetCode report sent to your inbox and stay up to
             date with your bias blindspot.
         </p>
@@ -78,13 +80,13 @@ const handleSubmit = async () => {
                     v-model="email"
                     type="email"
                     placeholder="Email address"
-                    class="border-zinc-600 bg-zinc-900 text-white placeholder:text-zinc-500"
+                    class="border-public-border bg-public-bg text-public-text placeholder:text-public-text-muted"
                     required
                 />
 
                 <div
                     v-if="errorMessage"
-                    class="flex items-center gap-2 rounded-lg bg-red-500/20 p-2 text-red-400"
+                    class="flex items-center gap-2 rounded-lg bg-red-500/10 p-2 text-red-600 dark:text-red-400"
                 >
                     <AlertCircle class="size-4 shrink-0" />
                     <span class="text-sm">{{ errorMessage }}</span>
@@ -92,7 +94,7 @@ const handleSubmit = async () => {
 
                 <Button
                     type="submit"
-                    class="w-full bg-red-600 hover:bg-red-700"
+                    class="w-full bg-public-accent text-white hover:bg-public-accent-hover"
                     :disabled="isLoading"
                 >
                     {{ isLoading ? 'Subscribing...' : 'Subscribe' }}
@@ -102,12 +104,12 @@ const handleSubmit = async () => {
 
         <div v-else class="space-y-2">
             <div
-                class="flex items-center gap-2 rounded-lg bg-green-500/20 p-3 text-green-400"
+                class="flex items-center gap-2 rounded-lg bg-green-500/10 p-3 text-green-600 dark:text-green-400"
             >
                 <Check class="size-5" />
                 <span class="text-sm">Check your email to verify!</span>
             </div>
-            <p class="text-xs text-zinc-500">
+            <p class="text-xs text-public-text-muted">
                 We've sent a verification link to your email address.
             </p>
         </div>

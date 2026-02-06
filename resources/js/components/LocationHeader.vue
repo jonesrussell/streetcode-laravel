@@ -78,12 +78,12 @@ const subtitle = computed(() => {
                         <BreadcrumbLink v-if="crumb.href" as-child>
                             <Link
                                 :href="crumb.href"
-                                class="text-zinc-400 hover:text-white"
+                                class="text-public-text-muted hover:text-public-accent"
                             >
                                 {{ crumb.name }}
                             </Link>
                         </BreadcrumbLink>
-                        <BreadcrumbPage v-else class="text-white">
+                        <BreadcrumbPage v-else class="text-public-text">
                             {{ crumb.name }}
                         </BreadcrumbPage>
                     </BreadcrumbItem>
@@ -95,19 +95,21 @@ const subtitle = computed(() => {
         </Breadcrumb>
 
         <div class="flex items-center gap-3">
-            <MapPin class="size-8 text-red-400" />
+            <MapPin class="size-8 text-public-accent" />
             <div>
-                <h1 class="text-3xl font-bold text-white">
+                <h1
+                    class="font-heading text-3xl font-bold text-public-text"
+                >
                     {{ displayName }}
                 </h1>
                 <div
-                    class="mt-1 flex items-center gap-2 text-sm text-zinc-400"
+                    class="mt-1 flex items-center gap-2 text-sm text-public-text-secondary"
                 >
                     <span v-if="subtitle">{{ subtitle }}</span>
                     <Badge
                         v-if="articleCount"
                         variant="secondary"
-                        class="bg-zinc-700 text-zinc-300"
+                        class="bg-public-bg-subtle text-public-text-secondary"
                     >
                         {{ articleCount.toLocaleString() }} articles
                     </Badge>

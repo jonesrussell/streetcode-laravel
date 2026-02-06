@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Article } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Calendar } from 'lucide-vue-next';
@@ -23,8 +22,8 @@ const formattedDate = props.article.published_at
 
 <template>
     <Link :href="`/articles/${article.id}`">
-        <Card
-            class="h-full border-zinc-700 bg-zinc-800/50 transition-all hover:bg-zinc-800 hover:shadow-lg"
+        <article
+            class="group h-full overflow-hidden rounded-lg border border-public-border bg-public-surface transition-all hover:shadow-md"
         >
             <img
                 v-if="article.image_url"
@@ -33,42 +32,44 @@ const formattedDate = props.article.published_at
                 class="h-48 w-full object-cover"
             />
 
-            <CardHeader>
+            <div class="p-4">
                 <div class="mb-2 flex items-center justify-between text-xs">
                     <SourceCredibilityBadge
                         v-if="article.news_source"
                         :source="article.news_source"
                     />
-                    <div class="flex items-center gap-1 text-zinc-400">
+                    <div
+                        class="flex items-center gap-1 text-public-text-muted"
+                    >
                         <Calendar class="size-3" />
                         {{ formattedDate }}
                     </div>
                 </div>
 
-                <CardTitle class="line-clamp-2 text-white">
+                <h3
+                    class="mb-2 line-clamp-2 font-heading text-lg leading-snug font-semibold text-public-text group-hover:text-public-accent"
+                >
                     {{ article.title }}
-                </CardTitle>
-            </CardHeader>
+                </h3>
 
-            <CardContent>
                 <p
                     v-if="article.excerpt"
-                    class="mb-4 line-clamp-3 text-sm text-zinc-400"
+                    class="mb-4 line-clamp-3 text-sm text-public-text-secondary"
                 >
                     {{ article.excerpt }}
                 </p>
 
-                <div v-if="article.tags?.length" class="flex flex-wrap gap-2">
+                <div v-if="article.tags?.length" class="flex flex-wrap gap-1.5">
                     <Badge
                         v-for="tag in article.tags.slice(0, 3)"
                         :key="tag.id"
                         variant="secondary"
-                        class="bg-zinc-700 text-xs text-zinc-300"
+                        class="bg-public-bg-subtle text-xs text-public-text-secondary"
                     >
                         {{ tag.name }}
                     </Badge>
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+        </article>
     </Link>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
+import { formatTimeAgo } from '@/composables/useTimeAgo';
 import type { Article } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Clock } from 'lucide-vue-next';
@@ -12,48 +13,37 @@ interface Props {
 withDefaults(defineProps<Props>(), {
     title: 'Top News Stories',
 });
-
-const formatTimeAgo = (dateString: string | null): string => {
-    if (!dateString) {
-        return '';
-    }
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffHours < 1) {
-        return 'Just now';
-    }
-    if (diffHours < 24) {
-        return `${diffHours}h ago`;
-    }
-    if (diffDays < 7) {
-        return `${diffDays}d ago`;
-    }
-    return date.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
-};
 </script>
 
 <template>
     <section class="mb-8">
-        <h2 class="mb-4 text-lg font-bold text-white">{{ title }}</h2>
+        <h2 class="mb-4 font-heading text-lg font-bold text-public-text">
+            {{ title }}
+        </h2>
 
-        <div class="space-y-2">
+        <div class="divide-y divide-public-border">
             <Link
-                v-for="article in articles"
+                v-for="(article, index) in articles"
                 :key="article.id"
                 :href="`/articles/${article.id}`"
-                class="group flex items-center gap-4 rounded-lg px-3 py-2 transition-colors hover:bg-zinc-800/50"
+                class="group flex items-center gap-4 py-3 transition-colors hover:bg-public-bg-subtle"
             >
+                <!-- Rank Number -->
+                <span
+                    class="w-6 shrink-0 text-center font-heading text-lg font-bold text-public-accent"
+                >
+                    {{ index + 1 }}
+                </span>
+
                 <div class="flex min-w-0 flex-1 flex-col">
                     <h3
-                        class="mb-1 line-clamp-2 text-sm leading-snug font-medium text-white group-hover:text-zinc-200"
+                        class="mb-1 line-clamp-2 text-sm leading-snug font-medium text-public-text group-hover:text-public-accent"
                     >
                         {{ article.title }}
                     </h3>
-                    <div class="flex items-center gap-3 text-xs text-zinc-400">
+                    <div
+                        class="flex items-center gap-3 text-xs text-public-text-muted"
+                    >
                         <SourceCredibilityBadge
                             v-if="article.news_source"
                             :source="article.news_source"

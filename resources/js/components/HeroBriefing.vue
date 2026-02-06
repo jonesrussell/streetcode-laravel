@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
+import { formatTimeAgo } from '@/composables/useTimeAgo';
 import type { Article } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Clock } from 'lucide-vue-next';
@@ -11,35 +12,15 @@ interface Props {
 }
 
 defineProps<Props>();
-
-const formatTimeAgo = (dateString: string | null): string => {
-    if (!dateString) {
-        return '';
-    }
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffHours < 1) {
-        return 'Just now';
-    }
-    if (diffHours < 24) {
-        return `${diffHours}h ago`;
-    }
-    if (diffDays < 7) {
-        return `${diffDays}d ago`;
-    }
-    return date.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
-};
 </script>
 
 <template>
     <section class="mb-8">
         <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-xl font-bold text-white">Daily Briefing</h2>
-            <span class="text-sm text-zinc-400">
+            <h2 class="font-heading text-xl font-bold text-public-text">
+                Daily Briefing
+            </h2>
+            <span class="text-sm text-public-text-muted">
                 {{
                     new Date().toLocaleDateString('en-CA', {
                         weekday: 'long',
@@ -56,7 +37,7 @@ const formatTimeAgo = (dateString: string | null): string => {
             <div v-if="heroArticle" class="lg:col-span-2">
                 <Link
                     :href="`/articles/${heroArticle.id}`"
-                    class="group relative block overflow-hidden rounded-lg bg-zinc-800"
+                    class="group relative block overflow-hidden rounded-lg bg-public-surface"
                 >
                     <div class="aspect-[16/9] w-full">
                         <img
@@ -67,9 +48,9 @@ const formatTimeAgo = (dateString: string | null): string => {
                         />
                         <div
                             v-else
-                            class="flex h-full w-full items-center justify-center bg-zinc-700"
+                            class="flex h-full w-full items-center justify-center bg-public-bg-subtle"
                         >
-                            <span class="text-zinc-500">No image</span>
+                            <span class="text-public-text-muted">No image</span>
                         </div>
                     </div>
                     <div
@@ -82,20 +63,20 @@ const formatTimeAgo = (dateString: string | null): string => {
                                 :source="heroArticle.news_source"
                             />
                             <div
-                                class="flex items-center gap-1 text-xs text-zinc-300"
+                                class="flex items-center gap-1 text-xs text-white/80"
                             >
                                 <Clock class="size-3" />
                                 {{ formatTimeAgo(heroArticle.published_at) }}
                             </div>
                         </div>
                         <h3
-                            class="mb-2 text-2xl leading-tight font-bold text-white group-hover:text-zinc-200"
+                            class="mb-2 font-heading text-2xl leading-tight font-bold text-white group-hover:text-white/90"
                         >
                             {{ heroArticle.title }}
                         </h3>
                         <p
                             v-if="heroArticle.excerpt"
-                            class="line-clamp-2 text-sm text-zinc-300"
+                            class="line-clamp-2 text-sm text-white/80"
                         >
                             {{ heroArticle.excerpt }}
                         </p>
@@ -109,7 +90,7 @@ const formatTimeAgo = (dateString: string | null): string => {
                     v-for="article in featuredArticles.slice(0, 3)"
                     :key="article.id"
                     :href="`/articles/${article.id}`"
-                    class="group flex gap-3 rounded-lg bg-zinc-800/50 p-3 transition-colors hover:bg-zinc-800"
+                    class="group flex gap-3 rounded-lg border border-public-border bg-public-surface p-3 transition-colors hover:border-public-accent/30"
                 >
                     <div
                         v-if="article.image_url"
@@ -125,16 +106,16 @@ const formatTimeAgo = (dateString: string | null): string => {
                         <div class="mb-1 flex items-center gap-2">
                             <span
                                 v-if="article.news_source"
-                                class="text-xs text-zinc-400"
+                                class="text-xs text-public-text-muted"
                             >
                                 {{ article.news_source.name }}
                             </span>
-                            <span class="text-xs text-zinc-500">{{
+                            <span class="text-xs text-public-text-muted">{{
                                 formatTimeAgo(article.published_at)
                             }}</span>
                         </div>
                         <h4
-                            class="line-clamp-2 text-sm leading-snug font-medium text-white group-hover:text-zinc-200"
+                            class="line-clamp-2 font-heading text-sm leading-snug font-medium text-public-text group-hover:text-public-accent"
                         >
                             {{ article.title }}
                         </h4>
@@ -146,7 +127,7 @@ const formatTimeAgo = (dateString: string | null): string => {
                                 v-for="tag in article.tags.slice(0, 2)"
                                 :key="tag.id"
                                 variant="secondary"
-                                class="h-5 bg-zinc-700 px-1.5 text-[10px] text-zinc-300"
+                                class="h-5 bg-public-bg-subtle px-1.5 text-[10px] text-public-text-muted"
                             >
                                 {{ tag.name }}
                             </Badge>

@@ -12,10 +12,27 @@
         Instrument Sans, ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+    --font-heading: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-body:
+        'DM Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
+
+    /* Public site semantic colors */
+    --color-public-bg: var(--public-bg);
+    --color-public-bg-subtle: var(--public-bg-subtle);
+    --color-public-surface: var(--public-surface);
+    --color-public-border: var(--public-border);
+    --color-public-text: var(--public-text);
+    --color-public-text-secondary: var(--public-text-secondary);
+    --color-public-text-muted: var(--public-text-muted);
+    --color-public-accent: var(--public-accent);
+    --color-public-accent-hover: var(--public-accent-hover);
+    --color-public-accent-subtle: var(--public-accent-subtle);
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -115,6 +132,19 @@
     --chart-4: hsl(43 74% 66%);
     --chart-5: hsl(27 87% 67%);
     --radius: 0.5rem;
+
+    /* Public site tokens – light */
+    --public-bg: hsl(210 20% 98%);
+    --public-bg-subtle: hsl(210 17% 95%);
+    --public-surface: hsl(0 0% 100%);
+    --public-border: hsl(214 14% 89%);
+    --public-text: hsl(215 25% 12%);
+    --public-text-secondary: hsl(215 14% 34%);
+    --public-text-muted: hsl(215 10% 55%);
+    --public-accent: hsl(224 76% 48%);
+    --public-accent-hover: hsl(224 76% 42%);
+    --public-accent-subtle: hsl(224 76% 95%);
+
     --sidebar-background: hsl(0 0% 98%);
     --sidebar-foreground: hsl(240 5.3% 26.1%);
     --sidebar-primary: hsl(0 0% 10%);
@@ -151,6 +181,18 @@
     --chart-3: hsl(30 80% 55%);
     --chart-4: hsl(280 65% 60%);
     --chart-5: hsl(340 75% 55%);
+    /* Public site tokens – dark */
+    --public-bg: hsl(215 20% 7%);
+    --public-bg-subtle: hsl(215 17% 11%);
+    --public-surface: hsl(215 18% 13%);
+    --public-border: hsl(215 14% 20%);
+    --public-text: hsl(210 20% 95%);
+    --public-text-secondary: hsl(210 14% 75%);
+    --public-text-muted: hsl(210 10% 55%);
+    --public-accent: hsl(224 76% 60%);
+    --public-accent-hover: hsl(224 76% 65%);
+    --public-accent-subtle: hsl(224 50% 18%);
+
     --sidebar-background: hsl(0 0% 7%);
     --sidebar-foreground: hsl(0 0% 95.9%);
     --sidebar-primary: hsl(360, 100%, 100%);

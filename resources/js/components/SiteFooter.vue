@@ -28,6 +28,14 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
             { name: 'Criminal Justice', href: '/?tag=criminal-justice' },
         ],
     },
+    locations: {
+        title: 'Countries',
+        links: [
+            { name: 'United States', href: '/crime/us' },
+            { name: 'Canada', href: '/crime/ca' },
+            { name: 'United Kingdom', href: '/crime/gb' },
+        ],
+    },
     company: {
         title: 'Company',
         links: [
@@ -37,30 +45,22 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
             { name: 'Terms of Service', href: '/terms' },
         ],
     },
-    connect: {
-        title: 'Connect',
-        links: [
-            { name: 'Twitter', href: 'https://twitter.com', external: true },
-            { name: 'Facebook', href: 'https://facebook.com', external: true },
-            { name: 'RSS Feed', href: '/feed' },
-        ],
-    },
 };
 </script>
 
 <template>
-    <footer class="border-t border-zinc-800 bg-zinc-950">
+    <footer class="border-t border-public-border bg-public-bg-subtle">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
                 <!-- Brand Column -->
                 <div class="lg:col-span-1">
                     <Link
                         href="/"
-                        class="text-lg font-bold text-white hover:text-zinc-200"
+                        class="font-heading text-lg font-bold text-public-text hover:text-public-accent"
                     >
                         StreetCode
                     </Link>
-                    <p class="mt-4 text-sm text-zinc-400">
+                    <p class="mt-4 text-sm text-public-text-secondary">
                         Crime news aggregation. Stay informed about crime
                         trends and public safety in your community.
                     </p>
@@ -73,7 +73,7 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
                     class="lg:col-span-1"
                 >
                     <h3
-                        class="mb-4 text-sm font-semibold tracking-wider text-zinc-400 uppercase"
+                        class="mb-4 text-sm font-semibold tracking-wider text-public-text-muted uppercase"
                     >
                         {{ section.title }}
                     </h3>
@@ -84,14 +84,14 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
                                 :href="link.href"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="text-sm text-zinc-500 transition-colors hover:text-white"
+                                class="text-sm text-public-text-secondary transition-colors hover:text-public-accent"
                             >
                                 {{ link.name }}
                             </a>
                             <Link
                                 v-else
                                 :href="link.href"
-                                class="text-sm text-zinc-500 transition-colors hover:text-white"
+                                class="text-sm text-public-text-secondary transition-colors hover:text-public-accent"
                             >
                                 {{ link.name }}
                             </Link>
@@ -102,14 +102,16 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
 
             <!-- Bottom Bar -->
             <div
-                class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-zinc-800 pt-8 md:flex-row"
+                class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-public-border pt-8 md:flex-row"
             >
-                <p class="text-sm text-zinc-500">
+                <p class="text-sm text-public-text-muted">
                     &copy; {{ currentYear }} StreetCode.net. All rights
                     reserved.
                 </p>
                 <div class="flex items-center gap-4">
-                    <span class="text-xs text-zinc-600">streetcode.net</span>
+                    <span class="text-xs text-public-text-muted"
+                        >streetcode.net</span
+                    >
                 </div>
             </div>
         </div>

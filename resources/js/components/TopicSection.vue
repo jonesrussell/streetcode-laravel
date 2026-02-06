@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { formatTimeAgo } from '@/composables/useTimeAgo';
+import { getTagBadgeColor } from '@/composables/useTagColors';
 import type { Article, Tag } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { ChevronRight, Clock } from 'lucide-vue-next';
@@ -12,66 +13,25 @@ interface Props {
 }
 
 defineProps<Props>();
-
-const formatTimeAgo = (dateString: string | null): string => {
-    if (!dateString) {
-        return '';
-    }
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffHours < 1) {
-        return 'Just now';
-    }
-    if (diffHours < 24) {
-        return `${diffHours}h ago`;
-    }
-    if (diffDays < 7) {
-        return `${diffDays}d ago`;
-    }
-    return date.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
-};
-
-const tagColorMap: Record<string, string> = {
-    red: 'bg-red-500/20 text-red-400 border-red-500/30',
-    orange: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-    yellow: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    green: 'bg-green-500/20 text-green-400 border-green-500/30',
-    blue: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    purple: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-};
-
-const getTagColorClass = (color: string | null): string => {
-    return (
-        tagColorMap[color || ''] ||
-        'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
-    );
-};
 </script>
 
 <template>
     <section class="mb-8">
         <div class="mb-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <h2 class="text-lg font-bold text-white">
+                <h2 class="font-heading text-lg font-bold text-public-text">
                     {{ tag.name }} News
                 </h2>
-                <Badge :class="['border', getTagColorClass(tag.color)]">
+                <Badge :class="['border', getTagBadgeColor(tag.color)]">
                     {{ tag.article_count }} articles
                 </Badge>
             </div>
-            <Link :href="`/?tag=${tag.slug}`">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    class="text-zinc-400 hover:text-white"
-                >
-                    Read More
-                    <ChevronRight class="ml-1 size-4" />
-                </Button>
+            <Link
+                :href="`/?tag=${tag.slug}`"
+                class="inline-flex items-center text-sm font-medium text-public-accent hover:text-public-accent-hover"
+            >
+                Read More
+                <ChevronRight class="ml-1 size-4" />
             </Link>
         </div>
 
@@ -80,7 +40,7 @@ const getTagColorClass = (color: string | null): string => {
                 v-for="article in articles"
                 :key="article.id"
                 :href="`/articles/${article.id}`"
-                class="group overflow-hidden rounded-lg bg-zinc-800/50 transition-colors hover:bg-zinc-800"
+                class="group overflow-hidden rounded-lg border border-public-border bg-public-surface transition-all hover:shadow-md"
             >
                 <div
                     v-if="article.image_url"
@@ -94,12 +54,12 @@ const getTagColorClass = (color: string | null): string => {
                 </div>
                 <div class="p-4">
                     <h3
-                        class="mb-2 line-clamp-2 text-sm leading-snug font-medium text-white group-hover:text-zinc-200"
+                        class="mb-2 line-clamp-2 text-sm leading-snug font-medium text-public-text group-hover:text-public-accent"
                     >
                         {{ article.title }}
                     </h3>
                     <div
-                        class="flex items-center justify-between text-xs text-zinc-400"
+                        class="flex items-center justify-between text-xs text-public-text-muted"
                     >
                         <SourceCredibilityBadge
                             v-if="article.news_source"

@@ -52,4 +52,11 @@ class ArticleFactory extends Factory
             'published_at' => fake()->dateTimeBetween('-30 days', 'now'),
         ]);
     }
+
+    public function inCity(\App\Models\City $city): static
+    {
+        return $this->state(fn () => [
+            'city_id' => $city->id,
+        ]);
+    }
 }

@@ -2,17 +2,19 @@
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import ArticleCard from '@/components/ArticleCard.vue';
 import HeroBriefing from '@/components/HeroBriefing.vue';
+import LocationHeader from '@/components/LocationHeader.vue';
+import NearbyCities from '@/components/NearbyCities.vue';
 import NewsletterSignup from '@/components/NewsletterSignup.vue';
 import SiteFooter from '@/components/SiteFooter.vue';
 import TagFilter from '@/components/TagFilter.vue';
 import TopStoriesList from '@/components/TopStoriesList.vue';
-import TopicSection from '@/components/TopicSection.vue';
 import TrendingTopics from '@/components/TrendingTopics.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type {
     Article,
-    CategoryArticles,
+    City as CityType,
+    LocationContext,
     PaginatedArticles,
     Tag,
 } from '@/types';
@@ -21,17 +23,17 @@ import { Menu, Search } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface Props {
+    location: LocationContext;
+    city: CityType;
     heroArticle: Article | null;
     featuredArticles: Article[];
     topStories: Article[];
-    articlesByCategory: CategoryArticles[];
     articles: PaginatedArticles;
     popularTags: Tag[];
-    trendingTopics: Tag[];
+    nearbyCities: CityType[];
     filters: {
         tag?: string;
         search?: string;
-        source?: number;
     };
 }
 
@@ -40,20 +42,27 @@ const props = defineProps<Props>();
 const searchQuery = ref(props.filters.search || '');
 const showMobileMenu = ref(false);
 
+const currentPath = `/crime/${props.location.country}/${props.location.region}/${props.location.city}`;
+
 const performSearch = () => {
-    router.get('/', { search: searchQuery.value }, { preserveState: true });
+    router.get(
+        currentPath,
+        { search: searchQuery.value },
+        { preserveState: true },
+    );
 };
 </script>
 
 <template>
-    <Head title="Crime News - Streetcode.net" />
+    <Head
+        :title="`${location.cityName} Crime News - ${location.regionName} | Streetcode.net`"
+    />
 
     <div class="min-h-screen bg-zinc-900">
         <!-- Header -->
         <header class="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
-                    <!-- Logo -->
                     <Link
                         href="/"
                         class="flex h-16 shrink-0 items-center p-2 hover:opacity-90"
@@ -63,7 +72,6 @@ const performSearch = () => {
                         />
                     </Link>
 
-                    <!-- Desktop Navigation -->
                     <nav class="hidden items-center gap-6 md:flex">
                         <Link
                             href="/"
@@ -71,33 +79,20 @@ const performSearch = () => {
                             >Home</Link
                         >
                         <Link
-                            href="/?tag=violent-crime"
+                            :href="`/crime/${location.country}`"
                             class="text-sm text-zinc-300 hover:text-white"
-                            >Violent Crime</Link
+                            >{{ location.countryName }}</Link
                         >
                         <Link
-                            href="/?tag=property-crime"
+                            :href="`/crime/${location.country}/${location.region}`"
                             class="text-sm text-zinc-300 hover:text-white"
-                            >Property Crime</Link
+                            >{{ location.regionName }}</Link
                         >
-                        <Link
-                            href="/?tag=drug-crime"
-                            class="text-sm text-zinc-300 hover:text-white"
-                            >Drug Crime</Link
-                        >
-                        <Link
-                            href="/?tag=organized-crime"
-                            class="text-sm text-zinc-300 hover:text-white"
-                            >Organized Crime</Link
-                        >
-                        <Link
-                            href="/?tag=criminal-justice"
-                            class="text-sm text-zinc-300 hover:text-white"
-                            >Criminal Justice</Link
-                        >
+                        <span class="text-sm font-medium text-white">{{
+                            location.cityName
+                        }}</span>
                     </nav>
 
-                    <!-- Search and Actions -->
                     <div class="flex items-center gap-4">
                         <div class="relative hidden md:block">
                             <Search
@@ -122,7 +117,6 @@ const performSearch = () => {
                     </div>
                 </div>
 
-                <!-- Mobile Menu -->
                 <div
                     v-if="showMobileMenu"
                     class="border-t border-zinc-800 py-4 md:hidden"
@@ -143,29 +137,14 @@ const performSearch = () => {
                             >Home</Link
                         >
                         <Link
-                            href="/?tag=violent-crime"
+                            :href="`/crime/${location.country}`"
                             class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >Violent Crime</Link
+                            >{{ location.countryName }}</Link
                         >
                         <Link
-                            href="/?tag=property-crime"
+                            :href="`/crime/${location.country}/${location.region}`"
                             class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >Property Crime</Link
-                        >
-                        <Link
-                            href="/?tag=drug-crime"
-                            class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >Drug Crime</Link
-                        >
-                        <Link
-                            href="/?tag=organized-crime"
-                            class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >Organized Crime</Link
-                        >
-                        <Link
-                            href="/?tag=criminal-justice"
-                            class="rounded px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >Criminal Justice</Link
+                            >{{ location.regionName }}</Link
                         >
                     </nav>
                 </div>
@@ -174,59 +153,56 @@ const performSearch = () => {
 
         <!-- Main Content -->
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <!-- Top Section: Hero + Sidebar -->
+            <LocationHeader
+                :location="location"
+                :article-count="articles?.meta?.total ?? articles.total"
+            />
+
             <div class="grid gap-8 lg:grid-cols-3">
-                <!-- Main Column -->
                 <div class="lg:col-span-2">
-                    <!-- Hero Briefing Section -->
                     <HeroBriefing
                         :hero-article="heroArticle"
                         :featured-articles="featuredArticles"
                     />
 
-                    <!-- Top Stories List -->
                     <TopStoriesList
                         v-if="topStories.length"
                         :articles="topStories"
                     />
                 </div>
 
-                <!-- Sidebar -->
                 <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
-                    <!-- Crime Categories -->
+                    <NearbyCities
+                        v-if="nearbyCities.length"
+                        :cities="nearbyCities"
+                        :current-slug="location.city"
+                    />
+
                     <TrendingTopics
                         v-if="popularTags.length"
                         :topics="popularTags"
                         title="Categories"
                     />
 
-                    <!-- Newsletter Signup -->
                     <NewsletterSignup />
                 </aside>
             </div>
 
-            <!-- Full Width Sections -->
             <div class="mt-8">
-                <!-- Topic Sections -->
-                <TopicSection
-                    v-for="category in articlesByCategory"
-                    :key="category.tag.id"
-                    :tag="category.tag"
-                    :articles="category.articles"
-                />
-
-                <!-- Tag Filters -->
                 <section v-if="popularTags.length" class="mb-8">
                     <h3 class="mb-4 text-lg font-bold text-white">
                         Browse by Category
                     </h3>
-                    <TagFilter :tags="popularTags" :active-tag="filters.tag" />
+                    <TagFilter
+                        :tags="popularTags"
+                        :active-tag="filters.tag"
+                        :route="currentPath"
+                    />
                 </section>
 
-                <!-- All Articles Grid -->
                 <section>
                     <h2 class="mb-4 text-lg font-bold text-white">
-                        Latest News Stories
+                        Latest from {{ location.cityName }}
                     </h2>
                     <div
                         v-if="articles?.data?.length"
@@ -246,7 +222,6 @@ const performSearch = () => {
                         No articles found. Try adjusting your filters.
                     </div>
 
-                    <!-- Pagination -->
                     <div
                         v-if="
                             articles?.meta?.last_page &&
@@ -267,7 +242,12 @@ const performSearch = () => {
                             "
                             size="sm"
                             class="border-zinc-700"
-                            @click="router.get('/', { ...filters, page })"
+                            @click="
+                                router.get(currentPath, {
+                                    ...filters,
+                                    page,
+                                })
+                            "
                         >
                             {{ page }}
                         </Button>
@@ -276,7 +256,6 @@ const performSearch = () => {
             </div>
         </main>
 
-        <!-- Footer -->
         <SiteFooter />
     </div>
 </template>

@@ -16,6 +16,7 @@ class Article extends Model
 
     protected $fillable = [
         'news_source_id',
+        'city_id',
         'author_id',
         'title',
         'excerpt',
@@ -44,6 +45,11 @@ class Article extends Model
     public function newsSource(): BelongsTo
     {
         return $this->belongsTo(NewsSource::class);
+    }
+
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
     }
 
     public function author(): BelongsTo
@@ -79,6 +85,21 @@ class Article extends Model
     public function scopeSearch(Builder $query, string $searchTerm): void
     {
         $query->whereFullText(['title', 'excerpt', 'content'], $searchTerm);
+    }
+
+    public function scopeInCity(Builder $query, City $city): void
+    {
+        $query->where('city_id', $city->id);
+    }
+
+    public function scopeInRegion(Builder $query, string $countryCode, string $regionCode): void
+    {
+        $query->whereHas('city', fn (Builder $q) => $q->inRegion($countryCode, $regionCode));
+    }
+
+    public function scopeInCountry(Builder $query, string $countryCode): void
+    {
+        $query->whereHas('city', fn (Builder $q) => $q->inCountry($countryCode));
     }
 
     public function incrementViewCount(): void

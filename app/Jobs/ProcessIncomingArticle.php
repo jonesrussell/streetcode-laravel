@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Article;
+use App\Models\City;
 use App\Models\NewsSource;
 use App\Models\Tag;
 use Carbon\Carbon;
@@ -68,6 +69,9 @@ class ProcessIncomingArticle implements ShouldQueue
             // Get or create news source
             $sourceId = $this->getOrCreateSource();
 
+            // Extract and process location data
+            $cityId = $this->getOrCreateCity();
+
             // Build metadata from publisher fields
             $metadata = $this->buildMetadata();
 
@@ -83,6 +87,7 @@ class ProcessIncomingArticle implements ShouldQueue
             // Map publisher fields to article fields
             $article = Article::create([
                 'news_source_id' => $sourceId,
+                'city_id' => $cityId,
                 'external_id' => $externalId,
                 'title' => $title,
                 'excerpt' => $this->articleData['intro'] ?? $this->articleData['description'] ?? $this->articleData['og_description'] ?? null,
@@ -249,6 +254,36 @@ class ProcessIncomingArticle implements ShouldQueue
     }
 
     /**
+     * Get or create City from North Cloud location data.
+     */
+    protected function getOrCreateCity(): ?int
+    {
+        $citySlug = $this->articleData['location_city'] ?? null;
+        $regionCode = $this->articleData['location_province'] ?? null;
+        $countryName = $this->articleData['location_country'] ?? null;
+
+        if (! $citySlug || ! $regionCode || ! $countryName || $countryName === 'unknown') {
+            return null;
+        }
+
+        try {
+            $city = City::findOrCreateFromLocation($citySlug, $regionCode, $countryName);
+            $city->increment('article_count');
+
+            return $city->id;
+        } catch (\Exception $e) {
+            Log::error('Failed to create city from location data', [
+                'city_slug' => $citySlug,
+                'region_code' => $regionCode,
+                'country_name' => $countryName,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
      * Get article URL from available fields.
      */
     protected function getArticleUrl(): string
@@ -378,6 +413,23 @@ class ProcessIncomingArticle implements ShouldQueue
 
         if (isset($this->articleData['og_url'])) {
             $metadata['og_url'] = $this->articleData['og_url'];
+        }
+
+        // Location metadata from North Cloud classifier
+        if (isset($this->articleData['location_city'])) {
+            $metadata['location_city'] = $this->articleData['location_city'];
+        }
+
+        if (isset($this->articleData['location_province'])) {
+            $metadata['location_province'] = $this->articleData['location_province'];
+        }
+
+        if (isset($this->articleData['location_country'])) {
+            $metadata['location_country'] = $this->articleData['location_country'];
+        }
+
+        if (isset($this->articleData['location_confidence'])) {
+            $metadata['location_confidence'] = $this->articleData['location_confidence'];
         }
 
         return $metadata;

@@ -15,7 +15,7 @@ import { dashboard } from '@/routes';
 import { index as articlesIndex, trashed as articlesTrashed } from '@/routes/dashboard/articles';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FileText, Folder, LayoutGrid, Trash2 } from 'lucide-vue-next';
+import { BookOpen, FileText, Folder, LayoutGrid } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 

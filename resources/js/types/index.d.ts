@@ -123,3 +123,25 @@ export interface CategoryArticles {
     tag: Tag;
     articles: Article[];
 }
+
+export interface City {
+    id: number;
+    city_slug: string;
+    city_name: string;
+    region_code: string;
+    region_name: string;
+    country_code: string;
+    country_name: string;
+    article_count: number;
+    url_path?: string;
+}
+
+export interface LocationContext {
+    country: string;
+    countryName: string;
+    region?: string;
+    regionName?: string;
+    city?: string;
+    cityName?: string;
+    level: 'country' | 'region' | 'city';
+}

@@ -61,8 +61,8 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
                         StreetCode
                     </Link>
                     <p class="mt-4 text-sm text-zinc-400">
-                        Canadian crime news aggregation. Stay informed about
-                        crime trends and public safety across Canada.
+                        Crime news aggregation. Stay informed about crime
+                        trends and public safety in your community.
                     </p>
                 </div>
 
@@ -109,7 +109,7 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
                     reserved.
                 </p>
                 <div class="flex items-center gap-4">
-                    <span class="text-xs text-zinc-600">Canada</span>
+                    <span class="text-xs text-zinc-600">streetcode.net</span>
                 </div>
             </div>
         </div>

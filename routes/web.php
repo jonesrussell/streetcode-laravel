@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\NewsSourceController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TagController;
@@ -24,6 +25,19 @@ Route::get('/sources/{newsSource:slug}', [NewsSourceController::class, 'show'])-
 
 // Search (uses ArticleController@index with search param)
 Route::get('/search', [ArticleController::class, 'index'])->name('search');
+
+// Location routes (hierarchical: country → region → city)
+Route::get('/crime/{country}/{region}/{city}', [LocationController::class, 'showCity'])
+    ->name('location.city')
+    ->where(['country' => '[a-z]{2}', 'region' => '[a-z]{2,3}', 'city' => '[a-z0-9\-]+']);
+
+Route::get('/crime/{country}/{region}', [LocationController::class, 'showRegion'])
+    ->name('location.region')
+    ->where(['country' => '[a-z]{2}', 'region' => '[a-z]{2,3}']);
+
+Route::get('/crime/{country}', [LocationController::class, 'showCountry'])
+    ->name('location.country')
+    ->where(['country' => '[a-z]{2}']);
 
 // Newsletter subscription routes
 Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe.store');

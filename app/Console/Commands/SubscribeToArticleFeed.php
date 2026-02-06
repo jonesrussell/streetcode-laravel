@@ -11,15 +11,18 @@ class SubscribeToArticleFeed extends Command
 {
     protected $signature = 'articles:subscribe
                             {--channel= : Single channel (overrides crime_channels config)}
-                            {--channels= : Comma-separated channels (overrides config)}';
+                            {--channels= : Comma-separated channels (overrides config)}
+                            {--connection=northcloud : Redis connection name from config/database.php}';
 
     protected $description = 'Subscribe to external Redis pub/sub for incoming crime articles (North Cloud Layer 3 channels)';
 
     public function handle(): void
     {
         $channels = $this->resolveChannels();
+        $connection = $this->option('connection');
         $minQualityScore = (int) config('database.articles.min_quality_score', 0);
 
+        $this->info("Connection: {$connection}");
         $this->info('Subscribing to Redis channels: '.implode(', ', $channels));
 
         if ($minQualityScore > 0) {
@@ -28,21 +31,27 @@ class SubscribeToArticleFeed extends Command
 
         // Use raw Redis client for pub/sub to bypass prefix
         // Pub/sub channels shouldn't use prefixes since they're shared across services
-        $redisConfig = config('database.redis.default');
+        $redisConfig = config("database.redis.{$connection}");
+
+        if (! $redisConfig) {
+            $this->error("Redis connection [{$connection}] not configured.");
+
+            return;
+        }
+
         $client = new \Redis;
 
         $host = $redisConfig['host'] ?? '127.0.0.1';
         $port = (int) ($redisConfig['port'] ?? 6379);
         $password = $redisConfig['password'] ?? null;
 
-        // Connect without prefix
         $client->connect($host, $port);
 
         if ($password) {
             $client->auth($password);
         }
 
-        // Set read timeout to -1 (infinite) for pub/sub subscriptions
+        // Set read timeout for pub/sub subscriptions (-1 = infinite)
         $readTimeout = $redisConfig['read_timeout'] ?? -1;
         $client->setOption(\Redis::OPT_READ_TIMEOUT, (float) $readTimeout);
 

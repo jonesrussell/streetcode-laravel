@@ -42,6 +42,18 @@ class ProcessIncomingArticle implements ShouldQueue
                 return;
             }
 
+            // Defense-in-depth: only accept core_street_crime articles
+            $crimeRelevance = $this->articleData['crime_relevance'] ?? '';
+            if ($crimeRelevance !== 'core_street_crime') {
+                Log::info('Skipping non-core-crime article', [
+                    'crime_relevance' => $crimeRelevance,
+                    'title' => $this->articleData['title'] ?? $this->articleData['og_title'] ?? 'unknown',
+                    'external_id' => $this->articleData['id'] ?? 'unknown',
+                ]);
+
+                return;
+            }
+
             $externalId = $this->articleData['id'];
 
             // Deduplication check
@@ -330,6 +342,10 @@ class ProcessIncomingArticle implements ShouldQueue
             $metadata['is_crime_related'] = $this->articleData['is_crime_related'];
         }
 
+        if (isset($this->articleData['crime_relevance'])) {
+            $metadata['crime_relevance'] = $this->articleData['crime_relevance'];
+        }
+
         if (isset($this->articleData['content_type'])) {
             $metadata['content_type'] = $this->articleData['content_type'];
         }
@@ -385,6 +401,17 @@ class ProcessIncomingArticle implements ShouldQueue
      */
     protected function attachTags(Article $article, array $topics): void
     {
+        $allowedCrimeTypes = [
+            'violent_crime',
+            'property_crime',
+            'drug_crime',
+            'organized_crime',
+            'criminal_justice',
+            'gang_violence',
+        ];
+
+        $topics = array_filter($topics, fn ($topic) => in_array($topic, $allowedCrimeTypes, true));
+
         $tagIds = [];
 
         foreach ($topics as $topic) {

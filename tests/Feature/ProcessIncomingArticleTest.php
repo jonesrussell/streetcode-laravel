@@ -19,6 +19,7 @@ it('processes a valid publisher message format', function () {
         'quality_score' => 85,
         'topics' => ['crime', 'local'],
         'is_crime_related' => true,
+        'crime_relevance' => 'core_street_crime',
         'source_reputation' => 78,
         'confidence' => 0.92,
         'intro' => 'Article introduction paragraph',
@@ -52,6 +53,7 @@ it('maps raw_text to content when body is not present', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -76,6 +78,7 @@ it('creates news source from URL domain', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://news.example.com/article',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -103,6 +106,7 @@ it('handles www prefix in source URL', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://www.example.com/article',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -128,6 +132,7 @@ it('creates unknown source when URL cannot be parsed', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'invalid-url',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -153,7 +158,8 @@ it('maps topics to tags', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
-        'topics' => ['crime', 'local', 'police'],
+        'crime_relevance' => 'core_street_crime',
+        'topics' => ['violent_crime', 'property_crime', 'gang_violence'],
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -162,7 +168,7 @@ it('maps topics to tags', function () {
     $article = Article::where('external_id', 'es-doc-id-topics-test')->first();
 
     expect($article->tags)->toHaveCount(3);
-    expect($article->tags->pluck('slug')->toArray())->toContain('crime', 'local', 'police');
+    expect($article->tags->pluck('slug')->toArray())->toContain('violent-crime', 'property-crime', 'gang-violence');
 });
 
 it('stores publisher metadata in article metadata field', function () {
@@ -178,6 +184,7 @@ it('stores publisher metadata in article metadata field', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
         'quality_score' => 85,
         'source_reputation' => 78,
         'confidence' => 0.92,
@@ -221,6 +228,7 @@ it('skips duplicate articles using external_id', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     // Create article first
@@ -265,6 +273,7 @@ it('uses description as excerpt when intro is not present', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
         'description' => 'Meta description of the article',
     ];
 
@@ -289,6 +298,7 @@ it('updates source credibility_score when source_reputation is provided', functi
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
         'source_reputation' => 85,
     ];
 
@@ -314,6 +324,7 @@ it('handles empty topics array', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
         'topics' => [],
     ];
 
@@ -338,6 +349,7 @@ it('sanitizes HTML content while preserving basic formatting', function () {
         'canonical_url' => 'https://example.com/test',
         'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -362,6 +374,7 @@ it('processes article with og_title instead of title', function () {
         'body' => 'Content here',
         'canonical_url' => '',
         'published_date' => '0001-01-01T00:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -385,6 +398,7 @@ it('processes article with missing source field', function () {
         'og_title' => 'Article without source',
         'body' => 'Content',
         'canonical_url' => '',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -409,6 +423,7 @@ it('uses publisher published_at when published_date is invalid', function () {
         'body' => 'Content',
         'canonical_url' => 'https://example.com/test',
         'published_date' => '0001-01-01T00:00:00Z',
+        'crime_relevance' => 'core_street_crime',
     ];
 
     $job = new ProcessIncomingArticle($articleData);
@@ -432,6 +447,7 @@ it('uses og_description as excerpt when intro and description are missing', func
         'body' => 'Content',
         'canonical_url' => 'https://example.com/test',
         'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
         'og_description' => 'Open Graph description',
     ];
 
@@ -441,4 +457,96 @@ it('uses og_description as excerpt when intro and description are missing', func
     $article = Article::where('external_id', 'es-doc-id-og-description')->first();
 
     expect($article->excerpt)->toBe('Open Graph description');
+});
+
+it('filters non-crime topics from tags', function () {
+    $articleData = [
+        'publisher' => [
+            'route_id' => 'test-route',
+            'published_at' => '2025-12-28T15:30:45Z',
+            'channel' => 'articles:crime',
+        ],
+        'id' => 'es-doc-id-filter-topics',
+        'title' => 'Test Article',
+        'body' => 'Content',
+        'canonical_url' => 'https://example.com/test',
+        'source' => 'https://example.com',
+        'published_date' => '2025-12-28T08:00:00Z',
+        'crime_relevance' => 'core_street_crime',
+        'topics' => ['violent_crime', 'local', 'police', 'drug_crime'],
+    ];
+
+    $job = new ProcessIncomingArticle($articleData);
+    $job->handle();
+
+    $article = Article::where('external_id', 'es-doc-id-filter-topics')->first();
+
+    expect($article->tags)->toHaveCount(2);
+    expect($article->tags->pluck('slug')->toArray())->toContain('violent-crime', 'drug-crime');
+    expect($article->tags->pluck('slug')->toArray())->not->toContain('local', 'police');
+});
+
+it('rejects non-core crime article', function () {
+    $data = [
+        'publisher' => [
+            'route_id' => 'route-1',
+            'published_at' => now()->toISOString(),
+            'channel' => 'crime:context',
+        ],
+        'id' => 'test-reject-peripheral',
+        'title' => 'Opinion about crime rates',
+        'canonical_url' => 'https://example.com/opinion',
+        'source' => 'https://example.com',
+        'quality_score' => 75,
+        'content_type' => 'article',
+        'crime_relevance' => 'peripheral_crime',
+    ];
+
+    $job = new ProcessIncomingArticle($data);
+    $job->handle();
+
+    expect(Article::where('external_id', 'test-reject-peripheral')->exists())->toBeFalse();
+});
+
+it('rejects article with missing crime_relevance', function () {
+    $data = [
+        'publisher' => [
+            'route_id' => 'route-1',
+            'published_at' => now()->toISOString(),
+            'channel' => 'crime:homepage',
+        ],
+        'id' => 'test-reject-no-relevance',
+        'title' => 'Article without crime relevance field',
+        'canonical_url' => 'https://example.com/article',
+        'source' => 'https://example.com',
+        'quality_score' => 75,
+    ];
+
+    $job = new ProcessIncomingArticle($data);
+    $job->handle();
+
+    expect(Article::where('external_id', 'test-reject-no-relevance')->exists())->toBeFalse();
+});
+
+it('accepts core_street_crime article', function () {
+    $data = [
+        'publisher' => [
+            'route_id' => 'route-1',
+            'published_at' => now()->toISOString(),
+            'channel' => 'crime:homepage',
+        ],
+        'id' => 'test-accept-core',
+        'title' => 'Man arrested for robbery',
+        'canonical_url' => 'https://example.com/robbery',
+        'source' => 'https://example.com',
+        'quality_score' => 75,
+        'content_type' => 'article',
+        'crime_relevance' => 'core_street_crime',
+        'topics' => ['violent_crime'],
+    ];
+
+    $job = new ProcessIncomingArticle($data);
+    $job->handle();
+
+    expect(Article::where('external_id', 'test-accept-core')->exists())->toBeTrue();
 });

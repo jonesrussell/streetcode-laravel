@@ -3,49 +3,49 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+use JonesRussell\NorthCloud\Models\Article as BaseArticle;
 
-class Article extends Model
+class Article extends BaseArticle
 {
-    /** @use HasFactory<\Database\Factories\ArticleFactory> */
-    use HasFactory, SoftDeletes;
+    protected static function booted(): void
+    {
+        static::creating(function (Article $article) {
+            if (empty($article->slug) && ! empty($article->title)) {
+                $slug = Str::slug($article->title);
+                $original = $slug;
+                $counter = 1;
+
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = "{$original}-{$counter}";
+                    $counter++;
+                }
+
+                $article->slug = $slug;
+            }
+        });
+    }
 
     protected $fillable = [
         'news_source_id',
         'city_id',
         'author_id',
         'title',
+        'slug',
         'excerpt',
         'content',
         'url',
         'external_id',
         'image_url',
         'author',
+        'status',
         'published_at',
         'crawled_at',
         'metadata',
         'view_count',
         'is_featured',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'published_at' => 'datetime',
-            'crawled_at' => 'datetime',
-            'metadata' => 'array',
-            'is_featured' => 'boolean',
-        ];
-    }
-
-    public function newsSource(): BelongsTo
-    {
-        return $this->belongsTo(NewsSource::class);
-    }
 
     public function city(): BelongsTo
     {
@@ -57,53 +57,38 @@ class Article extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
-    public function tags(): BelongsToMany
+    public function scopeSearch(Builder $query, string $searchTerm): Builder
     {
-        return $this->belongsToMany(Tag::class)
-            ->withTimestamps()
-            ->withPivot('confidence');
-    }
+        if (in_array($query->getConnection()->getDriverName(), ['mysql', 'mariadb'])) {
+            return $query->whereFullText(['title', 'excerpt', 'content'], $searchTerm);
+        }
 
-    public function scopePublished(Builder $query): void
-    {
-        $query->where('published_at', '<=', now())
-            ->orderByDesc('published_at');
-    }
+        $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $searchTerm);
 
-    public function scopeFeatured(Builder $query): void
-    {
-        $query->where('is_featured', true);
-    }
-
-    public function scopeWithTag(Builder $query, string $tagSlug): void
-    {
-        $query->whereHas('tags', function (Builder $q) use ($tagSlug) {
-            $q->where('slug', $tagSlug);
+        return $query->where(function ($q) use ($escaped) {
+            $q->where('title', 'LIKE', "%{$escaped}%")
+                ->orWhere('excerpt', 'LIKE', "%{$escaped}%")
+                ->orWhere('content', 'LIKE', "%{$escaped}%");
         });
     }
 
-    public function scopeSearch(Builder $query, string $searchTerm): void
+    public function scopeInCity(Builder $query, City $city): Builder
     {
-        $query->whereFullText(['title', 'excerpt', 'content'], $searchTerm);
+        return $query->where('city_id', $city->id);
     }
 
-    public function scopeInCity(Builder $query, City $city): void
+    public function scopeInRegion(Builder $query, string $countryCode, string $regionCode): Builder
     {
-        $query->where('city_id', $city->id);
+        return $query->whereHas('city', fn (Builder $q) => $q->inRegion($countryCode, $regionCode));
     }
 
-    public function scopeInRegion(Builder $query, string $countryCode, string $regionCode): void
+    public function scopeInCountry(Builder $query, string $countryCode): Builder
     {
-        $query->whereHas('city', fn (Builder $q) => $q->inRegion($countryCode, $regionCode));
+        return $query->whereHas('city', fn (Builder $q) => $q->inCountry($countryCode));
     }
 
-    public function scopeInCountry(Builder $query, string $countryCode): void
+    protected static function newFactory()
     {
-        $query->whereHas('city', fn (Builder $q) => $q->inCountry($countryCode));
-    }
-
-    public function incrementViewCount(): void
-    {
-        $this->increment('view_count');
+        return \Database\Factories\ArticleFactory::new();
     }
 }

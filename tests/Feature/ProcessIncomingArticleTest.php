@@ -1,7 +1,7 @@
 <?php
 
-use App\Jobs\ProcessIncomingArticle;
 use App\Models\Article;
+use JonesRussell\NorthCloud\Jobs\ProcessIncomingArticle;
 
 it('processes a valid publisher message format', function () {
     $articleData = [
@@ -17,7 +17,7 @@ it('processes a valid publisher message format', function () {
         'source' => 'https://example.com/original-article-url',
         'published_date' => '2025-12-28T08:00:00Z',
         'quality_score' => 85,
-        'topics' => ['crime', 'local'],
+        'topics' => ['violent_crime'],
         'is_crime_related' => true,
         'crime_relevance' => 'core_street_crime',
         'source_reputation' => 78,
@@ -26,13 +26,14 @@ it('processes a valid publisher message format', function () {
         'og_image' => 'https://example.com/images/article-image.jpg',
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-12345')->first();
 
     expect($article)->not->toBeNull();
     expect($article->title)->toBe('Local Police Investigate Break-In');
+    expect($article->slug)->not->toBeEmpty();
+    expect($article->status)->toBe('published');
     expect($article->url)->toBe('https://example.com/articles/police-investigate');
     expect($article->content)->toBe('Full article text content here...');
     expect($article->excerpt)->toBe('Article introduction paragraph');
@@ -40,118 +41,62 @@ it('processes a valid publisher message format', function () {
     expect($article->published_at->toIso8601String())->toBe('2025-12-28T08:00:00+00:00');
 });
 
-it('maps raw_text to content when body is not present', function () {
-    $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
-        'id' => 'es-doc-id-raw-text',
-        'title' => 'Test Article',
-        'raw_text' => 'Raw text content without body field',
-        'canonical_url' => 'https://example.com/test',
-        'source' => 'https://example.com',
-        'published_date' => '2025-12-28T08:00:00Z',
-        'crime_relevance' => 'core_street_crime',
-    ];
-
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
-
-    $article = Article::where('external_id', 'es-doc-id-raw-text')->first();
-
-    expect($article)->not->toBeNull();
-    expect($article->content)->toBe('Raw text content without body field');
-});
-
 it('creates news source from URL domain', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-source-test',
         'title' => 'Test Article',
         'body' => 'Content',
-        'canonical_url' => 'https://example.com/test',
+        'canonical_url' => 'https://news.example.com/test',
         'source' => 'https://news.example.com/article',
         'published_date' => '2025-12-28T08:00:00Z',
         'crime_relevance' => 'core_street_crime',
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-source-test')->first();
     $source = $article->newsSource;
 
     expect($source)->not->toBeNull();
-    expect($source->url)->toBe('https://news.example.com/article');
-    expect($source->name)->toBe('News');
-    expect($source->slug)->toBe('news');
+    expect($source->slug)->toBe('news-example-com');
 });
 
 it('handles www prefix in source URL', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-www-test',
         'title' => 'Test Article',
         'body' => 'Content',
-        'canonical_url' => 'https://example.com/test',
-        'source' => 'https://www.example.com/article',
+        'canonical_url' => 'https://www.example.com/test',
         'published_date' => '2025-12-28T08:00:00Z',
         'crime_relevance' => 'core_street_crime',
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-www-test')->first();
     $source = $article->newsSource;
 
-    expect($source->name)->toBe('Example');
-    expect($source->slug)->toBe('example');
+    expect($source->slug)->toBe('example-com');
 });
 
-it('creates unknown source when URL cannot be parsed', function () {
+it('creates unknown source when no URL available', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
-        'id' => 'es-doc-id-invalid-url',
+        'id' => 'es-doc-id-no-url',
         'title' => 'Test Article',
         'body' => 'Content',
-        'canonical_url' => 'https://example.com/test',
-        'source' => 'invalid-url',
-        'published_date' => '2025-12-28T08:00:00Z',
         'crime_relevance' => 'core_street_crime',
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
-    $article = Article::where('external_id', 'es-doc-id-invalid-url')->first();
-    $source = $article->newsSource;
+    $article = Article::where('external_id', 'es-doc-id-no-url')->first();
 
-    expect($source->slug)->toBe('unknown');
-    expect($source->name)->toBe('Unknown Source');
+    expect($article)->not->toBeNull();
+    expect($article->newsSource->slug)->toBe('unknown');
 });
 
 it('maps topics to tags', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-topics-test',
         'title' => 'Test Article',
         'body' => 'Content',
@@ -162,8 +107,7 @@ it('maps topics to tags', function () {
         'topics' => ['violent_crime', 'property_crime', 'gang_violence'],
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-topics-test')->first();
 
@@ -171,7 +115,7 @@ it('maps topics to tags', function () {
     expect($article->tags->pluck('slug')->toArray())->toContain('violent-crime', 'property-crime', 'gang-violence');
 });
 
-it('stores publisher metadata in article metadata field', function () {
+it('stores metadata in article metadata field', function () {
     $articleData = [
         'publisher' => [
             'route_id' => 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5g6h7',
@@ -196,8 +140,7 @@ it('stores publisher metadata in article metadata field', function () {
         'keywords' => ['police', 'investigation'],
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-metadata-test')->first();
     $metadata = $article->metadata;
@@ -205,7 +148,6 @@ it('stores publisher metadata in article metadata field', function () {
     expect($metadata['publisher']['route_id'])->toBe('a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5g6h7');
     expect($metadata['publisher']['channel'])->toBe('articles:crime');
     expect($metadata['quality_score'])->toBe(85);
-    expect($metadata['source_reputation'])->toBe(78);
     expect($metadata['confidence'])->toBe(0.92);
     expect($metadata['is_crime_related'])->toBe(true);
     expect($metadata['content_type'])->toBe('article');
@@ -216,12 +158,14 @@ it('stores publisher metadata in article metadata field', function () {
 });
 
 it('skips duplicate articles using external_id', function () {
+    Article::factory()->create([
+        'external_id' => 'es-doc-id-duplicate',
+        'title' => 'Original Article',
+    ]);
+
+    $initialCount = Article::count();
+
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-duplicate',
         'title' => 'Test Article',
         'body' => 'Content',
@@ -231,93 +175,43 @@ it('skips duplicate articles using external_id', function () {
         'crime_relevance' => 'core_street_crime',
     ];
 
-    // Create article first
-    Article::factory()->create([
-        'external_id' => 'es-doc-id-duplicate',
-        'title' => 'Original Article',
-    ]);
+    ProcessIncomingArticle::dispatchSync($articleData);
 
-    $initialCount = Article::count();
-
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
-
-    // Article count should not increase
     expect(Article::count())->toBe($initialCount);
 });
 
 it('rejects message with missing required fields', function () {
     $articleData = [
         'title' => 'Test Article',
-        // Missing: id, canonical_url, source, published_date
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('title', 'Test Article')->first();
 
     expect($article)->toBeNull();
 });
 
-it('uses description as excerpt when intro is not present', function () {
+it('uses og_description as excerpt when intro is missing', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
-        'id' => 'es-doc-id-description',
+        'id' => 'es-doc-id-og-description',
         'title' => 'Test Article',
         'body' => 'Content',
         'canonical_url' => 'https://example.com/test',
-        'source' => 'https://example.com',
         'published_date' => '2025-12-28T08:00:00Z',
         'crime_relevance' => 'core_street_crime',
-        'description' => 'Meta description of the article',
+        'og_description' => 'Open Graph description',
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
-    $article = Article::where('external_id', 'es-doc-id-description')->first();
+    $article = Article::where('external_id', 'es-doc-id-og-description')->first();
 
-    expect($article->excerpt)->toBe('Meta description of the article');
-});
-
-it('updates source credibility_score when source_reputation is provided', function () {
-    $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
-        'id' => 'es-doc-id-reputation',
-        'title' => 'Test Article',
-        'body' => 'Content',
-        'canonical_url' => 'https://example.com/test',
-        'source' => 'https://example.com',
-        'published_date' => '2025-12-28T08:00:00Z',
-        'crime_relevance' => 'core_street_crime',
-        'source_reputation' => 85,
-    ];
-
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
-
-    $article = Article::where('external_id', 'es-doc-id-reputation')->first();
-    $source = $article->newsSource;
-
-    expect($source->credibility_score)->toBe(85);
+    expect($article->excerpt)->toBe('Open Graph description');
 });
 
 it('handles empty topics array', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-no-topics',
         'title' => 'Test Article',
         'body' => 'Content',
@@ -328,8 +222,7 @@ it('handles empty topics array', function () {
         'topics' => [],
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-no-topics')->first();
 
@@ -338,11 +231,6 @@ it('handles empty topics array', function () {
 
 it('sanitizes HTML content while preserving basic formatting', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-sanitize',
         'title' => 'Test Article',
         'body' => '<p>Valid paragraph</p><script>alert("xss")</script><strong>Bold text</strong>',
@@ -352,8 +240,7 @@ it('sanitizes HTML content while preserving basic formatting', function () {
         'crime_relevance' => 'core_street_crime',
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-sanitize')->first();
 
@@ -364,108 +251,24 @@ it('sanitizes HTML content while preserving basic formatting', function () {
 
 it('processes article with og_title instead of title', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-og-title',
         'og_title' => 'Article with OG Title',
         'body' => 'Content here',
-        'canonical_url' => '',
+        'canonical_url' => 'https://example.com/og-article',
         'published_date' => '0001-01-01T00:00:00Z',
         'crime_relevance' => 'core_street_crime',
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-og-title')->first();
 
     expect($article)->not->toBeNull();
     expect($article->title)->toBe('Article with OG Title');
-    expect($article->url)->toContain('articles-crime');
-});
-
-it('processes article with missing source field', function () {
-    $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
-        'id' => 'es-doc-id-no-source',
-        'og_title' => 'Article without source',
-        'body' => 'Content',
-        'canonical_url' => '',
-        'crime_relevance' => 'core_street_crime',
-    ];
-
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
-
-    $article = Article::where('external_id', 'es-doc-id-no-source')->first();
-
-    expect($article)->not->toBeNull();
-    expect($article->newsSource)->not->toBeNull();
-    expect($article->newsSource->slug)->toBe('crime');
-});
-
-it('uses publisher published_at when published_date is invalid', function () {
-    $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
-        'id' => 'es-doc-id-invalid-date',
-        'title' => 'Test Article',
-        'body' => 'Content',
-        'canonical_url' => 'https://example.com/test',
-        'published_date' => '0001-01-01T00:00:00Z',
-        'crime_relevance' => 'core_street_crime',
-    ];
-
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
-
-    $article = Article::where('external_id', 'es-doc-id-invalid-date')->first();
-
-    expect($article)->not->toBeNull();
-    expect($article->published_at->toIso8601String())->toBe('2025-12-28T15:30:45+00:00');
-});
-
-it('uses og_description as excerpt when intro and description are missing', function () {
-    $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
-        'id' => 'es-doc-id-og-description',
-        'title' => 'Test Article',
-        'body' => 'Content',
-        'canonical_url' => 'https://example.com/test',
-        'published_date' => '2025-12-28T08:00:00Z',
-        'crime_relevance' => 'core_street_crime',
-        'og_description' => 'Open Graph description',
-    ];
-
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
-
-    $article = Article::where('external_id', 'es-doc-id-og-description')->first();
-
-    expect($article->excerpt)->toBe('Open Graph description');
 });
 
 it('filters non-crime topics from tags', function () {
     $articleData = [
-        'publisher' => [
-            'route_id' => 'test-route',
-            'published_at' => '2025-12-28T15:30:45Z',
-            'channel' => 'articles:crime',
-        ],
         'id' => 'es-doc-id-filter-topics',
         'title' => 'Test Article',
         'body' => 'Content',
@@ -476,8 +279,7 @@ it('filters non-crime topics from tags', function () {
         'topics' => ['violent_crime', 'local', 'police', 'drug_crime'],
     ];
 
-    $job = new ProcessIncomingArticle($articleData);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($articleData);
 
     $article = Article::where('external_id', 'es-doc-id-filter-topics')->first();
 
@@ -488,33 +290,21 @@ it('filters non-crime topics from tags', function () {
 
 it('rejects non-core crime article', function () {
     $data = [
-        'publisher' => [
-            'route_id' => 'route-1',
-            'published_at' => now()->toISOString(),
-            'channel' => 'crime:context',
-        ],
         'id' => 'test-reject-peripheral',
         'title' => 'Opinion about crime rates',
         'canonical_url' => 'https://example.com/opinion',
         'source' => 'https://example.com',
         'quality_score' => 75,
-        'content_type' => 'article',
         'crime_relevance' => 'peripheral_crime',
     ];
 
-    $job = new ProcessIncomingArticle($data);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($data);
 
     expect(Article::where('external_id', 'test-reject-peripheral')->exists())->toBeFalse();
 });
 
 it('rejects article with missing crime_relevance', function () {
     $data = [
-        'publisher' => [
-            'route_id' => 'route-1',
-            'published_at' => now()->toISOString(),
-            'channel' => 'crime:homepage',
-        ],
         'id' => 'test-reject-no-relevance',
         'title' => 'Article without crime relevance field',
         'canonical_url' => 'https://example.com/article',
@@ -522,31 +312,45 @@ it('rejects article with missing crime_relevance', function () {
         'quality_score' => 75,
     ];
 
-    $job = new ProcessIncomingArticle($data);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($data);
 
     expect(Article::where('external_id', 'test-reject-no-relevance')->exists())->toBeFalse();
 });
 
 it('accepts core_street_crime article', function () {
     $data = [
-        'publisher' => [
-            'route_id' => 'route-1',
-            'published_at' => now()->toISOString(),
-            'channel' => 'crime:homepage',
-        ],
         'id' => 'test-accept-core',
         'title' => 'Man arrested for robbery',
         'canonical_url' => 'https://example.com/robbery',
         'source' => 'https://example.com',
         'quality_score' => 75,
-        'content_type' => 'article',
         'crime_relevance' => 'core_street_crime',
         'topics' => ['violent_crime'],
     ];
 
-    $job = new ProcessIncomingArticle($data);
-    $job->handle();
+    ProcessIncomingArticle::dispatchSync($data);
 
     expect(Article::where('external_id', 'test-accept-core')->exists())->toBeTrue();
+});
+
+it('falls back to publisher published_at when published_date is missing', function () {
+    $articleData = [
+        'publisher' => [
+            'route_id' => 'test-route',
+            'published_at' => '2025-12-28T15:30:45Z',
+            'channel' => 'articles:crime',
+        ],
+        'id' => 'es-doc-id-fallback-date',
+        'title' => 'Test Article',
+        'body' => 'Content',
+        'canonical_url' => 'https://example.com/test',
+        'crime_relevance' => 'core_street_crime',
+    ];
+
+    ProcessIncomingArticle::dispatchSync($articleData);
+
+    $article = Article::where('external_id', 'es-doc-id-fallback-date')->first();
+
+    expect($article)->not->toBeNull();
+    expect($article->published_at->toIso8601String())->toBe('2025-12-28T15:30:45+00:00');
 });

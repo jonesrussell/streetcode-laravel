@@ -16,15 +16,19 @@ class ArticleFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->sentence();
+
         return [
             'news_source_id' => \App\Models\NewsSource::factory(),
-            'title' => fake()->sentence(),
+            'title' => $title,
+            'slug' => \Illuminate\Support\Str::slug($title).'-'.fake()->unique()->randomNumber(5),
             'excerpt' => fake()->paragraph(),
             'content' => fake()->paragraphs(5, true),
             'url' => fake()->url(),
             'external_id' => fake()->uuid(),
             'image_url' => 'https://picsum.photos/800/400?random='.fake()->numberBetween(1, 1000),
             'author' => fake()->name(),
+            'status' => 'published',
             'published_at' => fake()->dateTimeBetween('-30 days', 'now'),
             'crawled_at' => now(),
             'view_count' => fake()->numberBetween(0, 1000),
@@ -42,6 +46,7 @@ class ArticleFactory extends Factory
     public function draft(): static
     {
         return $this->state(fn (array $attributes) => [
+            'status' => 'draft',
             'published_at' => null,
         ]);
     }

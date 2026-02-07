@@ -1,9 +1,9 @@
 <?php
 
-use App\Jobs\ProcessIncomingArticle;
 use App\Models\Article;
 use App\Models\City;
 use App\Models\NewsSource;
+use JonesRussell\NorthCloud\Jobs\ProcessIncomingArticle;
 
 test('city is auto-created when article arrives with location data', function () {
     $source = NewsSource::factory()->create();

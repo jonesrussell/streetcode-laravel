@@ -34,16 +34,21 @@ npm run dev                  # development with HMR
 
 ### Article Processing Pipeline
 
-1. **Ingestion**: `php artisan articles:subscribe` subscribes to Redis channel (`articles:crime` by default)
-2. **Validation**: Messages validated against publisher format, quality score checked against `ARTICLES_MIN_QUALITY_SCORE`
-3. **Queue**: `ProcessIncomingArticle` job dispatched to Horizon
-4. **Processing**: Deduplication by `external_id`, NewsSource auto-detection from URL, tag attachment with confidence scores
+Uses `jonesrussell/northcloud-laravel` package for shared ingestion infrastructure:
+
+1. **Ingestion**: `php artisan articles:subscribe` (package command) subscribes to Redis crime channels configured in `config/northcloud.php`
+2. **Validation**: Messages validated by package, quality score checked if enabled
+3. **Pipeline**: `ProcessIncomingArticle` job dispatches to `ProcessorPipeline`
+4. **Processing**: `CrimeArticleProcessor` gates on `crime_relevance === 'core_street_crime'`, delegates to `ArticleIngestionService` for dedup/source/tags, then adds city linking, extended metadata, and crime tag filtering
 
 ### Key Model Relationships
 
-- `Article` → belongsTo `NewsSource`, belongsTo `User` (author), belongsToMany `Tag` (with confidence pivot)
+- `Article` → belongsTo `NewsSource`, belongsTo `City`, belongsTo `User` (author), belongsToMany `Tag` (with confidence pivot)
 - `Tag` → belongsToMany `Article`
 - `NewsSource` → hasMany `Article`
+- `City` → hasMany `Article`
+
+Models extend package base classes (`JonesRussell\NorthCloud\Models\*`) and add streetcode-specific features.
 
 ### Frontend Architecture
 
@@ -57,7 +62,8 @@ npm run dev                  # development with HMR
 
 - Full-text search indexes on articles (title, excerpt, content) - MySQL only
 - Soft deletes on articles
-- JSON metadata column for publisher data, quality scores
+- JSON metadata column for publisher data, quality scores, crime classification
+- `slug` and `status` columns on articles (auto-generated slug on create)
 
 ## Key Files
 
@@ -66,8 +72,9 @@ npm run dev                  # development with HMR
 | `bootstrap/app.php` | Middleware, exceptions, routing config |
 | `routes/web.php` | Public and dashboard routes |
 | `routes/admin.php` | Admin-protected routes |
-| `app/Jobs/ProcessIncomingArticle.php` | Article processing logic |
-| `app/Console/Commands/SubscribeToArticleFeed.php` | Redis subscriber |
+| `config/northcloud.php` | Package config: channels, models, processors |
+| `app/Processing/CrimeArticleProcessor.php` | Crime filtering, city linking, metadata |
+| `app/Models/Article.php` | Extends package Article with city/search/slug |
 | `app/Http/Middleware/HandleInertiaRequests.php` | Shared props for all pages |
 
 ## Article Message Format
@@ -89,7 +96,8 @@ Articles received via Redis must follow this structure:
   "intro": "Article excerpt",
   "body": "Article content",
   "topics": ["crime", "theft"],
-  "quality_score": 85
+  "quality_score": 85,
+  "crime_relevance": "core_street_crime"
 }
 ```
 

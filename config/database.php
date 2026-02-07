@@ -200,46 +200,4 @@ return [
 
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Articles Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configuration for incoming article processing from external sources.
-    |
-    */
-
-    'articles' => [
-        'min_quality_score' => env('ARTICLES_MIN_QUALITY_SCORE', 0),
-        // Crime-only Redis channels (North Cloud Layer 3 + Layer 4).
-        // Only core_street_crime articles reach these channels.
-        // Peripheral crime (crime:courts, crime:context) deliberately excluded.
-        'crime_channels' => [
-            // Layer 3: Crime classification channels
-            'crime:homepage',
-            'crime:category:violent-crime',
-            'crime:category:property-crime',
-            'crime:category:drug-crime',
-            'crime:category:gang-violence',
-            'crime:category:organized-crime',
-            'crime:category:court-news',
-            'crime:category:crime',
-            // Layer 4: Location channels (Canadian provinces)
-            'crime:canada',
-            'crime:province:on',
-            'crime:province:bc',
-            'crime:province:ab',
-            'crime:province:qc',
-            'crime:province:mb',
-            'crime:province:sk',
-            'crime:province:ns',
-            'crime:province:nb',
-            'crime:province:nl',
-            'crime:province:pe',
-            'crime:province:nt',
-            'crime:province:nu',
-            'crime:province:yt',
-        ],
-    ],
-
 ];

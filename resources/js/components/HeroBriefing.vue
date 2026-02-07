@@ -40,7 +40,7 @@ defineProps<Props>();
                     :href="`/articles/${heroArticle.id}`"
                     class="group relative block overflow-hidden rounded-lg bg-public-surface"
                 >
-                    <div class="aspect-[16/9] w-full">
+                    <div class="aspect-video w-full">
                         <ArticleImage
                             :src="heroArticle.image_url"
                             :alt="heroArticle.title"
@@ -50,7 +50,7 @@ defineProps<Props>();
                         />
                     </div>
                     <div
-                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+                        class="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent"
                     />
                     <div class="absolute right-0 bottom-0 left-0 p-6">
                         <div class="mb-3 flex items-center gap-3">

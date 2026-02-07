@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ArticleCard from '@/components/ArticleCard.vue';
+import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import PublicLayout from '@/layouts/PublicLayout.vue';
@@ -92,11 +93,12 @@ const description =
             </header>
 
             <!-- Featured Image -->
-            <img
+            <ArticleImage
                 v-if="article.image_url"
                 :src="article.image_url"
                 :alt="article.title"
-                class="mb-8 w-full rounded-lg object-cover"
+                container-class="mb-8 w-full rounded-lg"
+                img-class="w-full rounded-lg"
             />
 
             <!-- Description -->

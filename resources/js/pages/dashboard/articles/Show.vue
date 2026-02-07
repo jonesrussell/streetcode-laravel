@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ArticleImage from '@/components/ArticleImage.vue';
 import ArticleStatusBadge from '@/components/admin/ArticleStatusBadge.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
@@ -193,10 +194,11 @@ const handleBack = () => {
             <!-- Featured Image -->
             <Card v-if="article.image_url">
                 <CardContent class="pt-6">
-                    <img
+                    <ArticleImage
                         :src="article.image_url"
                         :alt="article.title"
-                        class="w-full rounded-lg object-cover"
+                        container-class="w-full rounded-lg"
+                        img-class="w-full rounded-lg"
                     />
                 </CardContent>
             </Card>

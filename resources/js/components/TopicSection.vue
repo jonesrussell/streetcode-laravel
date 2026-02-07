@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import { formatTimeAgo } from '@/composables/useTimeAgo';
@@ -46,10 +47,11 @@ defineProps<Props>();
                     v-if="article.image_url"
                     class="aspect-video w-full overflow-hidden"
                 >
-                    <img
+                    <ArticleImage
                         :src="article.image_url"
                         :alt="article.title"
-                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        container-class="h-full w-full"
+                        img-class="transition-transform duration-300 group-hover:scale-105"
                     />
                 </div>
                 <div class="p-4">

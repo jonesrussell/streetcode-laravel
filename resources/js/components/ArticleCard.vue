@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import type { Article } from '@/types';
@@ -25,11 +26,12 @@ const formattedDate = props.article.published_at
         <article
             class="group h-full overflow-hidden rounded-lg border border-public-border bg-public-surface transition-all hover:shadow-md"
         >
-            <img
+            <ArticleImage
                 v-if="article.image_url"
                 :src="article.image_url"
                 :alt="article.title"
-                class="h-48 w-full object-cover"
+                container-class="h-48 w-full"
+                img-class="h-full w-full"
             />
 
             <div class="p-4">

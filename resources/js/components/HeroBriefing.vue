@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import { formatTimeAgo } from '@/composables/useTimeAgo';
@@ -40,18 +41,13 @@ defineProps<Props>();
                     class="group relative block overflow-hidden rounded-lg bg-public-surface"
                 >
                     <div class="aspect-[16/9] w-full">
-                        <img
-                            v-if="heroArticle.image_url"
+                        <ArticleImage
                             :src="heroArticle.image_url"
                             :alt="heroArticle.title"
-                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            container-class="h-full w-full"
+                            img-class="transition-transform duration-300 group-hover:scale-105"
+                            show-placeholder-when-empty
                         />
-                        <div
-                            v-else
-                            class="flex h-full w-full items-center justify-center bg-public-bg-subtle"
-                        >
-                            <span class="text-public-text-muted">No image</span>
-                        </div>
                     </div>
                     <div
                         class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
@@ -96,10 +92,11 @@ defineProps<Props>();
                         v-if="article.image_url"
                         class="size-20 shrink-0 overflow-hidden rounded"
                     >
-                        <img
+                        <ArticleImage
                             :src="article.image_url"
                             :alt="article.title"
-                            class="h-full w-full object-cover"
+                            container-class="size-full"
+                            img-class="size-full"
                         />
                     </div>
                     <div class="flex min-w-0 flex-col justify-center">

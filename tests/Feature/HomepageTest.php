@@ -28,6 +28,20 @@ test('homepage includes hero article when featured articles exist', function () 
     );
 });
 
+test('homepage renders when no hero article is available', function () {
+    Article::factory()->published()->featured()->create([
+        'image_url' => null,
+    ]);
+
+    $response = $this->get('/');
+
+    $response->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->has('heroArticle')
+            ->where('heroArticle', null)
+        );
+});
+
 test('homepage includes featured articles', function () {
     Article::factory()->count(3)->published()->featured()->create();
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { formatTimeAgo } from '@/composables/useTimeAgo';
 import type { Article } from '@/types';
@@ -58,10 +59,11 @@ withDefaults(defineProps<Props>(), {
                     v-if="article.image_url"
                     class="size-16 shrink-0 overflow-hidden rounded"
                 >
-                    <img
+                    <ArticleImage
                         :src="article.image_url"
                         :alt="article.title"
-                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        container-class="size-full"
+                        img-class="transition-transform duration-300 group-hover:scale-110"
                     />
                 </div>
             </Link>

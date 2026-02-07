@@ -36,3 +36,18 @@ test('article show page increments view count', function () {
 
     expect($article->fresh()->view_count)->toBe(6);
 });
+
+test('article show page renders when article has image url that may fail to load', function () {
+    $article = Article::factory()->published()->create([
+        'image_url' => 'https://example.com/may-404.jpg',
+    ]);
+
+    $response = $this->get(route('articles.show', $article));
+
+    $response->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('Articles/Show')
+            ->has('article')
+            ->where('article.image_url', 'https://example.com/may-404.jpg')
+        );
+});

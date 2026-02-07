@@ -109,7 +109,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@github.com:jonesrussell/northcloud-laravel.git"
+            "url": "git@github-northcloud:jonesrussell/northcloud-laravel.git"
         }
     ]
 }

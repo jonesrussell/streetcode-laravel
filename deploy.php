@@ -8,8 +8,6 @@ require 'recipe/laravel.php';
 
 set('repository', 'git@github.com:jonesrussell/streetcode-laravel.git');
 set('keep_releases', 5);
-set('ssh_multiplexing', true);
-set('forward_agent', true);
 
 add('shared_files', []);
 add('shared_dirs', []);

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "90734395974fef36f5311b199480ad23",
+    "content-hash": "98349efb1ae352c041aed853bd3e271c",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1232,7 +1232,7 @@
             "version": "v0.1.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:jonesrussell/northcloud-laravel.git",
+                "url": "git@github-northcloud:jonesrussell/northcloud-laravel.git",
                 "reference": "30173360e725cddcb402039c19f180f6ab89ac49"
             },
             "dist": {

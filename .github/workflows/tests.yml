@@ -32,6 +32,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.NORTHCLOUD_DEPLOY_KEY }}
 
+      - name: Configure SSH host alias
+        run: |
+          cat >> ~/.ssh/config << EOF
+          Host github-northcloud
+            HostName github.com
+            User git
+          EOF
+
       - name: Install Dependencies
         run: |
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
@@ -70,6 +78,14 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.NORTHCLOUD_DEPLOY_KEY }}
+
+      - name: Configure SSH host alias
+        run: |
+          cat >> ~/.ssh/config << EOF
+          Host github-northcloud
+            HostName github.com
+            User git
+          EOF
 
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader

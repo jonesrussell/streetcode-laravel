@@ -34,3 +34,7 @@ task('deploy:restart_services', function (): void {
     run('cd {{release_path}} && {{bin/php}} artisan inertia:stop-ssr', ['allow_failure' => true]);
 });
 after('deploy:symlink', 'deploy:restart_services');
+task('deploy:reload_php_fpm', function (): void {
+    run('sudo systemctl restart php8.4-fpm', ['allow_failure' => true]);
+});
+after('deploy:restart_services', 'deploy:reload_php_fpm');

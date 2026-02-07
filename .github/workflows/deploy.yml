@@ -60,6 +60,7 @@ jobs:
           Host streetcode.net
             User deployer
             StrictHostKeyChecking no
+            ForwardAgent yes
           EOF
           chmod 600 ~/.ssh/config
 

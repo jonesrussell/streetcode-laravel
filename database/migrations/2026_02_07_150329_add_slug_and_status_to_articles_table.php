@@ -10,10 +10,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->string('slug')->nullable()->unique()->after('title');
-            $table->string('status')->default('published')->index()->after('author');
-        });
+        if (! Schema::hasColumn('articles', 'slug')) {
+            Schema::table('articles', function (Blueprint $table) {
+                $table->string('slug')->nullable()->unique()->after('title');
+            });
+        }
+
+        if (! Schema::hasColumn('articles', 'status')) {
+            Schema::table('articles', function (Blueprint $table) {
+                $table->string('status')->default('published')->index()->after('author');
+            });
+        }
 
         // Backfill slugs from titles
         DB::table('articles')->whereNull('slug')->orderBy('id')->each(function ($article) {

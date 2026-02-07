@@ -17,12 +17,13 @@ return new class extends Migration
 
         // Backfill slugs from titles
         DB::table('articles')->whereNull('slug')->orderBy('id')->each(function ($article) {
-            $slug = Str::slug($article->title);
+            $slug = Str::limit(Str::slug($article->title), 255, '');
             $original = $slug;
             $counter = 1;
 
             while (DB::table('articles')->where('slug', $slug)->where('id', '!=', $article->id)->exists()) {
-                $slug = "{$original}-{$counter}";
+                $suffix = "-{$counter}";
+                $slug = Str::limit($original, 255 - strlen($suffix), '').$suffix;
                 $counter++;
             }
 

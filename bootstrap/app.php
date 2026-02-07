@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -34,9 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        $middleware->alias([
-            'admin' => EnsureUserIsAdmin::class,
-        ]);
+        // Admin middleware is now registered by northcloud-laravel package as 'northcloud-admin'
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

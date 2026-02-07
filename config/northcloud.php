@@ -66,4 +66,9 @@ return [
         'auto_create' => true,
         'allowed' => [],
     ],
+
+    'admin' => [
+        'resource' => \App\Admin\ArticleResource::class,
+        'controller' => \App\Http\Controllers\Admin\ArticleController::class,
+    ],
 ];

@@ -183,8 +183,8 @@ it('displays create form with news sources and tags', function () {
     $response->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('dashboard/articles/Create')
-            ->has('newsSources', 3)
-            ->has('tags', 5)
+            ->has('relationOptions.news_sources', 3)
+            ->has('relationOptions.tags', 5)
         );
 });
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d1a584eef4076201c9fee9415d4bec4",
+    "content-hash": "00e4b648c5112823f068086e1e470463",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1232,8 +1232,14 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github-northcloud:jonesrussell/northcloud-laravel.git",
-                "reference": "16cd6b791f5c99c5b7d8eb6f39eeb3de6e63b5c4"
+                "url": "git@github.com:jonesrussell/northcloud-laravel.git",
+                "reference": "0d0fed46f4a7c7c9992cbba6fe6a0bd2abc9fc7c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jonesrussell/northcloud-laravel/zipball/0d0fed46f4a7c7c9992cbba6fe6a0bd2abc9fc7c",
+                "reference": "0d0fed46f4a7c7c9992cbba6fe6a0bd2abc9fc7c",
+                "shasum": ""
             },
             "require": {
                 "ext-json": "*",
@@ -1275,7 +1281,11 @@
                 "MIT"
             ],
             "description": "Shared article ingestion pipeline for North Cloud-connected Laravel sites",
-            "time": "2026-02-07T21:07:01+00:00"
+            "support": {
+                "source": "https://github.com/jonesrussell/northcloud-laravel/tree/main",
+                "issues": "https://github.com/jonesrussell/northcloud-laravel/issues"
+            },
+            "time": "2026-02-08T02:35:46+00:00"
         },
         {
             "name": "laravel/fortify",
@@ -10161,5 +10171,5 @@
         "php": "^8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

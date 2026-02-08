@@ -32,6 +32,7 @@ before('deploy:symlink', 'artisan:migrate');
 task('deploy:restart_services', function (): void {
     run('cd {{release_path}} && {{bin/php}} artisan horizon:terminate', ['allow_failure' => true]);
     run('cd {{release_path}} && {{bin/php}} artisan inertia:stop-ssr', ['allow_failure' => true]);
+    run('systemctl --user restart streetcode-articles-subscribe.service', ['allow_failure' => true]);
 });
 after('deploy:symlink', 'deploy:restart_services');
 task('deploy:reload_php_fpm', function (): void {

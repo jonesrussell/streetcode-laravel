@@ -1232,14 +1232,8 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:jonesrussell/northcloud-laravel.git",
+                "url": "git@github-northcloud:jonesrussell/northcloud-laravel.git",
                 "reference": "0d0fed46f4a7c7c9992cbba6fe6a0bd2abc9fc7c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jonesrussell/northcloud-laravel/zipball/0d0fed46f4a7c7c9992cbba6fe6a0bd2abc9fc7c",
-                "reference": "0d0fed46f4a7c7c9992cbba6fe6a0bd2abc9fc7c",
-                "shasum": ""
             },
             "require": {
                 "ext-json": "*",

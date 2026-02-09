@@ -11,45 +11,29 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useNorthcloudNavigation } from '@/composables/useNorthcloudNavigation';
 import { dashboard } from '@/routes';
-import { index as articlesIndex, trashed as articlesTrashed } from '@/routes/dashboard/articles';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FileText, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems = computed<NavItem[]>(() => {
-    const items: NavItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
-        },
-        {
-            title: 'Articles',
-            href: articlesIndex(),
-            icon: FileText,
-            children: [
-                {
-                    title: 'All Articles',
-                    href: articlesIndex(),
-                },
-                {
-                    title: 'Trashed',
-                    href: articlesTrashed(),
-                },
-            ],
-        },
-    ];
+const { items: northcloudItems } = useNorthcloudNavigation();
 
-    return items;
-});
+const mainNavItems = computed<NavItem[]>(() => [
+    {
+        title: 'Dashboard',
+        href: dashboard(),
+        icon: LayoutGrid,
+    },
+    ...northcloudItems.value,
+]);
 
 const footerNavItems: NavItem[] = [
     {
         title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        href: 'https://github.com/jonesrussell/streetcode',
         icon: Folder,
     },
     {

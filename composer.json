@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
-        "jonesrussell/northcloud-laravel": "dev-main",
+        "jonesrussell/northcloud-laravel": "^0.1",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.41",
@@ -105,11 +105,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github-northcloud:jonesrussell/northcloud-laravel.git"
-        }
-    ]
+    "prefer-stable": true
 }

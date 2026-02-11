@@ -10,6 +10,13 @@ return [
         'channels' => array_filter(array_map(
             'trim',
             explode(',', env('NORTHCLOUD_CHANNELS', implode(',', [
+                // Layer 1: Crime topic channels (bulk of crime content)
+                'articles:crime',
+                'articles:violent_crime',
+                'articles:criminal_justice',
+                'articles:drug_crime',
+                'articles:property_crime',
+                'articles:organized_crime',
                 // Layer 3: Crime classification channels
                 'crime:homepage',
                 'crime:category:violent-crime',

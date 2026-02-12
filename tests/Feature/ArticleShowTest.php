@@ -51,3 +51,45 @@ test('article show page renders when article has image url that may fail to load
             ->where('article.image_url', 'https://example.com/may-404.jpg')
         );
 });
+
+test('article show page includes SEO meta and canonical URL in props for crawlers and sharing', function () {
+    $article = Article::factory()->published()->create([
+        'title' => 'SEO Test Article',
+        'excerpt' => 'Short excerpt for meta description.',
+        'image_url' => 'https://example.com/og-image.jpg',
+    ]);
+
+    $response = $this->get(route('articles.show', $article));
+
+    $response->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('Articles/Show')
+            ->has('article')
+            ->has('canonicalUrl')
+            ->has('ogImage')
+            ->where('article.title', 'SEO Test Article')
+            ->where('ogImage', 'https://example.com/og-image.jpg')
+        );
+
+    $props = $response->original->getData()['page']['props'];
+    expect($props['canonicalUrl'])->toContain('/articles/');
+    expect($props['canonicalUrl'])->not->toEndWith('/');
+});
+
+test('article show page uses default og image when article has no image', function () {
+    $article = Article::factory()->published()->create([
+        'title' => 'No Image Article',
+        'image_url' => null,
+    ]);
+
+    $response = $this->get(route('articles.show', $article));
+
+    $response->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('Articles/Show')
+            ->has('ogImage')
+        );
+
+    $props = $response->original->getData()['page']['props'];
+    expect($props['ogImage'])->toContain('logo.png');
+});

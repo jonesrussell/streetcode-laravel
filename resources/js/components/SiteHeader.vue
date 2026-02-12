@@ -32,13 +32,17 @@ const navLinks = [
                 <!-- Logo -->
                 <Link
                     href="/"
+                    aria-label="StreetCode home"
                     class="flex h-14 shrink-0 items-center p-2 hover:opacity-90"
                 >
                     <AppLogoIcon class="max-h-full w-auto object-contain" />
                 </Link>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden items-center gap-1 md:flex">
+                <nav
+                    class="hidden items-center gap-1 md:flex"
+                    aria-label="Main navigation"
+                >
                     <Link
                         v-for="link in navLinks"
                         :key="link.href"
@@ -52,60 +56,94 @@ const navLinks = [
                 <!-- Search + Mobile Toggle -->
                 <div class="flex items-center gap-2">
                     <!-- Desktop search -->
-                    <div class="relative hidden md:block">
+                    <form
+                        role="search"
+                        aria-label="Search articles"
+                        class="relative hidden md:block"
+                        @submit.prevent="performSearch"
+                    >
                         <Search
                             class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-public-text-muted"
+                            aria-hidden="true"
                         />
                         <Input
                             v-model="searchQuery"
                             type="search"
                             placeholder="Search articles..."
                             class="w-56 border-public-border bg-public-bg pl-10 text-public-text placeholder:text-public-text-muted"
+                            aria-label="Search articles"
                             @keyup.enter="performSearch"
                         />
-                    </div>
+                    </form>
 
                     <!-- Mobile search toggle -->
                     <button
+                        type="button"
                         class="rounded-md p-2 text-public-text-secondary hover:bg-public-bg-subtle md:hidden"
+                        :aria-label="showSearch ? 'Close search' : 'Open search'"
+                        :aria-expanded="showSearch"
+                        aria-controls="mobile-search"
                         @click="showSearch = !showSearch"
                     >
-                        <Search class="size-5" />
+                        <Search class="size-5" aria-hidden="true" />
                     </button>
 
                     <!-- Mobile menu toggle -->
                     <button
+                        type="button"
                         class="rounded-md p-2 text-public-text-secondary hover:bg-public-bg-subtle md:hidden"
+                        :aria-label="showMobileMenu ? 'Close menu' : 'Open menu'"
+                        :aria-expanded="showMobileMenu"
+                        aria-controls="mobile-menu"
                         @click="showMobileMenu = !showMobileMenu"
                     >
-                        <X v-if="showMobileMenu" class="size-5" />
-                        <Menu v-else class="size-5" />
+                        <X
+                            v-if="showMobileMenu"
+                            class="size-5"
+                            aria-hidden="true"
+                        />
+                        <Menu v-else class="size-5" aria-hidden="true" />
                     </button>
                 </div>
             </div>
 
             <!-- Mobile Search -->
-            <div v-if="showSearch" class="border-t border-public-border py-3 md:hidden">
-                <div class="relative">
+            <div
+                v-if="showSearch"
+                id="mobile-search"
+                class="border-t border-public-border py-3 md:hidden"
+            >
+                <form
+                    role="search"
+                    aria-label="Search articles"
+                    class="relative"
+                    @submit.prevent="performSearch"
+                >
                     <Search
                         class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-public-text-muted"
+                        aria-hidden="true"
                     />
                     <Input
                         v-model="searchQuery"
                         type="search"
                         placeholder="Search articles..."
                         class="w-full border-public-border bg-public-bg pl-10 text-public-text placeholder:text-public-text-muted"
+                        aria-label="Search articles"
                         @keyup.enter="performSearch"
                     />
-                </div>
+                </form>
             </div>
 
             <!-- Mobile Menu -->
             <div
                 v-if="showMobileMenu"
+                id="mobile-menu"
                 class="border-t border-public-border py-3 md:hidden"
             >
-                <nav class="flex flex-col gap-1">
+                <nav
+                    class="flex flex-col gap-1"
+                    aria-label="Main navigation"
+                >
                     <Link
                         v-for="link in navLinks"
                         :key="link.href"

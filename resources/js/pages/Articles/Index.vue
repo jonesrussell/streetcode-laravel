@@ -37,7 +37,13 @@ defineProps<Props>();
 </script>
 
 <template>
-    <Head title="Crime News - Streetcode.net" />
+    <Head title="Crime News - Streetcode.net">
+        <meta
+            name="description"
+            head-key="description"
+            content="Latest crime news and stories. Browse by category and location."
+        />
+    </Head>
 
     <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <!-- Top Section: Hero + Sidebar -->

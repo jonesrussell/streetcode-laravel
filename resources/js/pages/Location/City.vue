@@ -43,7 +43,13 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}/$
 <template>
     <Head
         :title="`${location.cityName} Crime News - ${location.regionName} | Streetcode.net`"
-    />
+    >
+        <meta
+            name="description"
+            head-key="description"
+            :content="`Crime news in ${location.cityName}, ${location.regionName}. Latest stories and public safety updates.`"
+        />
+    </Head>
 
     <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <LocationHeader

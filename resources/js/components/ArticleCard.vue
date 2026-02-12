@@ -43,7 +43,10 @@ const formattedDate = props.article.published_at
                     <div
                         class="flex items-center gap-1 text-public-text-muted"
                     >
-                        <Calendar class="size-3" />
+                        <Calendar
+                            class="size-3"
+                            aria-hidden="true"
+                        />
                         {{ formattedDate }}
                     </div>
                 </div>

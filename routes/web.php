@@ -3,12 +3,23 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\NewsSourceController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TagController;
 use App\Models\Article;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// Sitemap and robots (public, cacheable)
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/robots.txt', function () {
+    $sitemapUrl = rtrim(config('app.url'), '/').'/sitemap.xml';
+
+    return response("User-agent: *\nDisallow:\n\nSitemap: {$sitemapUrl}\n", 200, [
+        'Content-Type' => 'text/plain',
+    ]);
+});
 
 // Public article routes - no authentication required
 Route::get('/', [ArticleController::class, 'index'])->name('home');

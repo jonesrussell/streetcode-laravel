@@ -13,6 +13,8 @@ defineOptions({ layout: PublicLayout });
 interface Props {
     article: Article;
     relatedArticles: Article[];
+    canonicalUrl: string;
+    ogImage: string;
 }
 
 const props = defineProps<Props>();
@@ -30,7 +32,22 @@ const description =
 </script>
 
 <template>
-    <Head :title="article.title" />
+    <Head :title="article.title">
+        <meta
+            name="description"
+            head-key="description"
+            :content="description"
+        />
+        <link rel="canonical" :href="canonicalUrl" />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" :content="article.title" />
+        <meta property="og:description" :content="description" />
+        <meta property="og:image" :content="ogImage" />
+        <meta property="og:url" :content="canonicalUrl" />
+        <meta name="twitter:title" :content="article.title" />
+        <meta name="twitter:description" :content="description" />
+        <meta name="twitter:image" :content="ogImage" />
+    </Head>
 
     <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <!-- Breadcrumb -->
@@ -39,7 +56,10 @@ const description =
                 href="/"
                 class="inline-flex items-center gap-1 text-sm text-public-text-muted hover:text-public-accent"
             >
-                <ChevronLeft class="size-4" />
+                <ChevronLeft
+                    class="size-4"
+                    aria-hidden="true"
+                />
                 Back to Home
             </Link>
         </div>
@@ -58,7 +78,10 @@ const description =
                     class="flex flex-wrap items-center gap-4 text-sm text-public-text-secondary"
                 >
                     <div class="flex items-center gap-2">
-                        <Calendar class="size-4" />
+                        <Calendar
+                            class="size-4"
+                            aria-hidden="true"
+                        />
                         {{ formattedDate }}
                     </div>
 
@@ -66,7 +89,10 @@ const description =
                         v-if="article.author"
                         class="flex items-center gap-2"
                     >
-                        <User class="size-4" />
+                        <User
+                            class="size-4"
+                            aria-hidden="true"
+                        />
                         {{ article.author }}
                     </div>
 
@@ -118,7 +144,10 @@ const description =
             >
                 Read full article at
                 {{ article.news_source?.name ?? 'source' }}
-                <ExternalLink class="size-4" />
+                <ExternalLink
+                    class="size-4"
+                    aria-hidden="true"
+                />
             </a>
         </article>
 

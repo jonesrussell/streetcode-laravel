@@ -134,9 +134,16 @@ class ArticleController extends Controller
             ->limit(6)
             ->get();
 
+        $canonicalUrl = rtrim(route('articles.show', $article), '/');
+        $ogImage = $article->image_url
+            ? $article->image_url
+            : asset('logo.png');
+
         return Inertia::render('Articles/Show', [
             'article' => $article,
             'relatedArticles' => $relatedArticles,
+            'canonicalUrl' => $canonicalUrl,
+            'ogImage' => $ogImage,
         ]);
     }
 }

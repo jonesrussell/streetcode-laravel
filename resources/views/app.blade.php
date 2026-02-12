@@ -32,6 +32,12 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        {{-- Default Open Graph and Twitter (pages can override via Inertia Head) --}}
+        <meta property="og:site_name" content="{{ config('app.name') }}">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="{{ asset('logo.png') }}">
+        <meta name="twitter:card" content="summary_large_image">
+
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -54,6 +60,7 @@
         @endproduction
     </head>
     <body class="font-sans antialiased">
+        <a href="#main-content" class="skip-link">Skip to main content</a>
         @inertia
     </body>
 </html>

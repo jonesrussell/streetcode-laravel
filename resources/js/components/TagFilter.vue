@@ -27,7 +27,7 @@ const selectTag = (tagSlug: string | null) => {
             :class="[
                 'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
                 !activeTag
-                    ? 'border-public-accent bg-public-accent text-white'
+                    ? 'border-public-accent-button bg-public-accent-button text-white'
                     : 'border-public-border text-public-text-secondary hover:border-public-accent hover:text-public-accent',
             ]"
             @click="selectTag(null)"
@@ -41,7 +41,7 @@ const selectTag = (tagSlug: string | null) => {
             :class="[
                 'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
                 activeTag === tag.slug
-                    ? 'border-public-accent bg-public-accent text-white'
+                    ? 'border-public-accent-button bg-public-accent-button text-white'
                     : 'border-public-border text-public-text-secondary hover:border-public-accent hover:text-public-accent',
             ]"
             @click="selectTag(tag.slug)"

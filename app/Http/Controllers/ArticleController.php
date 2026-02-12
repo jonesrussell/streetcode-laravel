@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -100,6 +101,8 @@ class ArticleController extends Controller
         $trendingTopics = Tag::query()
             ->popular(15)
             ->get();
+
+        View::share('lcp_image_url', $heroArticle?->image_url);
 
         return Inertia::render('Articles/Index', [
             'heroArticle' => $heroArticle,

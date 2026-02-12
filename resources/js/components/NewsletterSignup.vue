@@ -94,7 +94,7 @@ const handleSubmit = async () => {
 
                 <Button
                     type="submit"
-                    class="w-full bg-public-accent text-white hover:bg-public-accent-hover"
+                    class="w-full bg-public-accent-button text-white hover:bg-public-accent"
                     :disabled="isLoading"
                 >
                     {{ isLoading ? 'Subscribing...' : 'Subscribe' }}

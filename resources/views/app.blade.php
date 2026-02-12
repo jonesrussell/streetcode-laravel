@@ -43,7 +43,12 @@
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|newsreader:400,500,600,700|dm-sans:400,500,600,700" rel="stylesheet" />
+        <link rel="preload" href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|newsreader:400,500,600,700|dm-sans:400,500,600,700" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|newsreader:400,500,600,700|dm-sans:400,500,600,700"></noscript>
+
+        @if(!empty($lcp_image_url))
+        <link rel="preload" as="image" href="{{ $lcp_image_url }}">
+        @endif
 
         @vite(['resources/js/app.ts'])
         @inertiaHead

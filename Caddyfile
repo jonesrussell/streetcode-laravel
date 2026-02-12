@@ -5,4 +5,11 @@ streetcode.net {
     encode gzip
     file_server
     php_fastcgi unix//run/php/php8.4-fpm.sock
+
+    # Cache static assets (Lighthouse: efficient cache lifetimes)
+    header /build/* Cache-Control "public, max-age=31536000, immutable"
+    header /logo.png Cache-Control "public, max-age=86400"
+    header /favicon.ico Cache-Control "public, max-age=86400"
+    header /favicon.svg Cache-Control "public, max-age=86400"
+    header /apple-touch-icon.png Cache-Control "public, max-age=86400"
 }

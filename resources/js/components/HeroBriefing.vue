@@ -44,6 +44,7 @@ defineProps<Props>();
                         <ArticleImage
                             :src="heroArticle.image_url"
                             :alt="heroArticle.title"
+                            loading="eager"
                             container-class="h-full w-full"
                             img-class="transition-transform duration-300 group-hover:scale-105"
                             show-placeholder-when-empty
@@ -83,7 +84,7 @@ defineProps<Props>();
             <!-- Featured Articles (Smaller) -->
             <div class="flex flex-col gap-4">
                 <Link
-                    v-for="article in featuredArticles.slice(0, 3)"
+                    v-for="(article, index) in featuredArticles.slice(0, 3)"
                     :key="article.id"
                     :href="`/articles/${article.id}`"
                     class="group flex gap-3 rounded-lg border border-public-border bg-public-surface p-3 transition-colors hover:border-public-accent/30"
@@ -95,6 +96,7 @@ defineProps<Props>();
                         <ArticleImage
                             :src="article.image_url"
                             :alt="article.title"
+                            :loading="index < 2 ? 'eager' : 'lazy'"
                             container-class="size-full"
                             img-class="size-full"
                         />

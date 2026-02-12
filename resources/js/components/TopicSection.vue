@@ -31,14 +31,14 @@ defineProps<Props>();
                 :href="`/?tag=${tag.slug}`"
                 class="inline-flex items-center text-sm font-medium text-public-accent hover:text-public-accent-hover"
             >
-                Read More
+                Read more {{ tag.name }} news
                 <ChevronRight class="ml-1 size-4" />
             </Link>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Link
-                v-for="article in articles"
+                v-for="(article, index) in articles"
                 :key="article.id"
                 :href="`/articles/${article.id}`"
                 class="group overflow-hidden rounded-lg border border-public-border bg-public-surface transition-all hover:shadow-md"
@@ -50,6 +50,7 @@ defineProps<Props>();
                     <ArticleImage
                         :src="article.image_url"
                         :alt="article.title"
+                        :loading="index === 0 ? 'eager' : 'lazy'"
                         container-class="h-full w-full"
                         img-class="transition-transform duration-300 group-hover:scale-105"
                     />

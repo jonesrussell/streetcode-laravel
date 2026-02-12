@@ -9,6 +9,7 @@ interface Props {
     showPlaceholderWhenEmpty?: boolean;
     loading?: 'lazy' | 'eager';
     fit?: 'cover' | 'contain';
+    fetchpriority?: 'high' | 'low' | 'auto';
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
     showPlaceholderWhenEmpty: false,
     loading: 'lazy',
     fit: 'cover',
+    fetchpriority: 'auto',
 });
 
 const loadFailed = ref(false);
@@ -47,6 +49,7 @@ function onError(): void {
             :src="src"
             :alt="alt"
             :loading="loading"
+            :fetchpriority="fetchpriority"
             :class="[imgClass, objectFitClass]"
             class="size-full"
             @error="onError"

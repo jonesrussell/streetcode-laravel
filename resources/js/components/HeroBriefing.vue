@@ -45,6 +45,7 @@ defineProps<Props>();
                             :src="heroArticle.image_url"
                             :alt="heroArticle.title"
                             loading="eager"
+                            fetchpriority="high"
                             container-class="h-full w-full"
                             img-class="transition-transform duration-300 group-hover:scale-105"
                             show-placeholder-when-empty

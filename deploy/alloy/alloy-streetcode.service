@@ -1,0 +1,14 @@
+[Unit]
+Description=Alloy: ship StreetCode Laravel logs to North Cloud Loki
+After=network.target
+ConditionPathExists=/home/deployer/streetcode-laravel/current/storage/logs
+
+[Service]
+Type=simple
+WorkingDirectory=/home/deployer/streetcode-laravel
+ExecStart=/usr/bin/alloy run --storage.path=/home/deployer/.alloy-streetcode /home/deployer/streetcode-laravel/current/deploy/alloy/config.alloy
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

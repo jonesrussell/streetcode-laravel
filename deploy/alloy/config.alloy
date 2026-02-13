@@ -1,0 +1,43 @@
+// Alloy config for the StreetCode host (deployer@streetcode.net).
+// Tails Laravel log files and pushes to North Cloud Loki so the pipeline
+// dashboard panels (StreetCode Ingestion) show data.
+//
+// Required: Loki push URL reachable from this host (default http://127.0.0.1:3100
+// when North Cloud runs on the same server). Log path: current/storage/logs.
+//
+// Run: alloy run --storage.path=/home/deployer/.alloy-streetcode config.alloy
+// Or use the systemd user unit in deploy/alloy/ (see README there).
+
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+// Tail Laravel log files. Deploy uses no shared_dirs, so logs are in
+// current/storage/logs. If you use shared storage, change to shared/storage/logs/*.log.
+loki.source.file "streetcode" {
+  targets = [
+    {
+      __path__ = "/home/deployer/streetcode-laravel/current/storage/logs/*.log",
+      project  = "north-cloud",
+      service  = "streetcode",
+    },
+  ]
+  forward_to    = [loki.write.streetcode.receiver]
+  tail_from_end = true
+
+  file_match {
+    enabled    = true
+    sync_period = "10s"
+  }
+}
+
+loki.write "streetcode" {
+  endpoint {
+    // Same host: 127.0.0.1. If Loki is elsewhere, set that URL.
+    url             = "http://127.0.0.1:3100/loki/api/v1/push"
+    remote_timeout  = "10s"
+    batch_wait      = "1s"
+    batch_size      = "100KiB"
+  }
+}

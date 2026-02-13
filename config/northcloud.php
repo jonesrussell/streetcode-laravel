@@ -57,7 +57,7 @@ return [
     ],
 
     'processors' => [
-        \App\Processing\CrimeArticleProcessor::class,
+        \App\Processing\InstrumentedCrimeArticleProcessor::class,
     ],
 
     'processing' => [

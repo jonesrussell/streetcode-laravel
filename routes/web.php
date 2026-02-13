@@ -99,6 +99,13 @@ Route::get('dashboard', function (\Illuminate\Http\Request $request) {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Ingestion metrics (North Cloud pipeline: received / skipped / ingested)
+Route::get('dashboard/ingestion-metrics', function () {
+    $metrics = app(\App\Services\IngestionMetricsService::class);
+
+    return response()->json($metrics->getStats());
+})->middleware(['auth', 'verified'])->name('dashboard.ingestion-metrics');
+
 // Admin article routes are now loaded from northcloud-laravel package
 // Configured via config/northcloud.php 'admin' section
 

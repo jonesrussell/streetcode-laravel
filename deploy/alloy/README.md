@@ -19,29 +19,23 @@ unzip -o /tmp/alloy.zip -d /tmp && mv /tmp/alloy-linux-amd64 ~/bin/alloy && chmo
 
 Ensure `alloy` is on your PATH (e.g. add `~/bin` to PATH in `~/.bashrc`).
 
-## 2. Deploy config and systemd unit
+## 2. Deploy
 
-The deploy already copies `deploy/alloy/` to the server. After deploy, as **deployer** on streetcode.net:
+The deploy copies `deploy/systemd-user/*.service` (including **streetcode-alloy-loki.service**) to `~/.config/systemd/user/` and enables/restarts it with the other StreetCode services. So a normal deploy will install the unit and start it.
+
+**Before the first deploy that includes this:** install the Alloy binary on the server (step 1). If Alloy is in `~/bin/alloy`, edit the unit after deploy once:
 
 ```bash
-# Copy systemd user unit (uses current release path)
-mkdir -p ~/.config/systemd/user
-cp ~/streetcode-laravel/current/deploy/alloy/alloy-streetcode.service ~/.config/systemd/user/
-
-# If Alloy is in ~/bin:
-sed -i 's|/usr/bin/alloy|/home/deployer/bin/alloy|' ~/.config/systemd/user/alloy-streetcode.service
-
+sed -i 's|/usr/bin/alloy|/home/deployer/bin/alloy|' ~/.config/systemd/user/streetcode-alloy-loki.service
 systemctl --user daemon-reload
-systemctl --user enable alloy-streetcode.service
-systemctl --user start alloy-streetcode.service
-systemctl --user status alloy-streetcode.service
+systemctl --user restart streetcode-alloy-loki.service
 ```
 
-The unit points at `current/deploy/alloy/config.alloy`, so each deploy updates the config; restart the service after deploy if you change the Alloy config.
+If you do not want to ship logs to Loki, disable the unit: `systemctl --user disable --now streetcode-alloy-loki.service`.
 
 ## 3. Verify
 
-- Alloy logs: `journalctl --user -u alloy-streetcode.service -f`
+- Alloy logs: `journalctl --user -u streetcode-alloy-loki.service -f`
 - In Grafana (North Cloud): Explore → Loki, query `{project="north-cloud", service="streetcode"}`.
 
 ## Loki on another host

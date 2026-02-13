@@ -6,7 +6,7 @@
 // when North Cloud runs on the same server). Log path: current/storage/logs.
 //
 // Run: alloy run --storage.path=/home/deployer/.alloy-streetcode config.alloy
-// Or use the systemd user unit in deploy/alloy/ (see README there).
+// Or use the systemd user unit deploy/systemd-user/streetcode-alloy-loki.service (installed by deploy).
 
 logging {
   level  = "info"

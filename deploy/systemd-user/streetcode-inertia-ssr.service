@@ -6,6 +6,7 @@ ConditionPathExists=/home/deployer/streetcode-laravel/current
 [Service]
 Type=simple
 WorkingDirectory=/home/deployer/streetcode-laravel/current
+Environment=INERTIA_SSR_PORT=13714
 ExecStart=/bin/bash -lc 'source ~/.nvm/nvm.sh 2>/dev/null; exec /usr/bin/php artisan inertia:start-ssr'
 Restart=always
 RestartSec=3

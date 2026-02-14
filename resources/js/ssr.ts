@@ -20,5 +20,5 @@ createServer(
             setup: ({ App, props, plugin }) =>
                 createSSRApp({ render: () => h(App, props) }).use(plugin),
         }),
-    { cluster: true },
+    { cluster: true, port: Number(process.env.INERTIA_SSR_PORT || 13714) },
 );

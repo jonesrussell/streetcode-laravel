@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6dd72ee4f0f6d58c990cb1c1e90d51e2",
+    "content-hash": "3b375c1f79e9df6e4f4dc5682f630d03",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1229,17 +1229,11 @@
         },
         {
             "name": "jonesrussell/northcloud-laravel",
-            "version": "v0.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jonesrussell/northcloud-laravel.git",
-                "reference": "05a795797a87e55653d9ac06839841183b4a7285"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jonesrussell/northcloud-laravel/zipball/05a795797a87e55653d9ac06839841183b4a7285",
-                "reference": "05a795797a87e55653d9ac06839841183b4a7285",
-                "shasum": ""
+                "type": "path",
+                "url": "../northcloud-laravel",
+                "reference": "fb7d6c29eb4214211c55fd0f1da981baf0ee1ada"
             },
             "require": {
                 "ext-json": "*",
@@ -1270,16 +1264,19 @@
                     "JonesRussell\\NorthCloud\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "JonesRussell\\NorthCloud\\Database\\Factories\\": "database/factories/",
+                    "JonesRussell\\NorthCloud\\Tests\\": "tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
             "description": "Shared article ingestion pipeline for North Cloud-connected Laravel sites",
-            "support": {
-                "issues": "https://github.com/jonesrussell/northcloud-laravel/issues",
-                "source": "https://github.com/jonesrussell/northcloud-laravel/tree/v0.1.2"
-            },
-            "time": "2026-02-08T18:42:05+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "laravel/fortify",
@@ -10157,12 +10154,14 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "jonesrussell/northcloud-laravel": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

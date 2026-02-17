@@ -8,10 +8,16 @@
         "framework"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../northcloud-laravel"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
-        "jonesrussell/northcloud-laravel": "^0.1",
+        "jonesrussell/northcloud-laravel": "^0.2",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.41",

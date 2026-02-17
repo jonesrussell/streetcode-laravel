@@ -42,6 +42,16 @@ task('deploy:install_services', function (): void {
 });
 before('deploy:symlink', 'deploy:install_services');
 
+task('deploy:copy_caddyfile', function (): void {
+    run('cp {{release_path}}/Caddyfile {{deploy_path}}/Caddyfile');
+});
+after('deploy:symlink', 'deploy:copy_caddyfile');
+
+task('deploy:reload_caddy', function (): void {
+    run('sudo systemctl reload caddy || true');
+});
+after('deploy:copy_caddyfile', 'deploy:reload_caddy');
+
 task('deploy:restart_services', function (): void {
     run('cd {{release_path}} && {{bin/php}} artisan horizon:terminate || true');
     run('cd {{release_path}} && {{bin/php}} artisan inertia:stop-ssr || true');

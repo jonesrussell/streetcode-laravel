@@ -1,8 +1,0 @@
-services:
-  web:
-    networks:
-      - north-cloud_north-cloud-network
-
-networks:
-  north-cloud_north-cloud-network:
-    external: true

@@ -2,16 +2,27 @@
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import type { Tag } from '@/types';
 import { X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-interface Props {
-    tags: Tag[];
-    modelValue: number[];
+interface Option {
+    id: number;
+    name: string;
+    [key: string]: unknown;
 }
 
-const props = defineProps<Props>();
+interface Props {
+    options: Option[];
+    modelValue: number[];
+    displayField?: string;
+    placeholder?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    displayField: 'name',
+    placeholder: 'Search...',
+});
+
 const emit = defineEmits<{
     'update:modelValue': [value: number[]];
 }>();
@@ -19,28 +30,32 @@ const emit = defineEmits<{
 const searchQuery = ref('');
 const isOpen = ref(false);
 
-const selectedTags = computed(() =>
-    props.tags.filter((tag) => props.modelValue.includes(tag.id)),
+const getLabel = (option: Option): string => {
+    return String(option[props.displayField] ?? option.name);
+};
+
+const selectedOptions = computed(() =>
+    props.options.filter((opt) => props.modelValue.includes(opt.id)),
 );
 
-const filteredTags = computed(() =>
-    props.tags.filter((tag) =>
-        tag.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+const filteredOptions = computed(() =>
+    props.options.filter((opt) =>
+        getLabel(opt).toLowerCase().includes(searchQuery.value.toLowerCase()),
     ),
 );
 
-const toggleTag = (tagId: number) => {
-    const newValue = props.modelValue.includes(tagId)
-        ? props.modelValue.filter((id) => id !== tagId)
-        : [...props.modelValue, tagId];
+const toggleOption = (id: number) => {
+    const newValue = props.modelValue.includes(id)
+        ? props.modelValue.filter((v) => v !== id)
+        : [...props.modelValue, id];
 
     emit('update:modelValue', newValue);
 };
 
-const removeTag = (tagId: number) => {
+const removeOption = (id: number) => {
     emit(
         'update:modelValue',
-        props.modelValue.filter((id) => id !== tagId),
+        props.modelValue.filter((v) => v !== id),
     );
 };
 
@@ -53,17 +68,17 @@ const handleInputBlur = () => {
 
 <template>
     <div class="space-y-2">
-        <div class="mb-2 flex flex-wrap gap-2" v-if="selectedTags.length > 0">
+        <div class="mb-2 flex flex-wrap gap-2" v-if="selectedOptions.length > 0">
             <Badge
-                v-for="tag in selectedTags"
-                :key="tag.id"
+                v-for="opt in selectedOptions"
+                :key="opt.id"
                 variant="secondary"
                 class="flex items-center gap-1"
             >
-                {{ tag.name }}
+                {{ getLabel(opt) }}
                 <button
                     type="button"
-                    @click="removeTag(tag.id)"
+                    @click="removeOption(opt.id)"
                     class="rounded-full p-0.5 hover:bg-muted"
                 >
                     <X class="h-3 w-3" />
@@ -75,26 +90,26 @@ const handleInputBlur = () => {
             <Input
                 v-model="searchQuery"
                 type="text"
-                placeholder="Search tags..."
+                :placeholder="placeholder"
                 @focus="isOpen = true"
                 @blur="handleInputBlur"
             />
 
             <div
-                v-if="isOpen && filteredTags.length > 0"
+                v-if="isOpen && filteredOptions.length > 0"
                 class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-background shadow-lg"
             >
                 <div
-                    v-for="tag in filteredTags"
-                    :key="tag.id"
+                    v-for="opt in filteredOptions"
+                    :key="opt.id"
                     class="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-muted"
-                    @mousedown.prevent="toggleTag(tag.id)"
+                    @mousedown.prevent="toggleOption(opt.id)"
                 >
                     <Checkbox
-                        :checked="modelValue.includes(tag.id)"
-                        @click.stop="toggleTag(tag.id)"
+                        :checked="modelValue.includes(opt.id)"
+                        @click.stop="toggleOption(opt.id)"
                     />
-                    <span class="text-sm">{{ tag.name }}</span>
+                    <span class="text-sm">{{ getLabel(opt) }}</span>
                 </div>
             </div>
         </div>

@@ -3,6 +3,35 @@
 use App\Models\Article;
 use App\Models\Tag;
 
+test('no code renders legacy Home/Index Inertia page (home uses Articles/Index)', function () {
+    $base = base_path();
+    $dirs = ['app', 'routes', 'config', 'bootstrap'];
+    $offenders = [];
+
+    foreach ($dirs as $dir) {
+        $path = $base.DIRECTORY_SEPARATOR.$dir;
+        if (! is_dir($path)) {
+            continue;
+        }
+        $it = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+        foreach ($it as $file) {
+            if (! $file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
+            $content = file_get_contents($file->getPathname());
+            if (preg_match('/Inertia::render\s*\(\s*[\'"](Home\/Index|Home)[\'"]/', $content)) {
+                $offenders[] = str_replace($base.DIRECTORY_SEPARATOR, '', $file->getPathname());
+            }
+        }
+    }
+
+    expect($offenders)->toBeEmpty(
+        'Inertia page must be Articles/Index for the home route, not Home/Index. Found in: '.implode(', ', $offenders)
+    );
+});
+
 test('homepage returns successful response', function () {
     $response = $this->get('/');
 

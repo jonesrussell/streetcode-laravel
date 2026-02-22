@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15881a99cdb32df0efe431549082cd91",
+    "content-hash": "990cf01d710aa460db80487d45c39ba2",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1229,16 +1229,16 @@
         },
         {
             "name": "jonesrussell/northcloud-laravel",
-            "version": "0.2.0",
+            "version": "0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jonesrussell/northcloud-laravel.git",
-                "reference": "989ca74abac2fe8d5fb3f4c0b3d11a4dc9bd98c1"
+                "reference": "81552dbd94de7275989e867a8a07bf7deeedf4cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jonesrussell/northcloud-laravel/zipball/989ca74abac2fe8d5fb3f4c0b3d11a4dc9bd98c1",
-                "reference": "989ca74abac2fe8d5fb3f4c0b3d11a4dc9bd98c1",
+                "url": "https://api.github.com/repos/jonesrussell/northcloud-laravel/zipball/81552dbd94de7275989e867a8a07bf7deeedf4cd",
+                "reference": "81552dbd94de7275989e867a8a07bf7deeedf4cd",
                 "shasum": ""
             },
             "require": {
@@ -1252,6 +1252,7 @@
                 "php": "^8.4"
             },
             "require-dev": {
+                "inertiajs/inertia-laravel": "^2.0",
                 "laravel/pint": "^1.24",
                 "orchestra/testbench": "^10.0",
                 "pestphp/pest": "^4.0",
@@ -1277,9 +1278,9 @@
             "description": "Shared article ingestion pipeline for North Cloud-connected Laravel sites",
             "support": {
                 "issues": "https://github.com/jonesrussell/northcloud-laravel/issues",
-                "source": "https://github.com/jonesrussell/northcloud-laravel/tree/v0.2.0"
+                "source": "https://github.com/jonesrussell/northcloud-laravel/tree/v0.3.1"
             },
-            "time": "2026-02-17T04:45:41+00:00"
+            "time": "2026-02-18T01:07:07+00:00"
         },
         {
             "name": "laravel/fortify",

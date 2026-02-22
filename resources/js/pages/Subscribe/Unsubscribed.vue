@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PublicLayout from '@/layouts/PublicLayout.vue';
 import { Button } from '@/components/ui/button';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { MailX } from 'lucide-vue-next';
 

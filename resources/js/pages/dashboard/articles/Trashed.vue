@@ -17,11 +17,11 @@ import { index as articlesIndex } from '@/routes/dashboard/articles';
 import type { Article, BreadcrumbItem, PaginatedArticles } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import {
+    Archive,
     ArrowUpDown,
     FileText,
     RotateCcw,
     Trash2,
-    Archive,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
@@ -71,8 +71,10 @@ const applyFilters = () => {
         {
             ...props.filters,
             search: searchQuery.value || undefined,
-            source: sourceFilter.value !== 'all' ? sourceFilter.value : undefined,
-            channel: channelFilter.value !== 'all' ? channelFilter.value : undefined,
+            source:
+                sourceFilter.value !== 'all' ? sourceFilter.value : undefined,
+            channel:
+                channelFilter.value !== 'all' ? channelFilter.value : undefined,
         },
         {
             preserveState: true,
@@ -86,16 +88,17 @@ const handleSearch = () => {
 };
 
 const handleSourceChange = (value: unknown) => {
-    sourceFilter.value = value != null && (typeof value === 'string' || typeof value === 'number')
-        ? String(value)
-        : 'all';
+    sourceFilter.value =
+        value != null &&
+        (typeof value === 'string' || typeof value === 'number')
+            ? String(value)
+            : 'all';
     applyFilters();
 };
 
 const handleChannelChange = (value: unknown) => {
-    channelFilter.value = value != null && typeof value === 'string'
-        ? value
-        : 'all';
+    channelFilter.value =
+        value != null && typeof value === 'string' ? value : 'all';
     applyFilters();
 };
 
@@ -298,7 +301,9 @@ const deleteDescription = computed(() => {
 });
 
 const getChannel = (article: Article): string => {
-    const metadata = article.metadata as { publisher?: { channel?: string } } | null;
+    const metadata = article.metadata as {
+        publisher?: { channel?: string };
+    } | null;
     return metadata?.publisher?.channel || 'unknown';
 };
 
@@ -332,9 +337,12 @@ watch(
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Trashed Articles</h1>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        Trashed Articles
+                    </h1>
                     <p class="mt-1 text-muted-foreground">
-                        Manage soft-deleted articles - restore or permanently delete
+                        Manage soft-deleted articles - restore or permanently
+                        delete
                     </p>
                 </div>
                 <Button variant="outline" as="a" :href="articlesIndex().url">
@@ -381,7 +389,9 @@ watch(
             <!-- Filters -->
             <Card>
                 <CardContent class="pt-6">
-                    <div class="flex flex-col gap-4 md:flex-row md:items-center">
+                    <div
+                        class="flex flex-col gap-4 md:flex-row md:items-center"
+                    >
                         <div class="flex-1">
                             <Input
                                 v-model="searchQuery"
@@ -391,7 +401,7 @@ watch(
                                 class="max-w-sm"
                             />
                         </div>
-                        <div class="flex gap-2 flex-wrap">
+                        <div class="flex flex-wrap gap-2">
                             <Select
                                 v-model="sourceFilter"
                                 @update:model-value="handleSourceChange"
@@ -400,7 +410,9 @@ watch(
                                     <SelectValue placeholder="All Sources" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Sources</SelectItem>
+                                    <SelectItem value="all"
+                                        >All Sources</SelectItem
+                                    >
                                     <SelectItem
                                         v-for="source in newsSources"
                                         :key="source.id"
@@ -418,7 +430,9 @@ watch(
                                     <SelectValue placeholder="All Channels" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Channels</SelectItem>
+                                    <SelectItem value="all"
+                                        >All Channels</SelectItem
+                                    >
                                     <SelectItem
                                         v-for="channel in channels"
                                         :key="channel"
@@ -483,7 +497,7 @@ watch(
                                     />
                                 </th>
                                 <th
-                                    class="p-4 text-left font-medium cursor-pointer hover:bg-muted/50"
+                                    class="cursor-pointer p-4 text-left font-medium hover:bg-muted/50"
                                     @click="toggleSort('id')"
                                 >
                                     <div class="flex items-center gap-1">
@@ -492,7 +506,7 @@ watch(
                                     </div>
                                 </th>
                                 <th
-                                    class="p-4 text-left font-medium cursor-pointer hover:bg-muted/50"
+                                    class="cursor-pointer p-4 text-left font-medium hover:bg-muted/50"
                                     @click="toggleSort('title')"
                                 >
                                     <div class="flex items-center gap-1">
@@ -500,10 +514,14 @@ watch(
                                         <ArrowUpDown class="h-4 w-4" />
                                     </div>
                                 </th>
-                                <th class="p-4 text-left font-medium">Source</th>
-                                <th class="p-4 text-left font-medium">Channel</th>
+                                <th class="p-4 text-left font-medium">
+                                    Source
+                                </th>
+                                <th class="p-4 text-left font-medium">
+                                    Channel
+                                </th>
                                 <th
-                                    class="p-4 text-left font-medium cursor-pointer hover:bg-muted/50"
+                                    class="cursor-pointer p-4 text-left font-medium hover:bg-muted/50"
                                     @click="toggleSort('deleted_at')"
                                 >
                                     <div class="flex items-center gap-1">
@@ -511,7 +529,9 @@ watch(
                                         <ArrowUpDown class="h-4 w-4" />
                                     </div>
                                 </th>
-                                <th class="p-4 text-right font-medium">Actions</th>
+                                <th class="p-4 text-right font-medium">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -522,14 +542,22 @@ watch(
                             >
                                 <td class="p-4">
                                     <Checkbox
-                                        :checked="selectedIds.includes(article.id)"
-                                        @update:checked="(checked: boolean) => handleSelectOne(article.id, checked)"
+                                        :checked="
+                                            selectedIds.includes(article.id)
+                                        "
+                                        @update:checked="
+                                            (checked: boolean) =>
+                                                handleSelectOne(
+                                                    article.id,
+                                                    checked,
+                                                )
+                                        "
                                     />
                                 </td>
                                 <td class="p-4 font-mono text-xs">
                                     {{ article.id }}
                                 </td>
-                                <td class="p-4 max-w-[300px]">
+                                <td class="max-w-[300px] p-4">
                                     <div class="truncate font-medium">
                                         {{ article.title }}
                                     </div>
@@ -538,7 +566,9 @@ watch(
                                     {{ article.news_source?.name || '-' }}
                                 </td>
                                 <td class="p-4 text-muted-foreground">
-                                    <code class="text-xs bg-muted px-1 py-0.5 rounded">
+                                    <code
+                                        class="rounded bg-muted px-1 py-0.5 text-xs"
+                                    >
                                         {{ getChannel(article) }}
                                     </code>
                                 </td>
@@ -560,7 +590,9 @@ watch(
                                             size="sm"
                                             class="text-destructive hover:text-destructive"
                                             :disabled="isForceDeleting"
-                                            @click="handleForceDeleteClick(article)"
+                                            @click="
+                                                handleForceDeleteClick(article)
+                                            "
                                         >
                                             <Trash2 class="h-4 w-4" />
                                         </Button>
@@ -568,7 +600,10 @@ watch(
                                 </td>
                             </tr>
                             <tr v-if="articles.data.length === 0">
-                                <td colspan="7" class="p-8 text-center text-muted-foreground">
+                                <td
+                                    colspan="7"
+                                    class="p-8 text-center text-muted-foreground"
+                                >
                                     No trashed articles found.
                                 </td>
                             </tr>

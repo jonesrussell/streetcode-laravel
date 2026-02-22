@@ -23,7 +23,10 @@ interface FilterDefinition {
 interface Props {
     filters: FilterDefinition[];
     modelValue: Record<string, string | undefined>;
-    relationOptions?: Record<string, Array<{ id: number; name: string; [key: string]: unknown }>>;
+    relationOptions?: Record<
+        string,
+        Array<{ id: number; name: string; [key: string]: unknown }>
+    >;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -39,9 +42,16 @@ const updateFilter = (name: string, value: string | undefined) => {
     emit('update:modelValue', { ...props.modelValue, [name]: value });
 };
 
-const getRelationOptions = (filter: FilterDefinition): Array<{ id: number; name: string; [key: string]: unknown }> => {
-    if (filter.name === 'source') return props.relationOptions.news_sources ?? [];
-    return props.relationOptions[filter.name] ?? props.relationOptions[filter.relationship ?? ''] ?? [];
+const getRelationOptions = (
+    filter: FilterDefinition,
+): Array<{ id: number; name: string; [key: string]: unknown }> => {
+    if (filter.name === 'source')
+        return props.relationOptions.news_sources ?? [];
+    return (
+        props.relationOptions[filter.name] ??
+        props.relationOptions[filter.relationship ?? ''] ??
+        []
+    );
 };
 
 const handleApply = () => {
@@ -61,7 +71,9 @@ const handleApply = () => {
                             type="search"
                             :placeholder="filter.placeholder ?? 'Search...'"
                             class="max-w-sm"
-                            @update:model-value="updateFilter(filter.name, $event as string)"
+                            @update:model-value="
+                                updateFilter(filter.name, $event as string)
+                            "
                             @keyup.enter="handleApply"
                         />
                     </div>
@@ -70,13 +82,24 @@ const handleApply = () => {
                     <Select
                         v-else-if="filter.type === 'select'"
                         :model-value="modelValue[filter.name] ?? ''"
-                        @update:model-value="(val: unknown) => {
-                            updateFilter(filter.name, val != null && (typeof val === 'string' || typeof val === 'number') ? String(val) : undefined);
-                            handleApply();
-                        }"
+                        @update:model-value="
+                            (val: unknown) => {
+                                updateFilter(
+                                    filter.name,
+                                    val != null &&
+                                        (typeof val === 'string' ||
+                                            typeof val === 'number')
+                                        ? String(val)
+                                        : undefined,
+                                );
+                                handleApply();
+                            }
+                        "
                     >
                         <SelectTrigger class="w-[150px]">
-                            <SelectValue :placeholder="filter.label ?? filter.name" />
+                            <SelectValue
+                                :placeholder="filter.label ?? filter.name"
+                            />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem
@@ -93,16 +116,27 @@ const handleApply = () => {
                     <Select
                         v-else-if="filter.type === 'belongs-to'"
                         :model-value="modelValue[filter.name] ?? 'all'"
-                        @update:model-value="(val: unknown) => {
-                            updateFilter(filter.name, val !== 'all' && val != null ? String(val) : undefined);
-                            handleApply();
-                        }"
+                        @update:model-value="
+                            (val: unknown) => {
+                                updateFilter(
+                                    filter.name,
+                                    val !== 'all' && val != null
+                                        ? String(val)
+                                        : undefined,
+                                );
+                                handleApply();
+                            }
+                        "
                     >
                         <SelectTrigger class="w-[180px]">
-                            <SelectValue :placeholder="`All ${filter.label ?? ''}`" />
+                            <SelectValue
+                                :placeholder="`All ${filter.label ?? ''}`"
+                            />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All {{ filter.label }}</SelectItem>
+                            <SelectItem value="all"
+                                >All {{ filter.label }}</SelectItem
+                            >
                             <SelectItem
                                 v-for="opt in getRelationOptions(filter)"
                                 :key="opt.id"

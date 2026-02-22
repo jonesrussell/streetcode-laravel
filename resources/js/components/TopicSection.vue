@@ -2,8 +2,8 @@
 import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
-import { formatTimeAgo } from '@/composables/useTimeAgo';
 import { getTagBadgeColor } from '@/composables/useTagColors';
+import { formatTimeAgo } from '@/composables/useTimeAgo';
 import type { Article, Tag } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { ChevronRight, Clock } from 'lucide-vue-next';

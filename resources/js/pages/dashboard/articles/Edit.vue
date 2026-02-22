@@ -382,7 +382,10 @@ const formatDate = (date: string) => {
                         <!-- Tags -->
                         <div class="space-y-2">
                             <Label>Tags</Label>
-                            <TagMultiSelect v-model="form.tags" :options="tags" />
+                            <TagMultiSelect
+                                v-model="form.tags"
+                                :options="tags"
+                            />
                             <p
                                 v-if="errors.tags"
                                 class="text-sm text-destructive"

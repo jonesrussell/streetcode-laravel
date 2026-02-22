@@ -71,7 +71,10 @@ const handleInputBlur = () => {
 
 <template>
     <div class="space-y-2">
-        <div class="mb-2 flex flex-wrap gap-2" v-if="selectedOptions.length > 0">
+        <div
+            class="mb-2 flex flex-wrap gap-2"
+            v-if="selectedOptions.length > 0"
+        >
             <Badge
                 v-for="opt in selectedOptions"
                 :key="opt.id"

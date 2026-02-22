@@ -10,10 +10,7 @@ defineProps<{
 
 <template>
     <Head>
-        <meta
-            name="robots"
-            content="noindex, nofollow"
-        />
+        <meta name="robots" content="noindex, nofollow" />
     </Head>
     <AuthLayout :title="title" :description="description">
         <slot />

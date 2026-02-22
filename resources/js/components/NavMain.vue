@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
     SidebarGroup,
     SidebarGroupLabel,
     SidebarMenu,
@@ -12,7 +17,6 @@ import {
 import { urlIsActive } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronRight } from 'lucide-vue-next';
 
 defineProps<{
@@ -31,7 +35,9 @@ const page = usePage();
                 <Collapsible
                     v-if="item.children?.length"
                     as-child
-                    :default-open="item.children.some(c => urlIsActive(c.href, page.url))"
+                    :default-open="
+                        item.children.some((c) => urlIsActive(c.href, page.url))
+                    "
                     class="group/collapsible"
                 >
                     <SidebarMenuItem>
@@ -39,15 +45,22 @@ const page = usePage();
                             <SidebarMenuButton :tooltip="item.title">
                                 <component :is="item.icon" v-if="item.icon" />
                                 <span>{{ item.title }}</span>
-                                <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                <ChevronRight
+                                    class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                                />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                             <SidebarMenuSub>
-                                <SidebarMenuSubItem v-for="child in item.children" :key="child.title">
+                                <SidebarMenuSubItem
+                                    v-for="child in item.children"
+                                    :key="child.title"
+                                >
                                     <SidebarMenuSubButton
                                         as-child
-                                        :is-active="urlIsActive(child.href, page.url)"
+                                        :is-active="
+                                            urlIsActive(child.href, page.url)
+                                        "
                                     >
                                         <Link :href="child.href">
                                             <span>{{ child.title }}</span>

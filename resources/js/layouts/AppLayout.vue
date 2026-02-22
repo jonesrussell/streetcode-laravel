@@ -14,10 +14,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <Head>
-        <meta
-            name="robots"
-            content="noindex, nofollow"
-        />
+        <meta name="robots" content="noindex, nofollow" />
     </Head>
     <AppLayout :breadcrumbs="breadcrumbs">
         <slot />

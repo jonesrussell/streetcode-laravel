@@ -50,10 +50,7 @@ const pages = computed(() => {
             class="inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-public-text-secondary transition-colors hover:bg-public-bg-subtle disabled:pointer-events-none disabled:opacity-40"
             @click="goToPage(currentPage - 1)"
         >
-            <ChevronLeft
-                class="size-4"
-                aria-hidden="true"
-            />
+            <ChevronLeft class="size-4" aria-hidden="true" />
             Previous
         </button>
 
@@ -85,10 +82,7 @@ const pages = computed(() => {
             @click="goToPage(currentPage + 1)"
         >
             Next
-            <ChevronRight
-                class="size-4"
-                aria-hidden="true"
-            />
+            <ChevronRight class="size-4" aria-hidden="true" />
         </button>
     </nav>
 </template>

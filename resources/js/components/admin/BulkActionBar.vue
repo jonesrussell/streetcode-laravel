@@ -28,7 +28,9 @@ const emit = defineEmits<{
         <CardContent class="pt-6">
             <div class="flex items-center justify-between">
                 <div class="text-sm font-medium">
-                    {{ selectedCount }} article{{ selectedCount === 1 ? '' : 's' }}
+                    {{ selectedCount }} article{{
+                        selectedCount === 1 ? '' : 's'
+                    }}
                     selected
                 </div>
                 <div class="flex gap-2">

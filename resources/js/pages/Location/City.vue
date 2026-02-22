@@ -127,8 +127,7 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}/$
 
                 <ArticlePagination
                     v-if="
-                        articles?.meta?.last_page &&
-                        articles.meta.last_page > 1
+                        articles?.meta?.last_page && articles.meta.last_page > 1
                     "
                     :current-page="articles.meta.current_page"
                     :last-page="articles.meta.last_page"

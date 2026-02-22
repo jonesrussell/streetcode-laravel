@@ -87,9 +87,7 @@ const subtitle = computed(() => {
                             {{ crumb.name }}
                         </BreadcrumbPage>
                     </BreadcrumbItem>
-                    <BreadcrumbSeparator
-                        v-if="i < breadcrumbs.length - 1"
-                    />
+                    <BreadcrumbSeparator v-if="i < breadcrumbs.length - 1" />
                 </template>
             </BreadcrumbList>
         </Breadcrumb>
@@ -97,9 +95,7 @@ const subtitle = computed(() => {
         <div class="flex items-center gap-3">
             <MapPin class="size-8 text-public-accent" />
             <div>
-                <h1
-                    class="font-heading text-3xl font-bold text-public-text"
-                >
+                <h1 class="font-heading text-3xl font-bold text-public-text">
                     {{ displayName }}
                 </h1>
                 <div

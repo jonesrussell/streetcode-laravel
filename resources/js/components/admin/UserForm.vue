@@ -54,15 +54,25 @@ const isAdminCheckboxDisabled = (field: FieldDefinition): boolean => {
                         <template v-if="field.type === 'text'">
                             <Label :for="field.name">
                                 {{ field.label }}
-                                <span v-if="field.required" class="text-destructive">*</span>
+                                <span
+                                    v-if="field.required"
+                                    class="text-destructive"
+                                    >*</span
+                                >
                             </Label>
                             <Input
                                 :id="field.name"
-                                :model-value="(modelValue[field.name] as string) ?? ''"
+                                :model-value="
+                                    (modelValue[field.name] as string) ?? ''
+                                "
                                 type="text"
                                 :placeholder="`Enter ${field.label.toLowerCase()}`"
-                                :class="{ 'border-destructive': errors[field.name] }"
-                                @update:model-value="updateField(field.name, $event)"
+                                :class="{
+                                    'border-destructive': errors[field.name],
+                                }"
+                                @update:model-value="
+                                    updateField(field.name, $event)
+                                "
                             />
                         </template>
 
@@ -70,15 +80,25 @@ const isAdminCheckboxDisabled = (field: FieldDefinition): boolean => {
                         <template v-else-if="field.type === 'email'">
                             <Label :for="field.name">
                                 {{ field.label }}
-                                <span v-if="field.required" class="text-destructive">*</span>
+                                <span
+                                    v-if="field.required"
+                                    class="text-destructive"
+                                    >*</span
+                                >
                             </Label>
                             <Input
                                 :id="field.name"
-                                :model-value="(modelValue[field.name] as string) ?? ''"
+                                :model-value="
+                                    (modelValue[field.name] as string) ?? ''
+                                "
                                 type="email"
                                 :placeholder="`Enter ${field.label.toLowerCase()}`"
-                                :class="{ 'border-destructive': errors[field.name] }"
-                                @update:model-value="updateField(field.name, $event)"
+                                :class="{
+                                    'border-destructive': errors[field.name],
+                                }"
+                                @update:model-value="
+                                    updateField(field.name, $event)
+                                "
                             />
                         </template>
 
@@ -86,15 +106,25 @@ const isAdminCheckboxDisabled = (field: FieldDefinition): boolean => {
                         <template v-else-if="field.type === 'password'">
                             <Label :for="field.name">
                                 {{ getPasswordLabel(field) }}
-                                <span v-if="field.required && !isEdit" class="text-destructive">*</span>
+                                <span
+                                    v-if="field.required && !isEdit"
+                                    class="text-destructive"
+                                    >*</span
+                                >
                             </Label>
                             <Input
                                 :id="field.name"
-                                :model-value="(modelValue[field.name] as string) ?? ''"
+                                :model-value="
+                                    (modelValue[field.name] as string) ?? ''
+                                "
                                 type="password"
                                 :placeholder="`Enter ${field.label.toLowerCase()}`"
-                                :class="{ 'border-destructive': errors[field.name] }"
-                                @update:model-value="updateField(field.name, $event)"
+                                :class="{
+                                    'border-destructive': errors[field.name],
+                                }"
+                                @update:model-value="
+                                    updateField(field.name, $event)
+                                "
                             />
                             <p
                                 v-if="errors[field.name]"
@@ -107,15 +137,30 @@ const isAdminCheckboxDisabled = (field: FieldDefinition): boolean => {
                             <div class="mt-4 space-y-2">
                                 <Label for="password_confirmation">
                                     Confirm Password
-                                    <span v-if="field.required && !isEdit" class="text-destructive">*</span>
+                                    <span
+                                        v-if="field.required && !isEdit"
+                                        class="text-destructive"
+                                        >*</span
+                                    >
                                 </Label>
                                 <Input
                                     id="password_confirmation"
-                                    :model-value="(modelValue.password_confirmation as string) ?? ''"
+                                    :model-value="
+                                        (modelValue.password_confirmation as string) ??
+                                        ''
+                                    "
                                     type="password"
                                     placeholder="Confirm password"
-                                    :class="{ 'border-destructive': errors.password_confirmation }"
-                                    @update:model-value="updateField('password_confirmation', $event)"
+                                    :class="{
+                                        'border-destructive':
+                                            errors.password_confirmation,
+                                    }"
+                                    @update:model-value="
+                                        updateField(
+                                            'password_confirmation',
+                                            $event,
+                                        )
+                                    "
                                 />
                                 <p
                                     v-if="errors.password_confirmation"
@@ -131,14 +176,22 @@ const isAdminCheckboxDisabled = (field: FieldDefinition): boolean => {
                             <div class="flex items-center gap-2">
                                 <Checkbox
                                     :id="field.name"
-                                    :checked="(modelValue[field.name] as boolean) ?? false"
+                                    :checked="
+                                        (modelValue[field.name] as boolean) ??
+                                        false
+                                    "
                                     :disabled="isAdminCheckboxDisabled(field)"
-                                    @update:checked="updateField(field.name, $event)"
+                                    @update:checked="
+                                        updateField(field.name, $event)
+                                    "
                                 />
                                 <Label
                                     :for="field.name"
                                     class="cursor-pointer"
-                                    :class="{ 'opacity-50': isAdminCheckboxDisabled(field) }"
+                                    :class="{
+                                        'opacity-50':
+                                            isAdminCheckboxDisabled(field),
+                                    }"
                                 >
                                     {{ field.label }}
                                 </Label>
@@ -153,7 +206,11 @@ const isAdminCheckboxDisabled = (field: FieldDefinition): boolean => {
 
                         <!-- Error message (for non-password, non-checkbox fields) -->
                         <p
-                            v-if="errors[field.name] && field.type !== 'checkbox' && field.type !== 'password'"
+                            v-if="
+                                errors[field.name] &&
+                                field.type !== 'checkbox' &&
+                                field.type !== 'password'
+                            "
                             class="text-sm text-destructive"
                         >
                             {{ errors[field.name] }}

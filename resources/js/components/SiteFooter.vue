@@ -61,8 +61,8 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
                         StreetCode
                     </Link>
                     <p class="mt-4 text-sm text-public-text-secondary">
-                        Crime news aggregation. Stay informed about crime
-                        trends and public safety in your community.
+                        Crime news aggregation. Stay informed about crime trends
+                        and public safety in your community.
                     </p>
                 </div>
 

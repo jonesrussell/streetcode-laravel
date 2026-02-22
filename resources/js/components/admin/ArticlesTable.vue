@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Article, PaginatedArticles } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import type { Article, PaginatedArticles } from '@/types';
 import { ArrowDown, ArrowUp, Edit, Eye, EyeOff, Trash2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import ArticleStatusBadge from './ArticleStatusBadge.vue';
@@ -132,7 +132,9 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
             <table class="w-full">
                 <thead class="border-b bg-muted/50">
                     <tr>
-                        <th class="w-12 px-4 py-3 text-left text-sm font-medium">
+                        <th
+                            class="w-12 px-4 py-3 text-left text-sm font-medium"
+                        >
                             <Checkbox
                                 :model-value="isAllSelected"
                                 :indeterminate="isSomeSelected"
@@ -143,7 +145,9 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
                             v-for="col in columns"
                             :key="col.name"
                             class="px-4 py-3 text-left text-sm font-medium"
-                            :class="{ 'cursor-pointer hover:bg-muted': col.sortable }"
+                            :class="{
+                                'cursor-pointer hover:bg-muted': col.sortable,
+                            }"
                             @click="col.sortable && handleSort(col.name)"
                         >
                             <div class="flex items-center gap-1">
@@ -169,7 +173,9 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
                         <td class="px-4 py-3">
                             <Checkbox
                                 :model-value="articleCheckedStates[article.id]"
-                                @update:model-value="() => toggleSelect(article.id)"
+                                @update:model-value="
+                                    () => toggleSelect(article.id)
+                                "
                             />
                         </td>
                         <td
@@ -183,7 +189,10 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
                             </span>
 
                             <!-- Title -->
-                            <div v-else-if="col.name === 'title'" class="max-w-md">
+                            <div
+                                v-else-if="col.name === 'title'"
+                                class="max-w-md"
+                            >
                                 <a
                                     :href="showUrl(article.id)"
                                     class="line-clamp-2 text-sm font-medium transition-colors hover:text-primary"
@@ -221,7 +230,10 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
                                         {{ tag.name }}
                                     </Badge>
                                     <Badge
-                                        v-if="article.tags && article.tags.length > 3"
+                                        v-if="
+                                            article.tags &&
+                                            article.tags.length > 3
+                                        "
                                         variant="secondary"
                                         class="text-xs"
                                     >
@@ -232,17 +244,27 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
 
                             <!-- Status -->
                             <template v-else-if="col.name === 'status'">
-                                <ArticleStatusBadge :published-at="article.published_at" />
+                                <ArticleStatusBadge
+                                    :published-at="article.published_at"
+                                />
                             </template>
 
                             <!-- Published date -->
-                            <span v-else-if="col.name === 'published_at'" class="text-sm text-muted-foreground">
+                            <span
+                                v-else-if="col.name === 'published_at'"
+                                class="text-sm text-muted-foreground"
+                            >
                                 {{ formatDate(article.published_at) }}
                             </span>
 
                             <!-- View count -->
-                            <span v-else-if="col.name === 'view_count'" class="text-sm text-muted-foreground">
-                                {{ article.view_count?.toLocaleString() ?? '0' }}
+                            <span
+                                v-else-if="col.name === 'view_count'"
+                                class="text-sm text-muted-foreground"
+                            >
+                                {{
+                                    article.view_count?.toLocaleString() ?? '0'
+                                }}
                             </span>
 
                             <!-- Generic fallback -->
@@ -255,11 +277,17 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    :title="isPublished(article) ? 'Unpublish' : 'Publish'"
+                                    :title="
+                                        isPublished(article)
+                                            ? 'Unpublish'
+                                            : 'Publish'
+                                    "
                                     @click="emit('toggle-publish', article)"
                                 >
                                     <component
-                                        :is="isPublished(article) ? EyeOff : Eye"
+                                        :is="
+                                            isPublished(article) ? EyeOff : Eye
+                                        "
                                         class="h-4 w-4"
                                     />
                                 </Button>
@@ -289,7 +317,8 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
                             <div class="flex flex-col items-center gap-2">
                                 <p class="text-sm">No articles found.</p>
                                 <p class="text-xs">
-                                    Try adjusting your filters or create a new article.
+                                    Try adjusting your filters or create a new
+                                    article.
                                 </p>
                             </div>
                         </td>

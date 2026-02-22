@@ -46,9 +46,7 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}`;
 
         <!-- Cities Grid -->
         <section v-if="cities.length" class="mb-12">
-            <h2
-                class="mb-6 font-heading text-2xl font-bold text-public-text"
-            >
+            <h2 class="mb-6 font-heading text-2xl font-bold text-public-text">
                 Cities in {{ location.regionName }}
             </h2>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -61,16 +59,10 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}`;
                         class="border-public-border bg-public-surface transition-all hover:shadow-md"
                     >
                         <CardHeader>
-                            <div
-                                class="flex items-start justify-between"
-                            >
+                            <div class="flex items-start justify-between">
                                 <div class="flex items-center gap-2">
-                                    <MapPin
-                                        class="size-5 text-public-accent"
-                                    />
-                                    <CardTitle
-                                        class="text-lg text-public-text"
-                                    >
+                                    <MapPin class="size-5 text-public-accent" />
+                                    <CardTitle class="text-lg text-public-text">
                                         {{ city.city_name }}
                                     </CardTitle>
                                 </div>
@@ -89,9 +81,7 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}`;
 
         <!-- Tag Filter -->
         <section v-if="popularTags.length" class="mb-8">
-            <h3
-                class="mb-4 font-heading text-lg font-bold text-public-text"
-            >
+            <h3 class="mb-4 font-heading text-lg font-bold text-public-text">
                 Browse by Category
             </h3>
             <TagFilter
@@ -103,9 +93,7 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}`;
 
         <!-- Latest Articles -->
         <section>
-            <h2
-                class="mb-4 font-heading text-lg font-bold text-public-text"
-            >
+            <h2 class="mb-4 font-heading text-lg font-bold text-public-text">
                 Latest from {{ location.regionName }}
             </h2>
             <div
@@ -127,10 +115,7 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}`;
             </div>
 
             <ArticlePagination
-                v-if="
-                    articles?.meta?.last_page &&
-                    articles.meta.last_page > 1
-                "
+                v-if="articles?.meta?.last_page && articles.meta.last_page > 1"
                 :current-page="articles.meta.current_page"
                 :last-page="articles.meta.last_page"
                 :route="currentPath"

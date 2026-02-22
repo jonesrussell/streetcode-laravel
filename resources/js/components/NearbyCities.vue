@@ -28,7 +28,7 @@ defineProps<Props>();
                 class="group flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors hover:bg-public-bg-subtle"
                 :class="
                     city.city_slug === currentSlug
-                        ? 'bg-public-accent-subtle text-public-accent font-medium'
+                        ? 'bg-public-accent-subtle font-medium text-public-accent'
                         : 'text-public-text-secondary'
                 "
             >

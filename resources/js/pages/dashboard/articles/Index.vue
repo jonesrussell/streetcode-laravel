@@ -19,6 +19,7 @@ import {
     bulkUnpublish as articlesBulkUnpublish,
     create as articlesCreate,
     destroy as articlesDestroy,
+    edit as articlesEdit,
     index as articlesIndex,
     togglePublish as articlesTogglePublish,
 } from '@/routes/dashboard/articles';
@@ -223,6 +224,16 @@ const handleTogglePublish = (article: Article) => {
         },
     );
 };
+
+const tableColumns = [
+    { name: 'id', label: 'ID', sortable: false },
+    { name: 'title', label: 'Title', sortable: true },
+    { name: 'news_source', label: 'Source', sortable: false },
+    { name: 'tags', label: 'Tags', sortable: false },
+    { name: 'status', label: 'Status', sortable: false },
+    { name: 'published_at', label: 'Published', sortable: true },
+    { name: 'view_count', label: 'Views', sortable: true },
+];
 
 const getPageNumbers = () => {
     if (!props.articles?.last_page) return [];
@@ -484,8 +495,12 @@ watch(
             <ArticlesTable
                 v-if="articles"
                 :articles="articles"
+                :columns="tableColumns"
                 :filters="filters"
                 :selectedIds="selectedIds"
+                :showUrl="(id) => articlesEdit(id).url"
+                :editUrl="(id) => articlesEdit(id).url"
+                :indexUrl="articlesIndex().url"
                 @delete="handleDeleteClick"
                 @update:selected="handleSelectedUpdate"
                 @toggle-publish="handleTogglePublish"

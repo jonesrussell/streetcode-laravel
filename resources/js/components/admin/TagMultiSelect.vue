@@ -8,7 +8,6 @@ import { computed, ref } from 'vue';
 interface Option {
     id: number;
     name: string;
-    [key: string]: unknown;
 }
 
 interface Props {
@@ -31,7 +30,11 @@ const searchQuery = ref('');
 const isOpen = ref(false);
 
 const getLabel = (option: Option): string => {
-    return String(option[props.displayField] ?? option.name);
+    return String(
+        (option as unknown as Record<string, unknown>)[
+            props.displayField ?? 'name'
+        ] ?? option.name,
+    );
 };
 
 const selectedOptions = computed(() =>

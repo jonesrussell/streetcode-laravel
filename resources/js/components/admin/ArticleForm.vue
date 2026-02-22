@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AcceptableValue } from 'reka-ui';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -165,7 +166,7 @@ const isVisible = (field: FieldDefinition): boolean => {
                                 <span v-if="field.required" class="text-destructive">*</span>
                             </Label>
                             <Select
-                                :model-value="modelValue[field.name]"
+                                :model-value="(modelValue[field.name] as AcceptableValue | undefined)"
                                 @update:model-value="updateField(field.name, $event)"
                             >
                                 <SelectTrigger
@@ -208,7 +209,7 @@ const isVisible = (field: FieldDefinition): boolean => {
                                 <span v-if="field.required" class="text-destructive">*</span>
                             </Label>
                             <Select
-                                :model-value="modelValue[field.name]"
+                                :model-value="(modelValue[field.name] as AcceptableValue | undefined)"
                                 @update:model-value="updateField(field.name, $event)"
                             >
                                 <SelectTrigger

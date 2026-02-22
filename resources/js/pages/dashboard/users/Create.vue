@@ -2,6 +2,7 @@
 import UserForm from '@/components/admin/UserForm.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import type { RequestPayload } from '@inertiajs/core';
 import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -45,7 +46,7 @@ const handleSubmit = () => {
     processing.value = true;
     errors.value = {};
 
-    router.post(routePrefix, form.value, {
+    router.post(routePrefix, form.value as RequestPayload, {
         preserveScroll: true,
         onError: (err) => { errors.value = err; },
         onFinish: () => { processing.value = false; },

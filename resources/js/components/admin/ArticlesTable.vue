@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Article, PaginatedArticles } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -10,22 +11,6 @@ interface ColumnDefinition {
     name: string;
     label: string;
     sortable?: boolean;
-}
-
-interface Article {
-    id: number;
-    title: string;
-    published_at: string | null;
-    view_count: number;
-    author?: string | null;
-    news_source?: { id: number; name: string } | null;
-    tags?: Array<{ id: number; name: string }>;
-    [key: string]: unknown;
-}
-
-interface PaginatedArticles {
-    data: Article[];
-    [key: string]: unknown;
 }
 
 interface Props {
@@ -136,7 +121,7 @@ const getCellValue = (article: Article, column: ColumnDefinition) => {
         case 'published_at':
             return formatDate(article.published_at);
         default:
-            return article[column.name];
+            return (article as unknown as Record<string, unknown>)[column.name];
     }
 };
 </script>

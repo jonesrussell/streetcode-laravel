@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
+import type { RequestPayload } from '@inertiajs/core';
 import { Head, router } from '@inertiajs/vue3';
 import { AlertTriangle, ArrowLeft, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -67,7 +68,7 @@ const handleSubmit = () => {
     processing.value = true;
     errors.value = {};
 
-    router.patch(`${routePrefix}/${props.user.id}`, form.value, {
+    router.patch(`${routePrefix}/${props.user.id}`, form.value as RequestPayload, {
         preserveScroll: true,
         onError: (err) => { errors.value = err; },
         onFinish: () => { processing.value = false; },

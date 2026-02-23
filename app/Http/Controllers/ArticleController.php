@@ -147,9 +147,9 @@ class ArticleController extends Controller
 
         $excludeIds = array_merge($excludeIds, $topStories->pluck('id')->toArray());
 
-        // Crime sub-categories matching classifier topics (converted from snake_case to slug format)
-        // violent_crime → violent-crime, property_crime → property-crime, etc.
-        $crimeCategories = [
+        // Crime sub-categories matching classifier topics (converted from snake_case to slug format).
+        // Only these slugs are shown as categories on the homepage (sidebar + browse).
+        $crimeCategorySlugs = [
             'violent-crime',      // violent_crime: gang violence, murder, assault, shootings
             'property-crime',     // property_crime: theft, burglary, auto theft, vandalism
             'drug-crime',         // drug_crime: trafficking, possession, drug busts
@@ -158,7 +158,7 @@ class ArticleController extends Controller
         ];
         $articlesByCategory = [];
 
-        foreach ($crimeCategories as $categorySlug) {
+        foreach ($crimeCategorySlugs as $categorySlug) {
             $tag = Tag::query()->where('slug', $categorySlug)->first();
             if ($tag) {
                 $categoryArticles = Article::query()
@@ -181,10 +181,13 @@ class ArticleController extends Controller
 
         $popularTags = Tag::query()
             ->type('crime_category')
+            ->whereIn('slug', $crimeCategorySlugs)
             ->popular()
             ->get();
 
         $trendingTopics = Tag::query()
+            ->type('crime_category')
+            ->whereIn('slug', $crimeCategorySlugs)
             ->popular(15)
             ->get();
 

@@ -4,7 +4,8 @@
 streetcode.net {
   # Force Let's Encrypt (ACME) so the cert is CT-logged; avoids ERR_CERTIFICATE_TRANSPARENCY_REQUIRED
   tls {
-    issuer acme {}
+    issuer acme {
+    }
   }
 
   root * /home/deployer/streetcode-laravel/current/public

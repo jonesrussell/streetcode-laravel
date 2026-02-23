@@ -28,6 +28,7 @@ host('streetcode.net')
 
 after('deploy:failed', 'deploy:unlock');
 before('deploy:symlink', 'artisan:migrate');
+after('deploy:symlink', 'artisan:cache:clear');
 
 // Disable view caching — Inertia renders views client-side and artisan:view:cache
 // tries to connect to the SSR server which isn't running during deploy.

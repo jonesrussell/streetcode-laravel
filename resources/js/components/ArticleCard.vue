@@ -40,13 +40,8 @@ const formattedDate = props.article.published_at
                         v-if="article.news_source"
                         :source="article.news_source"
                     />
-                    <div
-                        class="flex items-center gap-1 text-public-text-muted"
-                    >
-                        <Calendar
-                            class="size-3"
-                            aria-hidden="true"
-                        />
+                    <div class="flex items-center gap-1 text-public-text-muted">
+                        <Calendar class="size-3" aria-hidden="true" />
                         {{ formattedDate }}
                     </div>
                 </div>

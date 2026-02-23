@@ -114,7 +114,9 @@ Articles received via Redis must follow this structure:
 - Deploy config: `deploy.php` → deploys to `streetcode.net` as `deployer` user
 - systemd user services in `~deployer/.config/systemd/user/` manage Horizon, SSR, and article subscriber
 - Horizon dashboard at `/horizon` (authenticated)
-- Post-deploy: terminates Horizon and SSR for graceful restart
+- Post-deploy: terminates Horizon and SSR for graceful restart; `artisan:cache:clear` runs after symlink so application cache (e.g. Redis) is cleared and no stale Inertia/page data is served
+- **Single consistent deploy**: Assets are built inside the release (`deploy:build_assets` in `release_path`); the symlink switch makes that release live. No separate asset host; one release = one codebase + one build.
+- **If using a CDN or reverse-proxy cache**: Purge cache for `/` (and any other public URLs that return Inertia pages) after deploys so users never receive old HTML/JSON that references removed page components (e.g. legacy `Home/Index`).
 - DDEV for local development (auto-starts article subscriber via supervisor)
 
 ===

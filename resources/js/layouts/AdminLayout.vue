@@ -24,8 +24,13 @@ defineProps<Props>();
             <slot name="header">
                 <div v-if="title" class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold tracking-tight">{{ title }}</h1>
-                        <p v-if="description" class="mt-1 text-muted-foreground">
+                        <h1 class="text-3xl font-bold tracking-tight">
+                            {{ title }}
+                        </h1>
+                        <p
+                            v-if="description"
+                            class="mt-1 text-muted-foreground"
+                        >
                             {{ description }}
                         </p>
                     </div>

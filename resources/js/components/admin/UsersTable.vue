@@ -2,7 +2,14 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowDown, ArrowUp, Edit, Shield, ShieldOff, Trash2 } from 'lucide-vue-next';
+import {
+    ArrowDown,
+    ArrowUp,
+    Edit,
+    Shield,
+    ShieldOff,
+    Trash2,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface ColumnDefinition {
@@ -52,9 +59,7 @@ const emit = defineEmits<{
     sort: [column: string, direction: string];
 }>();
 
-const allUserIds = computed(
-    () => props.users?.data?.map((u) => u.id) ?? [],
-);
+const allUserIds = computed(() => props.users?.data?.map((u) => u.id) ?? []);
 
 const selectedIdsSet = computed(() => new Set(props.selectedIds));
 
@@ -135,7 +140,9 @@ const isSelf = (user: User) => {
             <table class="w-full">
                 <thead class="border-b bg-muted/50">
                     <tr>
-                        <th class="w-12 px-4 py-3 text-left text-sm font-medium">
+                        <th
+                            class="w-12 px-4 py-3 text-left text-sm font-medium"
+                        >
                             <Checkbox
                                 :model-value="isAllSelected"
                                 :indeterminate="isSomeSelected"
@@ -146,7 +153,9 @@ const isSelf = (user: User) => {
                             v-for="col in columns"
                             :key="col.name"
                             class="px-4 py-3 text-left text-sm font-medium"
-                            :class="{ 'cursor-pointer hover:bg-muted': col.sortable }"
+                            :class="{
+                                'cursor-pointer hover:bg-muted': col.sortable,
+                            }"
                             @click="col.sortable && handleSort(col.name)"
                         >
                             <div class="flex items-center gap-1">
@@ -172,7 +181,9 @@ const isSelf = (user: User) => {
                         <td class="px-4 py-3">
                             <Checkbox
                                 :model-value="userCheckedStates[user.id]"
-                                @update:model-value="() => toggleSelect(user.id)"
+                                @update:model-value="
+                                    () => toggleSelect(user.id)
+                                "
                             />
                         </td>
                         <td
@@ -186,7 +197,10 @@ const isSelf = (user: User) => {
                             </span>
 
                             <!-- Name -->
-                            <div v-else-if="col.name === 'name'" class="max-w-md">
+                            <div
+                                v-else-if="col.name === 'name'"
+                                class="max-w-md"
+                            >
                                 <a
                                     :href="showUrl(user.id)"
                                     class="text-sm font-medium transition-colors hover:text-primary"
@@ -196,19 +210,29 @@ const isSelf = (user: User) => {
                             </div>
 
                             <!-- Email -->
-                            <span v-else-if="col.name === 'email'" class="text-sm text-muted-foreground">
+                            <span
+                                v-else-if="col.name === 'email'"
+                                class="text-sm text-muted-foreground"
+                            >
                                 {{ user.email }}
                             </span>
 
                             <!-- Role (is_admin) -->
                             <template v-else-if="col.name === 'is_admin'">
-                                <Badge :variant="user.is_admin ? 'default' : 'secondary'">
+                                <Badge
+                                    :variant="
+                                        user.is_admin ? 'default' : 'secondary'
+                                    "
+                                >
                                     {{ user.is_admin ? 'Admin' : 'User' }}
                                 </Badge>
                             </template>
 
                             <!-- Created date -->
-                            <span v-else-if="col.name === 'created_at'" class="text-sm text-muted-foreground">
+                            <span
+                                v-else-if="col.name === 'created_at'"
+                                class="text-sm text-muted-foreground"
+                            >
                                 {{ formatDate(user.created_at) }}
                             </span>
 
@@ -231,7 +255,11 @@ const isSelf = (user: User) => {
                                     v-if="!isSelf(user)"
                                     variant="ghost"
                                     size="sm"
-                                    :title="user.is_admin ? 'Revoke Admin' : 'Grant Admin'"
+                                    :title="
+                                        user.is_admin
+                                            ? 'Revoke Admin'
+                                            : 'Grant Admin'
+                                    "
                                     @click="emit('toggle-admin', user)"
                                 >
                                     <component
@@ -258,7 +286,8 @@ const isSelf = (user: User) => {
                             <div class="flex flex-col items-center gap-2">
                                 <p class="text-sm">No users found.</p>
                                 <p class="text-xs">
-                                    Try adjusting your filters or create a new user.
+                                    Try adjusting your filters or create a new
+                                    user.
                                 </p>
                             </div>
                         </td>

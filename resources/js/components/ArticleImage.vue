@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 interface Props {
     src: string | null;
@@ -29,8 +29,8 @@ const hasContent = computed(
         props.showPlaceholderWhenEmpty,
 );
 
-const objectFitClass = computed(
-    () => (props.fit === 'contain' ? 'object-contain' : 'object-cover'),
+const objectFitClass = computed(() =>
+    props.fit === 'contain' ? 'object-contain' : 'object-cover',
 );
 
 function onError(): void {
@@ -39,11 +39,7 @@ function onError(): void {
 </script>
 
 <template>
-    <div
-        v-if="hasContent"
-        :class="containerClass"
-        class="overflow-hidden"
-    >
+    <div v-if="hasContent" :class="containerClass" class="overflow-hidden">
         <img
             v-if="src && !loadFailed"
             :src="src"

@@ -56,10 +56,7 @@ const description =
                 href="/"
                 class="inline-flex items-center gap-1 text-sm text-public-text-muted hover:text-public-accent"
             >
-                <ChevronLeft
-                    class="size-4"
-                    aria-hidden="true"
-                />
+                <ChevronLeft class="size-4" aria-hidden="true" />
                 Back to Home
             </Link>
         </div>
@@ -78,21 +75,12 @@ const description =
                     class="flex flex-wrap items-center gap-4 text-sm text-public-text-secondary"
                 >
                     <div class="flex items-center gap-2">
-                        <Calendar
-                            class="size-4"
-                            aria-hidden="true"
-                        />
+                        <Calendar class="size-4" aria-hidden="true" />
                         {{ formattedDate }}
                     </div>
 
-                    <div
-                        v-if="article.author"
-                        class="flex items-center gap-2"
-                    >
-                        <User
-                            class="size-4"
-                            aria-hidden="true"
-                        />
+                    <div v-if="article.author" class="flex items-center gap-2">
+                        <User class="size-4" aria-hidden="true" />
                         {{ article.author }}
                     </div>
 
@@ -128,10 +116,7 @@ const description =
             />
 
             <!-- Description -->
-            <p
-                v-if="description"
-                class="text-lg text-public-text-secondary"
-            >
+            <p v-if="description" class="text-lg text-public-text-secondary">
                 {{ description }}
             </p>
 
@@ -144,18 +129,13 @@ const description =
             >
                 Read full article at
                 {{ article.news_source?.name ?? 'source' }}
-                <ExternalLink
-                    class="size-4"
-                    aria-hidden="true"
-                />
+                <ExternalLink class="size-4" aria-hidden="true" />
             </a>
         </article>
 
         <!-- Related Articles -->
         <section v-if="relatedArticles.length" class="mt-16">
-            <h2
-                class="mb-6 font-heading text-2xl font-bold text-public-text"
-            >
+            <h2 class="mb-6 font-heading text-2xl font-bold text-public-text">
                 Related Articles
             </h2>
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

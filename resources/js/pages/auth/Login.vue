@@ -51,12 +51,11 @@ defineProps<{
                         :tabindex="1"
                         autocomplete="email"
                         placeholder="email@example.com"
-                        :aria-describedby="errors.email ? 'email-error' : undefined"
+                        :aria-describedby="
+                            errors.email ? 'email-error' : undefined
+                        "
                     />
-                    <InputError
-                        id="email-error"
-                        :message="errors.email"
-                    />
+                    <InputError id="email-error" :message="errors.email" />
                 </div>
 
                 <div class="grid gap-2">
@@ -79,7 +78,9 @@ defineProps<{
                         :tabindex="2"
                         autocomplete="current-password"
                         placeholder="Password"
-                        :aria-describedby="errors.password ? 'password-error' : undefined"
+                        :aria-describedby="
+                            errors.password ? 'password-error' : undefined
+                        "
                     />
                     <InputError
                         id="password-error"

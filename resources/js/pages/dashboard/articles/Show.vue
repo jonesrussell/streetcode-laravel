@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ArticleImage from '@/components/ArticleImage.vue';
 import ArticleStatusBadge from '@/components/admin/ArticleStatusBadge.vue';
+import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

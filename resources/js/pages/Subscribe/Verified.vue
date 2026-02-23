@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PublicLayout from '@/layouts/PublicLayout.vue';
 import { Button } from '@/components/ui/button';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { CheckCircle, Mail } from 'lucide-vue-next';
 
@@ -21,7 +21,9 @@ defineProps<{
             <div
                 class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-green-500/10"
             >
-                <CheckCircle class="size-8 text-green-600 dark:text-green-400" />
+                <CheckCircle
+                    class="size-8 text-green-600 dark:text-green-400"
+                />
             </div>
 
             <h1 class="mb-2 font-heading text-2xl font-bold text-public-text">

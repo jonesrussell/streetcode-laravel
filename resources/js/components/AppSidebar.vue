@@ -11,10 +11,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { useNorthcloudNavigation } from '@jonesrussell/northcloud-laravel';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
+import { useNorthcloudNavigation } from '@jonesrussell/northcloud-laravel';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';

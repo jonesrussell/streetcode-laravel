@@ -36,9 +36,7 @@ const currentPath = `/crime/${props.location.country}`;
 </script>
 
 <template>
-    <Head
-        :title="`${location.countryName} Crime News | Streetcode.net`"
-    >
+    <Head :title="`${location.countryName} Crime News | Streetcode.net`">
         <meta
             name="description"
             head-key="description"
@@ -54,9 +52,7 @@ const currentPath = `/crime/${props.location.country}`;
 
         <!-- Regions Grid -->
         <section v-if="regions.length" class="mb-12">
-            <h2
-                class="mb-6 font-heading text-2xl font-bold text-public-text"
-            >
+            <h2 class="mb-6 font-heading text-2xl font-bold text-public-text">
                 Browse by Region
             </h2>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -69,16 +65,10 @@ const currentPath = `/crime/${props.location.country}`;
                         class="border-public-border bg-public-surface transition-all hover:shadow-md"
                     >
                         <CardHeader>
-                            <div
-                                class="flex items-start justify-between"
-                            >
+                            <div class="flex items-start justify-between">
                                 <div class="flex items-center gap-2">
-                                    <Globe
-                                        class="size-5 text-public-accent"
-                                    />
-                                    <CardTitle
-                                        class="text-lg text-public-text"
-                                    >
+                                    <Globe class="size-5 text-public-accent" />
+                                    <CardTitle class="text-lg text-public-text">
                                         {{ region.region_name }}
                                     </CardTitle>
                                 </div>
@@ -110,9 +100,7 @@ const currentPath = `/crime/${props.location.country}`;
 
         <!-- Top Cities -->
         <section v-if="topCities.length" class="mb-12">
-            <h2
-                class="mb-6 font-heading text-2xl font-bold text-public-text"
-            >
+            <h2 class="mb-6 font-heading text-2xl font-bold text-public-text">
                 Most Active Cities
             </h2>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -140,9 +128,7 @@ const currentPath = `/crime/${props.location.country}`;
 
         <!-- Tag Filter -->
         <section v-if="popularTags.length" class="mb-8">
-            <h3
-                class="mb-4 font-heading text-lg font-bold text-public-text"
-            >
+            <h3 class="mb-4 font-heading text-lg font-bold text-public-text">
                 Browse by Category
             </h3>
             <TagFilter
@@ -154,9 +140,7 @@ const currentPath = `/crime/${props.location.country}`;
 
         <!-- Latest Articles -->
         <section>
-            <h2
-                class="mb-4 font-heading text-lg font-bold text-public-text"
-            >
+            <h2 class="mb-4 font-heading text-lg font-bold text-public-text">
                 Latest from {{ location.countryName }}
             </h2>
             <div
@@ -178,10 +162,7 @@ const currentPath = `/crime/${props.location.country}`;
             </div>
 
             <ArticlePagination
-                v-if="
-                    articles?.meta?.last_page &&
-                    articles.meta.last_page > 1
-                "
+                v-if="articles?.meta?.last_page && articles.meta.last_page > 1"
                 :current-page="articles.meta.current_page"
                 :last-page="articles.meta.last_page"
                 :route="currentPath"

@@ -80,7 +80,9 @@ const navLinks = [
                     <button
                         type="button"
                         class="rounded-md p-2 text-public-text-secondary hover:bg-public-bg-subtle md:hidden"
-                        :aria-label="showSearch ? 'Close search' : 'Open search'"
+                        :aria-label="
+                            showSearch ? 'Close search' : 'Open search'
+                        "
                         :aria-expanded="showSearch"
                         aria-controls="mobile-search"
                         @click="showSearch = !showSearch"
@@ -92,7 +94,9 @@ const navLinks = [
                     <button
                         type="button"
                         class="rounded-md p-2 text-public-text-secondary hover:bg-public-bg-subtle md:hidden"
-                        :aria-label="showMobileMenu ? 'Close menu' : 'Open menu'"
+                        :aria-label="
+                            showMobileMenu ? 'Close menu' : 'Open menu'
+                        "
                         :aria-expanded="showMobileMenu"
                         aria-controls="mobile-menu"
                         @click="showMobileMenu = !showMobileMenu"
@@ -140,10 +144,7 @@ const navLinks = [
                 id="mobile-menu"
                 class="border-t border-public-border py-3 md:hidden"
             >
-                <nav
-                    class="flex flex-col gap-1"
-                    aria-label="Main navigation"
-                >
+                <nav class="flex flex-col gap-1" aria-label="Main navigation">
                     <Link
                         v-for="link in navLinks"
                         :key="link.href"

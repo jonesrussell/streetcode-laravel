@@ -21,5 +21,8 @@ export function getTagDotColor(color: string | null): string {
 }
 
 export function getTagBadgeColor(color: string | null): string {
-    return badgeColorMap[color || ''] || 'bg-slate-500/20 text-slate-600 border-slate-500/30 dark:text-slate-400';
+    return (
+        badgeColorMap[color || ''] ||
+        'bg-slate-500/20 text-slate-600 border-slate-500/30 dark:text-slate-400'
+    );
 }

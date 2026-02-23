@@ -33,7 +33,11 @@ const breadcrumbs = [
 
 const formatDateTime = (date: string) => {
     return new Date(date).toLocaleString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
     });
 };
 </script>
@@ -42,15 +46,25 @@ const formatDateTime = (date: string) => {
     <Head :title="`${user.name} - Dashboard`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
+        <div
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6"
+        >
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
-                    <Button variant="ghost" size="sm" as="a" :href="routePrefix" class="mb-2">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        as="a"
+                        :href="routePrefix"
+                        class="mb-2"
+                    >
                         <ArrowLeft class="mr-2 h-4 w-4" />
                         Back to Users
                     </Button>
-                    <h1 class="text-3xl font-bold tracking-tight">{{ user.name }}</h1>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        {{ user.name }}
+                    </h1>
                 </div>
                 <Button as="a" :href="`${routePrefix}/${user.id}/edit`">
                     <Edit class="mr-2 h-4 w-4" />
@@ -75,7 +89,11 @@ const formatDateTime = (date: string) => {
                         </div>
                         <div>
                             <p class="text-muted-foreground">Role</p>
-                            <Badge :variant="user.is_admin ? 'default' : 'secondary'">
+                            <Badge
+                                :variant="
+                                    user.is_admin ? 'default' : 'secondary'
+                                "
+                            >
                                 {{ user.is_admin ? 'Admin' : 'User' }}
                             </Badge>
                         </div>
@@ -92,16 +110,32 @@ const formatDateTime = (date: string) => {
                     <div class="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
                         <div>
                             <p class="text-muted-foreground">Created</p>
-                            <p class="font-medium">{{ formatDateTime(user.created_at) }}</p>
+                            <p class="font-medium">
+                                {{ formatDateTime(user.created_at) }}
+                            </p>
                         </div>
                         <div>
                             <p class="text-muted-foreground">Last Updated</p>
-                            <p class="font-medium">{{ formatDateTime(user.updated_at) }}</p>
+                            <p class="font-medium">
+                                {{ formatDateTime(user.updated_at) }}
+                            </p>
                         </div>
                         <div v-if="'two_factor_confirmed_at' in user">
-                            <p class="text-muted-foreground">Two-Factor Authentication</p>
-                            <Badge :variant="user.two_factor_confirmed_at ? 'default' : 'secondary'">
-                                {{ user.two_factor_confirmed_at ? 'Enabled' : 'Disabled' }}
+                            <p class="text-muted-foreground">
+                                Two-Factor Authentication
+                            </p>
+                            <Badge
+                                :variant="
+                                    user.two_factor_confirmed_at
+                                        ? 'default'
+                                        : 'secondary'
+                                "
+                            >
+                                {{
+                                    user.two_factor_confirmed_at
+                                        ? 'Enabled'
+                                        : 'Disabled'
+                                }}
                             </Badge>
                         </div>
                     </div>

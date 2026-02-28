@@ -19,7 +19,38 @@ class LocationController extends Controller
 
         abort_unless($countryName, HttpResponse::HTTP_NOT_FOUND);
 
-        $regions = City::query()
+        $heroArticle = Article::query()
+            ->with(['newsSource', 'tags', 'city'])
+            ->published()
+            ->inCountry($countryCode)
+            ->whereNotNull('image_url')
+            ->first();
+
+        $heroArticleId = $heroArticle?->id;
+
+        $featuredArticles = Article::query()
+            ->with(['newsSource', 'tags', 'city'])
+            ->published()
+            ->inCountry($countryCode)
+            ->whereNotNull('image_url')
+            ->when($heroArticleId, fn ($q) => $q->where('id', '!=', $heroArticleId))
+            ->limit(3)
+            ->get();
+
+        $excludeIds = collect([$heroArticleId])
+            ->merge($featuredArticles->pluck('id'))
+            ->filter()
+            ->toArray();
+
+        $topStories = Article::query()
+            ->with(['newsSource', 'tags', 'city'])
+            ->published()
+            ->inCountry($countryCode)
+            ->whereNotIn('id', $excludeIds)
+            ->limit(8)
+            ->get();
+
+        $allRegions = City::query()
             ->inCountry($countryCode)
             ->withArticles()
             ->selectRaw('region_code, region_name, SUM(article_count) as total_articles, COUNT(*) as city_count')
@@ -27,10 +58,13 @@ class LocationController extends Controller
             ->orderByDesc('total_articles')
             ->get();
 
+        $regions = $allRegions->take(12);
+        $totalRegionCount = $allRegions->count();
+
         $topCities = City::query()
             ->inCountry($countryCode)
             ->withArticles()
-            ->popular(12)
+            ->popular(8)
             ->get();
 
         $articles = Article::query()
@@ -52,7 +86,12 @@ class LocationController extends Controller
                 'countryName' => $countryName,
                 'level' => 'country',
             ],
+            'heroArticle' => $heroArticle,
+            'featuredArticles' => $featuredArticles,
+            'topStories' => $topStories,
             'regions' => $regions,
+            'allRegions' => Inertia::defer(fn () => $allRegions),
+            'totalRegionCount' => $totalRegionCount,
             'topCities' => $topCities,
             'articles' => $articles,
             'popularTags' => $popularTags,

@@ -224,6 +224,58 @@ test('country page returns correct data', function () {
         ->where('location.countryName', 'Canada')
         ->has('regions')
         ->has('topCities')
+        ->has('heroArticle')
+        ->has('featuredArticles')
+        ->has('topStories')
+        ->has('totalRegionCount')
+    );
+});
+
+test('country page returns hero and featured articles with images', function () {
+    $city = City::factory()->create([
+        'city_slug' => 'toronto',
+        'region_code' => 'ON',
+        'country_code' => 'ca',
+    ]);
+
+    Article::factory()->published()->count(5)->inCity($city)->create([
+        'image_url' => 'https://example.com/image.jpg',
+    ]);
+
+    Article::factory()->published()->count(2)->inCity($city)->create([
+        'image_url' => null,
+    ]);
+
+    $response = $this->get('/crime/ca');
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Location/Country')
+        ->where('heroArticle.image_url', 'https://example.com/image.jpg')
+        ->has('featuredArticles', 3)
+        ->has('topStories')
+    );
+});
+
+test('country page limits regions to 12 in sidebar', function () {
+    for ($i = 1; $i <= 15; $i++) {
+        $regionCode = sprintf('R%02d', $i);
+        City::factory()->create([
+            'city_slug' => "city-{$i}",
+            'region_code' => $regionCode,
+            'region_name' => "Region {$i}",
+            'country_code' => 'ca',
+            'article_count' => $i,
+        ]);
+    }
+
+    $response = $this->get('/crime/ca');
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Location/Country')
+        ->has('regions', 12)
+        ->where('totalRegionCount', 15)
     );
 });
 

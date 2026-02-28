@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { show } from '@/actions/App/Http/Controllers/TagController';
 import ArticleCard from '@/components/ArticleCard.vue';
 import ArticlePagination from '@/components/ArticlePagination.vue';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +18,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const currentPath = `/tags/${props.tag.slug}`;
+const currentPath = show.url(props.tag);
 </script>
 
 <template>
@@ -76,7 +77,7 @@ const currentPath = `/tags/${props.tag.slug}`;
                 <h2 class="font-heading text-lg font-bold text-public-text">
                     Latest {{ tag.name }} News
                 </h2>
-                <Badge :class="['border', getTagBadgeColor(tag.color)]">
+                <Badge :class="getTagBadgeColor(tag.color)">
                     {{ articles?.meta?.total ?? articles.data.length }} articles
                 </Badge>
             </div>

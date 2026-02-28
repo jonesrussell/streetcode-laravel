@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { show } from '@/actions/App/Http/Controllers/TagController';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTagBadgeColor, getTagDotColor } from '@/composables/useTagColors';
@@ -69,7 +70,7 @@ defineProps<Props>();
                 <Link
                     v-for="category in crimeCategories"
                     :key="category.id"
-                    :href="`/tags/${category.slug}`"
+                    :href="show.url(category)"
                 >
                     <Card
                         class="h-full border-public-border bg-public-surface transition-all hover:shadow-md"
@@ -88,10 +89,7 @@ defineProps<Props>();
                                     </CardTitle>
                                 </div>
                                 <Badge
-                                    :class="[
-                                        'border',
-                                        getTagBadgeColor(category.color),
-                                    ]"
+                                    :class="getTagBadgeColor(category.color)"
                                 >
                                     {{ category.article_count }} articles
                                 </Badge>

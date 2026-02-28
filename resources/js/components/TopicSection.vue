@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { show } from '@/actions/App/Http/Controllers/TagController';
 import ArticleImage from '@/components/ArticleImage.vue';
 import SourceCredibilityBadge from '@/components/SourceCredibilityBadge.vue';
 import { Badge } from '@/components/ui/badge';
@@ -23,12 +24,12 @@ defineProps<Props>();
                 <h2 class="font-heading text-lg font-bold text-public-text">
                     {{ tag.name }} News
                 </h2>
-                <Badge :class="['border', getTagBadgeColor(tag.color)]">
+                <Badge :class="getTagBadgeColor(tag.color)">
                     {{ tag.article_count }} articles
                 </Badge>
             </div>
             <Link
-                :href="`/tags/${tag.slug}`"
+                :href="show.url(tag)"
                 class="inline-flex items-center text-sm font-medium text-public-accent hover:text-public-accent-hover"
             >
                 Read more {{ tag.name }} news

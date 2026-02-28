@@ -58,7 +58,7 @@ class ArticleController extends Controller
 
     public function show(Article $article): Response
     {
-        $article->load(['newsSource', 'tags']);
+        $article->load(['newsSource', 'tags', 'city']);
         $article->incrementViewCount();
 
         $relatedArticles = Article::query()

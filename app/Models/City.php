@@ -27,6 +27,10 @@ class City extends Model
         'article_count' => 'integer',
     ];
 
+    protected $appends = [
+        'url_path',
+    ];
+
     public function articles(): HasMany
     {
         return $this->hasMany(Article::class);

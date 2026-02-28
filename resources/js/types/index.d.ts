@@ -41,6 +41,24 @@ export interface User {
 
 export type BreadcrumbItemType = BreadcrumbItem;
 
+export interface ArticleMetadata {
+    og_description?: string;
+    og_title?: string;
+    og_url?: string;
+    word_count?: number;
+    keywords?: string[];
+    category?: string;
+    section?: string;
+    confidence?: number;
+    is_crime_related?: boolean;
+    crime_relevance?: string;
+    content_type?: string;
+    location_city?: string;
+    location_province?: string;
+    location_country?: string;
+    location_confidence?: number;
+}
+
 export interface Article {
     id: number;
     news_source_id: number;
@@ -57,10 +75,10 @@ export interface Article {
     created_at: string;
     updated_at: string;
     deleted_at?: string | null;
-    metadata?: Record<string, unknown> & { og_description?: string };
+    metadata?: ArticleMetadata & Record<string, unknown>;
     news_source?: NewsSource;
     tags?: Tag[];
-    author?: User;
+    city?: City;
 }
 
 export interface NewsSource {

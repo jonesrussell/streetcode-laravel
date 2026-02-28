@@ -290,3 +290,74 @@ test('country page returns 404 for invalid country', function () {
 test('region page returns 404 for invalid region', function () {
     $this->get('/crime/ca/zz')->assertNotFound();
 });
+
+test('country page handles country with no articles gracefully', function () {
+    City::factory()->create([
+        'city_slug' => 'empty-city',
+        'region_code' => 'ON',
+        'country_code' => 'ca',
+        'article_count' => 0,
+    ]);
+
+    $response = $this->get('/crime/ca');
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Location/Country')
+        ->where('heroArticle', null)
+        ->where('featuredArticles', [])
+        ->where('topStories', [])
+    );
+});
+
+test('country page returns top stories when no articles have images', function () {
+    $city = City::factory()->create([
+        'city_slug' => 'imageless-city',
+        'region_code' => 'ON',
+        'country_code' => 'ca',
+    ]);
+
+    Article::factory()->published()->count(5)->inCity($city)->create([
+        'image_url' => null,
+    ]);
+
+    $response = $this->get('/crime/ca');
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Location/Country')
+        ->where('heroArticle', null)
+        ->where('featuredArticles', [])
+        ->has('topStories', 5)
+    );
+});
+
+test('country page top stories excludes hero and featured articles', function () {
+    $city = City::factory()->create([
+        'city_slug' => 'exclusion-test-city',
+        'region_code' => 'ON',
+        'country_code' => 'ca',
+    ]);
+
+    Article::factory()
+        ->published()
+        ->count(10)
+        ->inCity($city)
+        ->create(['image_url' => 'https://example.com/image.jpg']);
+
+    $response = $this->get('/crime/ca');
+
+    $response->assertOk();
+    $response->assertInertia(function ($page) {
+        $props = $page->toArray()['props'];
+
+        $heroId = $props['heroArticle']['id'] ?? null;
+        $featuredIds = collect($props['featuredArticles'])->pluck('id')->toArray();
+        $topStoryIds = collect($props['topStories'])->pluck('id')->toArray();
+
+        expect($topStoryIds)->not->toContain($heroId);
+        expect(array_intersect($topStoryIds, $featuredIds))->toBeEmpty();
+
+        return $page;
+    });
+});

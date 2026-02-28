@@ -170,3 +170,27 @@ test('canonical URL uses slug', function () {
     $props = $response->original->getData()['page']['props'];
     expect($props['canonicalUrl'])->toContain('/articles/canonical-slug-test');
 });
+
+test('non-existent slug returns 404', function () {
+    $response = $this->get('/articles/this-slug-does-not-exist');
+
+    $response->assertNotFound();
+});
+
+test('non-existent article ID returns 404', function () {
+    $response = $this->get('/articles/999999');
+
+    $response->assertNotFound();
+});
+
+test('numeric title generates prefixed slug to avoid route collision', function () {
+    $article = Article::factory()->published()->create([
+        'title' => '12345',
+        'slug' => null,
+    ]);
+
+    expect($article->slug)->toBe('article-12345');
+
+    $response = $this->get("/articles/{$article->slug}");
+    $response->assertSuccessful();
+});

@@ -22,7 +22,7 @@ const formattedDate = props.article.published_at
 </script>
 
 <template>
-    <Link :href="`/articles/${article.id}`">
+    <Link :href="`/articles/${article.slug}`">
         <article
             class="group h-full overflow-hidden rounded-lg border border-public-border bg-public-surface transition-all hover:shadow-md"
         >

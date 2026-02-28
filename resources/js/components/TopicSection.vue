@@ -40,7 +40,7 @@ defineProps<Props>();
             <Link
                 v-for="(article, index) in articles"
                 :key="article.id"
-                :href="`/articles/${article.id}`"
+                :href="`/articles/${article.slug}`"
                 class="group overflow-hidden rounded-lg border border-public-border bg-public-surface transition-all hover:shadow-md"
             >
                 <div

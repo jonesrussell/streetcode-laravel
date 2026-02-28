@@ -131,3 +131,42 @@ test('article show page works without city', function () {
             ->where('article.city', null)
         );
 });
+
+test('article show page uses slug in URL', function () {
+    $article = Article::factory()->published()->create([
+        'title' => 'Test Slug Article',
+        'slug' => 'test-slug-article',
+    ]);
+
+    $response = $this->get("/articles/{$article->slug}");
+
+    $response->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('Articles/Show')
+            ->where('article.slug', 'test-slug-article')
+        );
+});
+
+test('old ID-based article URLs redirect to slug-based URLs', function () {
+    $article = Article::factory()->published()->create([
+        'title' => 'Redirect Test Article',
+        'slug' => 'redirect-test-article',
+    ]);
+
+    $response = $this->get("/articles/{$article->id}");
+
+    $response->assertRedirect("/articles/{$article->slug}");
+    $response->assertStatus(301);
+});
+
+test('canonical URL uses slug', function () {
+    $article = Article::factory()->published()->create([
+        'title' => 'Canonical Slug Test',
+        'slug' => 'canonical-slug-test',
+    ]);
+
+    $response = $this->get(route('articles.show', $article));
+
+    $props = $response->original->getData()['page']['props'];
+    expect($props['canonicalUrl'])->toContain('/articles/canonical-slug-test');
+});

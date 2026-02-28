@@ -61,6 +61,7 @@ export interface ArticleMetadata {
 
 export interface Article {
     id: number;
+    slug: string;
     news_source_id: number;
     author_id: number | null;
     title: string;

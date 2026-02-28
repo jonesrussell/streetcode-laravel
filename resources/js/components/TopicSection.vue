@@ -28,7 +28,7 @@ defineProps<Props>();
                 </Badge>
             </div>
             <Link
-                :href="`/?tag=${tag.slug}`"
+                :href="`/tags/${tag.slug}`"
                 class="inline-flex items-center text-sm font-medium text-public-accent hover:text-public-accent-hover"
             >
                 Read more {{ tag.name }} news

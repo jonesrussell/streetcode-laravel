@@ -32,10 +32,8 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-        {{-- Default Open Graph and Twitter (pages can override via Inertia Head) --}}
+        {{-- Global Open Graph and Twitter defaults --}}
         <meta property="og:site_name" content="{{ config('app.name') }}">
-        <meta property="og:type" content="website">
-        <meta property="og:image" content="{{ asset('logo.png') }}">
         <meta name="twitter:card" content="summary_large_image">
 
         <link rel="icon" href="/favicon.ico" sizes="any">

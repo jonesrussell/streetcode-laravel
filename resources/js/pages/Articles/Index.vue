@@ -43,6 +43,13 @@ defineProps<Props>();
             head-key="description"
             content="Latest crime news and stories. Browse by category and location."
         />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Streetcode - Crime News" />
+        <meta
+            property="og:description"
+            content="Latest crime news and stories. Browse by category and location."
+        />
+        <meta property="og:image" content="/logo.png" />
     </Head>
 
     <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

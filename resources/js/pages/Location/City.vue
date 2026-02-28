@@ -49,6 +49,16 @@ const currentPath = `/crime/${props.location.country}/${props.location.region}/$
             head-key="description"
             :content="`Crime news in ${location.cityName}, ${location.regionName}. Latest stories and public safety updates.`"
         />
+        <meta property="og:type" content="website" />
+        <meta
+            property="og:title"
+            :content="`${location.cityName} Crime News`"
+        />
+        <meta
+            property="og:description"
+            :content="`Crime news in ${location.cityName}, ${location.regionName}. Latest stories and public safety updates.`"
+        />
+        <meta property="og:image" content="/logo.png" />
     </Head>
 
     <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

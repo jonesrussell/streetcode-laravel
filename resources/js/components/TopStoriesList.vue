@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
             <Link
                 v-for="(article, index) in articles"
                 :key="article.id"
-                :href="`/articles/${article.id}`"
+                :href="`/articles/${article.slug}`"
                 class="group flex items-center gap-4 py-3 transition-colors hover:bg-public-bg-subtle"
             >
                 <!-- Rank Number -->

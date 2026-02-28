@@ -14,6 +14,11 @@ class Article extends BaseArticle
         static::creating(function (Article $article) {
             if (empty($article->slug) && ! empty($article->title)) {
                 $slug = Str::slug($article->title);
+
+                if ($slug === '' || ctype_digit($slug)) {
+                    $slug = "article-{$slug}";
+                }
+
                 $original = $slug;
                 $counter = 1;
 

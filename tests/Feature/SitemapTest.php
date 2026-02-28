@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Article;
+
 test('sitemap returns 200 and valid xml', function () {
     $response = $this->get(route('sitemap'));
 
@@ -26,4 +28,17 @@ test('robots.txt returns 200 and references sitemap', function () {
     expect(str_contains($response->headers->get('Content-Type', ''), 'text/plain'))->toBeTrue();
     expect($response->getContent())->toContain('Sitemap:');
     expect($response->getContent())->toContain('sitemap.xml');
+});
+
+test('sitemap uses slug-based article URLs', function () {
+    $article = Article::factory()->published()->create([
+        'slug' => 'sitemap-test-article',
+    ]);
+
+    $response = $this->get(route('sitemap'));
+
+    $response->assertSuccessful();
+    $content = $response->getContent();
+    expect($content)->toContain('/articles/sitemap-test-article');
+    expect($content)->not->toContain("/articles/{$article->id}</loc>");
 });

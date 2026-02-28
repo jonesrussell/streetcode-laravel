@@ -23,7 +23,15 @@ Route::get('/robots.txt', function () {
 
 // Public article routes - no authentication required
 Route::get('/', [ArticleController::class, 'index'])->name('home');
-Route::get('/articles/{article:id}', [ArticleController::class, 'show'])->name('articles.show');
+
+// Redirect old ID-based URLs to new slug-based URLs (301 for SEO)
+Route::get('/articles/{id}', function (int $id) {
+    $article = Article::findOrFail($id);
+
+    return redirect()->route('articles.show', $article, 301);
+})->where('id', '[0-9]+');
+
+Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
 
 // Tag routes
 Route::get('/tags', [TagController::class, 'index'])->name('tags.index');

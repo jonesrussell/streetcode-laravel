@@ -37,7 +37,7 @@ defineProps<Props>();
             <!-- Hero Article (Large) -->
             <div v-if="heroArticle" class="lg:col-span-2">
                 <Link
-                    :href="`/articles/${heroArticle.id}`"
+                    :href="`/articles/${heroArticle.slug}`"
                     class="group relative block overflow-hidden rounded-lg bg-public-surface"
                 >
                     <div class="aspect-video w-full">
@@ -87,7 +87,7 @@ defineProps<Props>();
                 <Link
                     v-for="(article, index) in featuredArticles.slice(0, 3)"
                     :key="article.id"
-                    :href="`/articles/${article.id}`"
+                    :href="`/articles/${article.slug}`"
                     class="group flex gap-3 rounded-lg border border-public-border bg-public-surface p-3 transition-colors hover:border-public-accent/30"
                 >
                     <div

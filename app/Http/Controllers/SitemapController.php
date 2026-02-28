@@ -22,7 +22,7 @@ class SitemapController extends Controller
         Article::query()
             ->published()
             ->orderByDesc('published_at')
-            ->select(['id', 'updated_at'])
+            ->select(['id', 'slug', 'updated_at'])
             ->chunk(1000, function ($articles) use ($baseUrl, &$urls) {
                 foreach ($articles as $article) {
                     $urls[] = [

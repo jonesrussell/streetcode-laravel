@@ -259,7 +259,13 @@ onUnmounted(() => {
 
             <!-- Read Full Article CTA -->
             <div class="mt-6">
-                <Button as="a" :href="article.url" target="_blank" size="lg">
+                <Button
+                    as="a"
+                    :href="article.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="lg"
+                >
                     Read full article at
                     {{ article.news_source?.name ?? 'source' }}
                     <ExternalLink class="size-4" aria-hidden="true" />

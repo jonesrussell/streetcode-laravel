@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { show } from '@/actions/App/Http/Controllers/TagController';
 import { getTagDotColor } from '@/composables/useTagColors';
 import type { Tag } from '@/types';
 import { Link } from '@inertiajs/vue3';
@@ -27,7 +28,7 @@ withDefaults(defineProps<Props>(), {
             <Link
                 v-for="topic in topics"
                 :key="topic.id"
-                :href="`/?tag=${topic.slug}`"
+                :href="show.url(topic)"
                 class="group flex items-center justify-between rounded-md px-3 py-2 transition-colors hover:bg-public-bg-subtle"
             >
                 <div class="flex items-center gap-2">

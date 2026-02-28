@@ -28,6 +28,7 @@ class TagController extends Controller
             ->with(['newsSource', 'tags'])
             ->published()
             ->withTag($tag->slug)
+            ->latest('published_at')
             ->paginate(20);
 
         return Inertia::render('Tags/Show', [

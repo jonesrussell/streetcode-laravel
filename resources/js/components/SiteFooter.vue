@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { show } from '@/actions/App/Http/Controllers/TagController';
 import { Link } from '@inertiajs/vue3';
 
 interface FooterLink {
@@ -21,11 +22,11 @@ const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
     categories: {
         title: 'Categories',
         links: [
-            { name: 'Violent Crime', href: '/?tag=violent-crime' },
-            { name: 'Property Crime', href: '/?tag=property-crime' },
-            { name: 'Drug Crime', href: '/?tag=drug-crime' },
-            { name: 'Organized Crime', href: '/?tag=organized-crime' },
-            { name: 'Criminal Justice', href: '/?tag=criminal-justice' },
+            { name: 'Violent Crime', href: show.url('violent-crime') },
+            { name: 'Property Crime', href: show.url('property-crime') },
+            { name: 'Drug Crime', href: show.url('drug-crime') },
+            { name: 'Organized Crime', href: show.url('organized-crime') },
+            { name: 'Criminal Justice', href: show.url('criminal-justice') },
         ],
     },
     locations: {

@@ -10,13 +10,15 @@ return [
         'channels' => array_filter(array_map(
             'trim',
             explode(',', env('NORTHCLOUD_CHANNELS', implode(',', [
-                // Layer 1: Crime topic channels (bulk of crime content)
+                // Layer 1: Crime topic channels (content:{topic} from publisher)
+                'content:crime',
+                'content:violent_crime',
+                'content:criminal_justice',
+                'content:drug_crime',
+                'content:property_crime',
+                'content:organized_crime',
+                // Layer 2: DB channel (articles:crime from publisher)
                 'articles:crime',
-                'articles:violent_crime',
-                'articles:criminal_justice',
-                'articles:drug_crime',
-                'articles:property_crime',
-                'articles:organized_crime',
                 // Layer 3: Crime classification channels
                 'crime:homepage',
                 'crime:category:violent-crime',
@@ -24,7 +26,8 @@ return [
                 'crime:category:drug-crime',
                 'crime:category:gang-violence',
                 'crime:category:organized-crime',
-                'crime:category:court-news',
+                'crime:courts',
+                'crime:context',
                 'crime:category:crime',
                 // Layer 4: Location channels (Canadian provinces)
                 'crime:canada',

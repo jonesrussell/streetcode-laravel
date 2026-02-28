@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Article;
+use App\Models\City;
 
 test('article show page returns successful response', function () {
     $article = Article::factory()->published()->create();
@@ -92,4 +93,41 @@ test('article show page uses default og image when article has no image', functi
 
     $props = $response->original->getData()['page']['props'];
     expect($props['ogImage'])->toContain('logo.png');
+});
+
+test('article show page eager loads city relationship', function () {
+    $city = City::factory()->inOntario()->create([
+        'city_name' => 'Toronto',
+        'city_slug' => 'toronto',
+    ]);
+
+    $article = Article::factory()->published()->create([
+        'city_id' => $city->id,
+    ]);
+
+    $response = $this->get(route('articles.show', $article));
+
+    $response->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('Articles/Show')
+            ->has('article.city')
+            ->where('article.city.city_name', 'Toronto')
+            ->where('article.city.region_code', 'ON')
+            ->where('article.city.url_path', '/crime/ca/on/toronto')
+        );
+});
+
+test('article show page works without city', function () {
+    $article = Article::factory()->published()->create([
+        'city_id' => null,
+    ]);
+
+    $response = $this->get(route('articles.show', $article));
+
+    $response->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('Articles/Show')
+            ->has('article')
+            ->where('article.city', null)
+        );
 });

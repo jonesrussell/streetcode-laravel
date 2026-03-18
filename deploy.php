@@ -39,7 +39,8 @@ task('deploy:install_services', function (): void {
     run("mkdir -p $serviceDir");
     run("cp {{release_path}}/deploy/systemd-user/*.service $serviceDir/");
     run('systemctl --user daemon-reload');
-    run('systemctl --user enable streetcode-horizon.service streetcode-inertia-ssr.service streetcode-schedule-work.service streetcode-articles-subscribe.service streetcode-alloy-loki.service');
+    run('systemctl --user enable streetcode-horizon.service streetcode-inertia-ssr.service streetcode-schedule-work.service streetcode-articles-subscribe.service');
+    run('systemctl --user enable streetcode-alloy-loki.service || true');
 });
 before('deploy:symlink', 'deploy:install_services');
 

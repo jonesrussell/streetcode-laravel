@@ -40,7 +40,6 @@ task('deploy:install_services', function (): void {
     run("cp {{release_path}}/deploy/systemd-user/*.service $serviceDir/");
     run('systemctl --user daemon-reload');
     run('systemctl --user enable streetcode-horizon.service streetcode-inertia-ssr.service streetcode-schedule-work.service streetcode-articles-subscribe.service');
-    run('systemctl --user enable streetcode-alloy-loki.service || true');
 });
 before('deploy:symlink', 'deploy:install_services');
 
@@ -57,7 +56,7 @@ after('deploy:copy_caddyfile', 'deploy:reload_caddy');
 task('deploy:restart_services', function (): void {
     run('cd {{release_path}} && {{bin/php}} artisan horizon:terminate || true');
     run('cd {{release_path}} && {{bin/php}} artisan inertia:stop-ssr || true');
-    run('systemctl --user restart streetcode-horizon.service streetcode-inertia-ssr.service streetcode-schedule-work.service streetcode-articles-subscribe.service streetcode-alloy-loki.service || true');
+    run('systemctl --user restart streetcode-horizon.service streetcode-inertia-ssr.service streetcode-schedule-work.service streetcode-articles-subscribe.service || true');
 });
 after('deploy:symlink', 'deploy:restart_services');
 task('deploy:reload_php_fpm', function (): void {
